@@ -1,0 +1,97 @@
+body {
+  background: #800;
+}
+
+.sh.desktop {
+  position  : fixed;
+  top       : 0;
+  left      : 0;
+  right     : 0;
+  bottom    : 0;
+  background: #800;
+  display   : grid;
+  grid      :
+    "launcher" max-content "windows" 1fr;
+
+  >.launcher {
+    grid-area: launcher;
+
+  }
+
+  >.windows {
+    grid-area: windows;
+    display  : flex;
+  }
+  > .modals {
+    position:fixed;
+    top       : 0;
+    left      : 0;
+    right     : 0;
+    bottom    : 0;
+    background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4woSFgQLB7GHdwAAAB1pVFh0Q29tbWVudAAAAAAAQ3JlYXRlZCB3aXRoIEdJTVBkLmUHAAAAIUlEQVQI103HsQEAMAwCIMzjPd2ushG8tiCJ28Bt2roNfL8jDIfI9ZGeAAAAAElFTkSuQmCC);
+    display: flex;           /* establish flex container */
+    flex-direction: column;  /* make main axis vertical */
+    justify-content: center; /* center items vertically, in this case */
+    align-items: center;     /* center items horizontally, in this case */
+    > * {
+      max-width:75vw;
+      width:50vw;
+      margin:0 auto;
+    } 
+  }
+}
+
+.sh.window {
+  flex      : 1;
+  display   : grid;
+  background: #eee;
+  box-shadow: 0 0 8px #fff8, 0 0 4px #0008;
+  min-width : 100px;
+  min-height: 100px;
+  
+  grid      :
+  "titlebar" max-content 
+  "toolbar" max-content 
+  "client" 1fr
+  "statusbar" max-content;
+
+  > .titlebar {
+    grid-area: "titlebar"
+  }
+  > .toolbar {
+    grid-area: "toolbar"
+  }
+  > .statusbar {
+    grid-area: "statusbar"
+  }
+  > .client {
+    grid-area: "client";
+    >iframe {
+      position: absolute;
+      top:0;
+      left:0;
+      width:100%;
+      height:100%;
+    }
+  }
+}
+
+.ui.right.aligned.field {
+  text-align:right;
+}
+
+.ui.fitted.segment {
+  padding:0!important;
+  margin:0!important;
+}
+
+
+.ui.tight.segment {
+  padding: 0.4em 0.8em !important;
+}
+
+iframe.ui.tight.segment {
+  padding      : 0 !important;
+  border       : none;
+  margin-bottom: -4px;
+}
