@@ -1,8 +1,8 @@
 import React from "react";
 import ReactDOM from "react-dom";
 
-import { Desktop } from "./components/Desktop";
-import { DesktopController } from "./controllers/desktop/DesktopController";
+import { Desktop } from "./desktop/components/Desktop";
+import { DesktopController } from "./desktop/controllers/DesktopController";
 
 import "./styles.less";
 
@@ -13,3 +13,4 @@ ReactDOM.render(<Desktop desktop={desktop} />, rootElement);
 
 desktop("launch-app", { url: "https://websh.org/app-ace/" });
 
+desktop("show-launcher");

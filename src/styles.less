@@ -11,7 +11,7 @@ body {
   background: #800;
   display   : grid;
   grid      :
-    "launcher" max-content "windows" 1fr;
+    "launcher"max-content "windows"1fr;
 
   >.launcher {
     grid-area: launcher;
@@ -22,23 +22,31 @@ body {
     grid-area: windows;
     display  : flex;
   }
-  > .modals {
-    position:fixed;
-    top       : 0;
-    left      : 0;
-    right     : 0;
-    bottom    : 0;
-    background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4woSFgQLB7GHdwAAAB1pVFh0Q29tbWVudAAAAAAAQ3JlYXRlZCB3aXRoIEdJTVBkLmUHAAAAIUlEQVQI103HsQEAMAwCIMzjPd2ushG8tiCJ28Bt2roNfL8jDIfI9ZGeAAAAAElFTkSuQmCC);
-    display: flex;           /* establish flex container */
-    flex-direction: column;  /* make main axis vertical */
-    justify-content: center; /* center items vertically, in this case */
-    align-items: center;     /* center items horizontally, in this case */
-    > * {
-      max-width:75vw;
-      width:50vw;
-      margin:0 auto;
-    } 
+
+  >.modals {
+    position        : fixed;
+    top             : 0;
+    left            : 0;
+    right           : 0;
+    bottom          : 0;
+    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4woSFgQLB7GHdwAAAB1pVFh0Q29tbWVudAAAAAAAQ3JlYXRlZCB3aXRoIEdJTVBkLmUHAAAAIUlEQVQI103HsQEAMAwCIMzjPd2ushG8tiCJ28Bt2roNfL8jDIfI9ZGeAAAAAElFTkSuQmCC);
+    display         : flex;
+    flex-direction  : column;
+    justify-content : center;
+    align-items     : center;
+
+    >* {
+      margin   : 0 auto;
+    }
   }
+}
+
+.sh.dialog {
+  user-select: none;
+  margin     : 0;
+  padding    : 0;
+  max-width: 75vw;
+  min-width  :40rem;
 }
 
 .sh.window {
@@ -48,50 +56,66 @@ body {
   box-shadow: 0 0 8px #fff8, 0 0 4px #0008;
   min-width : 100px;
   min-height: 100px;
-  
-  grid      :
-  "titlebar" max-content 
-  "toolbar" max-content 
-  "client" 1fr
-  "statusbar" max-content;
+  margin    : 0;
+  padding   : 0;
 
-  > .titlebar {
-    grid-area: "titlebar"
+  grid:
+    "titlebar"max-content "toolbar"max-content "client"1fr "statusbar"max-content;
+
+  >.titlebar {
+    grid-area: "titlebar";
+
+    >.title {}
+
+    font-weight:bold;
+
+    >.file {
+      margin-left: 1em;
+    }
   }
-  > .toolbar {
+
+  >.toolbar {
     grid-area: "toolbar"
   }
-  > .statusbar {
+
+  >.statusbar {
     grid-area: "statusbar"
   }
-  > .client {
+
+  >.client {
     grid-area: "client";
+    position : relative;
+
     >iframe {
       position: absolute;
-      top:0;
-      left:0;
-      width:100%;
-      height:100%;
+      top     : 0;
+      left    : 0;
+      width   : 100%;
+      height  : 100%;
     }
   }
 }
 
-.ui.right.aligned.field {
-  text-align:right;
+.sh.app-icon {
+  background-size    : contain;
+  background-repeat  : no-repeat;
+  background-position: center;
+  width:64px;
+  height:64px;
 }
 
-.ui.fitted.segment {
-  padding:0!important;
-  margin:0!important;
+i.icon {
+  position: relative;
+  background-size    : contain;
+  background-repeat  : no-repeat;
+  background-position: center;
+}
+
+.ui.right.aligned.field {
+  text-align: right;
 }
 
 
 .ui.tight.segment {
   padding: 0.4em 0.8em !important;
-}
-
-iframe.ui.tight.segment {
-  padding      : 0 !important;
-  border       : none;
-  margin-bottom: -4px;
 }

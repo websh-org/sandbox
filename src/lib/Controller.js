@@ -26,19 +26,20 @@ class ControllerEvent {
 
 class ControllerStore {
   static $id = "id";
-
   isController = true;
 
   constructor({ parent, ...rest }) {
+    this._internal = Object.assign({},this._internal)
+    this._readonly = Object.assign({},this._readonly)
+    
+    this._actions = Object.assign({},this._actions)
     if (parent) parents.set(this,parent);
     this._handlers = {};
-    this._actions = {};
     const { $id } = this.constructor;
     if ($id) Object.defineProperty(this, $id, {
       value: rest[$id] || uuid(),
       writable: false
     })
-    this.self = this;
   }
 
   on(type,handler) {
@@ -54,18 +55,23 @@ class ControllerStore {
     this._handlers[type].delete(handler);
   }
 
-  _trigger(type,data={}) {
-    const event = new ControllerEvent({type,data,target:this});
+  _dispatch(event) {
+    const {type,data,target}=event;
     const handlers = this._handlers[type]
     if (handlers) {
       for (var handler of handlers) {
-        handler.call(this,event,event.data);
+        handler.call(this,event,data);
         if (event.isAborted) break;
       }
     }
     if (!event.isStopped && parents.has(this)) {
-      parents.get(this)._trigger(this)
+      parents.get(this)._dispatch(event)
     }
+  }
+
+  _trigger(type,data={}) {
+    const event = new ControllerEvent({type,data,target:this});
+    this._dispatch(event);
   }
 
   
@@ -102,12 +108,16 @@ export function Controller(Class) {
       },
       get(target, prop, receiver) {
         if (prop in controller) return Reflect.get(controller, prop);
+        if (store._internal[prop]) return undefined;
+        if (store._actions[prop]) return undefined;
         if (typeof prop === "string" && prop.startsWith("_")) return undefined;
         const value = Reflect.get(store, prop, store);
         if (typeof value === "function" && !value.isController) return value.bind(store);
         return value;
       },
       set(target, prop, value) {
+        if (store._internal[prop]) return undefined;
+        if (store._readonly[prop]) return undefined;
         if (typeof prop === "string" && prop.startsWith("_")) return undefined;
         if (prop in store) return Reflect.set(store, prop, store);
         store.assert(false, "bad-prop-" + prop);
@@ -123,4 +133,17 @@ export function Controller(Class) {
 
 Controller.Store = ControllerStore;
 
-const stores = new WeakMap();
+export function internal(obj, prop, desc) {
+  obj._internal = Object.assign({}, obj._internal, { [prop]: true })
+}
+
+export function readonly(obj, prop, desc) {
+  obj._readonly = Object.assign({}, obj._internal, { [prop]: true })
+}
+
+export function command(obj, prop, desc) {
+  var value = desc.initializer ? desc.initializer() : desc.value;
+  if (typeof value === "function") value = { execute: value }
+  obj._actions = Object.assign({}, obj._actions, { [prop]: value })
+  return {value:undefined};
+}

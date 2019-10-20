@@ -1,15 +1,38 @@
 import { observable, action, reaction, computed, toJS } from "mobx";
 
+function resolveURL(from,to) {
+  if (!to) return null;
+  try {
+    const url = new URL(to,from);
+    return url.href;
+  } catch(error) {
+    console.log(error)
+    return null;
+  }
+}
+
 export class AppInfo {
-  
-  manifest = null;
   url = null;
+
+  @observable
+  manifest = null;
+
   constructor({url,manifest}) {
     this.url = url;
     if (manifest) this.manifest = manifest;
     else this.manifest={api:{}}
   }
+  
+  @computed
+  get about() {
+    return {
+      name: this.manifest.name,
+      icon: resolveURL(this.url,this.manifest.icon),
+      description: this.manifest.description
+    }
+  }
 
+  @computed
   get file() {
     const def = this.manifest.api && this.manifest.api.file; 
     const ret = {
