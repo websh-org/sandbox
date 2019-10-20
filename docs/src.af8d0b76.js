@@ -97,4 +97,4 @@ var e=require("process"),t=arguments[3];Object.defineProperty(exports,"__esModul
 },{"mobx":"6uYi","~/lib/utils":"UOOq","~/lib/Controller":"SuCl","./WindowManagerController":"GDvf","~/shell/ShellController":"Qm/F","./DialogController":"75y+"}],"Focm":[function(require,module,exports) {
 "use strict";var e=s(require("react")),t=s(require("react-dom")),r=require("./desktop/components/Desktop"),o=require("./desktop/controllers/DesktopController");function s(e){return e&&e.__esModule?e:{default:e}}require("./styles.less");const l=(0,o.DesktopController)({}),u=document.getElementById("root");t.default.render(e.default.createElement(r.Desktop,{desktop:l}),u),l("launch-app",{url:"https://websh.org/app-ace/"}),l("show-launcher");
 },{"react":"1n8/","react-dom":"NKHc","./desktop/components/Desktop":"vPNO","./desktop/controllers/DesktopController":"tJQu","./styles.less":"dcEC"}]},{},["Focm"], null)
-//# sourceMappingURL=/app-ace/src.af8d0b76.js.map
+//# sourceMappingURL=/sandbox/src.af8d0b76.js.map

@@ -24,7 +24,7 @@
     "less": "^3.10.3"
   },
   "scripts": {
-    "build": "(rm -rf docs/*; cd src; NODE_ENV=production parcel build index.html --public-url=/app-ace --out-dir=../docs)"
+    "build": "(rm -rf docs/*; cd src; NODE_ENV=production parcel build index.html --public-url=/sandbox/ --out-dir=../docs)"
   },
   "browserslist": [
     "last 2 Chrome versions",
