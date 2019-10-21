@@ -34,7 +34,7 @@ body {
     background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4woSFgQLB7GHdwAAAB1pVFh0Q29tbWVudAAAAAAAQ3JlYXRlZCB3aXRoIEdJTVBkLmUHAAAAIUlEQVQI103HsQEAMAwCIMzjPd2ushG8tiCJ28Bt2roNfL8jDIfI9ZGeAAAAAElFTkSuQmCC);
 
     display         : grid;
-    grid: "top top top" 1fr "left center right" minmax(30rem,max-content)  "bottom bottom bottom" 2fr;
+    grid: "top top top" 1fr "left center right" max-content  "bottom bottom bottom" 2fr;
     grid-template-columns: 1fr max-content 1fr;
   }
 }
@@ -46,6 +46,7 @@ body {
   padding    : 0;
   max-width: 75vw;
   min-width  :40rem;
+ 
 }
 
 .sh.window {

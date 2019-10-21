@@ -1,5 +1,6 @@
 {
-  "name": "wenshell",
+  "name": "@websh/sandbox",
+  "private": true,
   "version": "0.2.0a",
   "description": "WebShell",
   "keywords": [],
@@ -10,10 +11,7 @@
     "mobx-react": "^6.1.4",
     "react": "^16.10.2",
     "react-dom": "^16.8.6",
-    "spdx-license-list": "^6.1.0",
-    "src": "^1.1.2",
-    "stores": "^1.0.0",
-    "undefined": "^0.1.0"
+    "spdx-license-list": "^6.1.0"
   },
   "devDependencies": {
     "@babel/core": "^7.6.4",

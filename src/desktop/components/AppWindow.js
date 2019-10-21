@@ -13,7 +13,7 @@ export class AppWindow extends React.Component {
     const { window } = this.props;
     return (
       <Window window={window}>
-        <iframe ref={this.refIframe} />
+        <iframe sandbox="allow-scripts" ref={this.refIframe} />
       </Window>
     );
   }

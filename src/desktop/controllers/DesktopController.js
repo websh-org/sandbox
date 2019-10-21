@@ -70,7 +70,21 @@ export const DesktopController = Controller(class DesktopStore extends Controlle
 
   @command
   async "window-close"({ window }) {
-    this.wm("window-close",{window});
+    try {
+      await this.wm("window-close",{window});
+    } catch(e) {
+      switch (e.error) {
+        case "file-unsaved": 
+          const res = await this.showModal("file-unsaved",{})
+          if (!res) return;
+          if (res.save) {
+            await this.action("app-file-save",{app:window,format:window.file.format})
+          }
+          await this.wm("window-close",{window,confirmed:true});
+          return;
+      }
+      this.throw(e);
+    }
   }
 
   /**
@@ -81,7 +95,7 @@ export const DesktopController = Controller(class DesktopStore extends Controlle
 
   @command
   async "launch-app"({ url }) {
-    const proc = await this.shell("init-app", { url })
+    const proc = await this.shell("ready-app", { url })
     const window = this.wm("open-app", { proc });
     this.action("window-activate", { window })
   }

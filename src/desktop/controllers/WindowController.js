@@ -78,7 +78,8 @@ export const WindowController = Controller(class extends Controller.Store {
   }
 
   @command
-  "close"() {
+  async "close"({confirmed}={}) {
+    await this.proc("close", {confirmed})
     this.closed = true;
   }
 })

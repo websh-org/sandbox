@@ -40,6 +40,7 @@ class Modal extends React.Component {
           dialog={dialog}
           data={dialog.data}
           resolve={res => dialog("resolve", res)}
+          resolver={res => () => dialog("resolve", res)}
           reject={err => dialog("reject", err)}
         />
       </div>

@@ -49,12 +49,12 @@ export const ShellController = Controller(class ShellStore extends Controller.St
   }
 
   @command
-  async "init-app"({ url }) {
+  async "ready-app"({ url }) {
     const info = await this.appRegistry("get", { url });
     const app = this.addProc(AppController({ url, info }));
     app("connect").then(async manifest => {
       await this.appRegistry("update", { url, manifest })
-      await app("init");
+      await app("ready");
     })
     return app;
   }

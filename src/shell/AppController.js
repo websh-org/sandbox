@@ -54,7 +54,7 @@ export const AppController = Controller(class AppStore extends RemoteController.
     return this.file;
   }
 
-  async _init() {
+  async _ready() {
     const def = this.info.file
     if (def.supported && def.formats.default) {
       this.action("file-new",{format:def.formats.default.id})

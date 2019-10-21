@@ -5,33 +5,42 @@ import { getter } from "/lib/utils";
 import { RemoteMasterPort } from "@websh/remote-master-port";
 
 export const RemoteController = Controller(class AppStore extends ProcController.Store {
-  @readonly
-  @observable
-  url;
-
-  @readonly
-  @observable
-  state = "INITIAL";
-
-
 
   constructor({ url, ...rest }) {
-    const parsed = new URL(url);
     super({ ...rest });
+
+    const parsed = new URL(url);
     this.url = parsed.href;
     this.origin = parsed.origin;
   }
 
+  @readonly @observable
+  url;
+
+  @readonly @observable
+  state = "INITIAL";
+
   @internal
   iframe = null;
 
-  async _load({ element }) {
-    this.iframe = element;
-    this._masterPort = new RemoteMasterPort('SOUTH-TOOTH', element, { origin: this.origin });
-    await this._loadApp();
+  @internal
+  send(...args) {
+    return this._masterPort.send(...args);
   }
 
-  _loadApp() {
+  @internal
+  async request(...args) {
+    const res = await this._masterPort.request(...args);
+    console.log('req', ...args, { res });
+    return res;
+  }
+
+  _load({ element: iframe }) {
+    this.assert(iframe instanceof HTMLIFrameElement, "bad-mount-point")
+    this.iframe = iframe;
+    const origin = iframe.sandbox && !iframe.sandbox.contains("allow-same-origin") ? "*" : this.origin
+    this._masterPort = new RemoteMasterPort('SOUTH-TOOTH', iframe, { origin });
+
     return new Promise(async (resolve, reject) => {
 
       const iframe = this.iframe;
@@ -78,17 +87,23 @@ export const RemoteController = Controller(class AppStore extends ProcController
   })
 }
 
-  _connected() {
-
+  async _close({confirmed}) {
+    try {
+      return await this.request("proc-close",{confirmed});
+    }
+    catch(error) {
+      if (!confirmed) {
+        this.assert(false,error);
+      }
+      await this.action("kill");
+    }
   }
 
-  send(...args) {
-    return this._masterPort.send(...args);
+  async __unload() {
+    this.iframe.removeAttribute('src');
+    this.iframe.srcdoc = "Not loaded";
+    await this._masterPort.disconnect();
+    this.url = null;
+    this.STATE = INITIAL;
   }
-  async request(...args) {
-    const res = await this._masterPort.request(...args);
-    console.log('req', ...args, { res });
-    return res;
-  }
-
 });

@@ -76,25 +76,33 @@ class ControllerStore {
     this._dispatch(event);
   }
 
-  
-  assert(cond, msg, details) {
-    if (cond) return;
-    console.log(this.constructor.name, msg,details)
-    throw new Error(msg);
+  @internal
+  assert(cond, ...args) {
+   if (!cond) this.throw(...args);
+
+  }
+  @internal
+  throw(error,data,message) {
+    if (typeof error=="string") {
+      error = {error,data,message}
+    } 
+    throw new ControllerError(error)
+  }
+
+}
+
+class ControllerError extends Error {
+  constructor({error,message,data={}}) {
+    super(error||message)
+    this.error = error || "internal-error";
+    this.message = message || error || "Internal Error";
+    this.data = data;
   }
 }
 
-export function Controller(Class) {
-  const actions = Object.assign({},ControllerStore.$actions||{});
-  class Store extends Class {
-    constructor(args={}) {
-      super(args);
-      if (Class.hasOwnProperty("$actions")) {
-        Object.assign(this._actions,Class.$actions)
-      }
-    }
-  }
- 
+
+export function Controller(Store) {
+   
   const factory = function (args) {   
     const store = new Store(args);
     const controller = function(){};

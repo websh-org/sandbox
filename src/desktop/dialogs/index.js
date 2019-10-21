@@ -3,8 +3,10 @@ import { FileSaveDialog } from "./FileSaveDialog";
 import { PromptDialog } from "./PromptDialog";
 import { AppAboutDialog } from "./AppAboutDialog";
 import { LauncherDialog } from "./LauncherDialog";
+import { FileUnsavedDialog } from "./FileUnsavedDialog";
 
 export const dialogs = {
+  'file-unsaved': FileUnsavedDialog,
   'file-open': FileOpenDialog,
   'file-save': FileSaveDialog,
   'prompt': PromptDialog,

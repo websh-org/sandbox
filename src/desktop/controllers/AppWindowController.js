@@ -1,3 +1,7 @@
+/**
+ * The toolbar should move to DesktopController
+ */
+
 import { observable, action, reaction, computed } from "mobx";
 import { Controller, readonly, command } from "~/lib/Controller";
 import { WindowController } from "./WindowController"
@@ -13,18 +17,18 @@ export const AppWindowController = Controller(class extends WindowController.Sto
   }
 
   @command
-  "file-new"({ format }) {
-    return this.proc("file-new", { format })
+  async "file-new"({ format }) {
+    return await this.proc("file-new", { format })
   }
 
   @command
-  "file-open"({ file, format }) {
-    return this.proc("file-open", { file, format })
+  async "file-open"({ file, format }) {
+    return await this.proc("file-open", { file, format })
   }
 
   @command
-  "file-save"({ format }) {
-    return this.proc("file-save", { format })
+  async "file-save"({ format }) {
+    return await this.proc("file-save", { format })
   }
 })
 

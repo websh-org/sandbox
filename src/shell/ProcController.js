@@ -8,25 +8,22 @@ let counter = 0;
 export const ProcController = Controller(class ProcStore extends Controller.Store {
   static $id = "pid";
 
-  @readonly
-  @observable
+  @readonly @observable
   manifest = {};
 
-  @readonly
-  @observable
+  @readonly @observable
   isLoading = true;
 
-  @readonly
-  @observable
+  @readonly @observable
   dead = false;
 
-  @internal
-  @observable _title = null;
+  @internal @observable 
+  _title = null;
 
-  @computed
   get title() {
-    return this._title;
+    return this.title;
   }
+
 
   constructor({ title, ...rest }) {
     super(rest);
@@ -36,12 +33,12 @@ export const ProcController = Controller(class ProcStore extends Controller.Stor
   _load({ element }) {
   }
 
-  _init() {
-    console.log("no")
+  _ready() {
   }
 
-  _connected() {
+  _close() {
   }
+
 
   @command
   async 'load'({ element }) {
@@ -70,7 +67,16 @@ export const ProcController = Controller(class ProcStore extends Controller.Stor
   }
 
   @command
-  'init'() {
-    return this._init();
+  'ready'() {
+    return this._ready();
+  }
+
+  @command
+  async "close" ({confirmed=false}) {
+    try {
+      await this._close({confirmed});
+    } catch (e) {
+       if (!confirmed) this.throw(e)
+    }
   }
 });

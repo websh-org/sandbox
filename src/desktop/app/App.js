@@ -9,13 +9,11 @@ import "../styles/styles.less";
 
 @observer
 export class App extends React.Component {
-  componentWillMount() {
-    this.desktop = DesktopController(this.props.config || {});
+  desktop = DesktopController(this.props.config || {});
+  componentDidMount() {
+    this.desktop("launch-app",{url:"http://localhost:42003"})
   }
   render() {
     return <Desktop desktop={this.desktop} />
   }
 }
-
-const rootElement = document.getElementById("root");
-ReactDOM.render(<App/>, rootElement);

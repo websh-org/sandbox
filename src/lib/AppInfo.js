@@ -6,7 +6,7 @@ function resolveURL(...args) {
     const url = new URL(...args);
     return url.href;
   } catch (error) {
-    console.log(error)
+    console.log("bad url",...args)
     return null;
   }
 }

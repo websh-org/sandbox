@@ -8,6 +8,17 @@
 * add info page for users
 * add help page for developers
 
+## WebShellApp.js
+* autofocus
+  * opt out ?
+* move encoding/decoding?
+* set up dirty file tracking?
+
+## Apps
+* textarea - add dirty check
+* ace - set more modes from extension
+* quill 
+
 ## Manifests
 * add manifest schema
 * websh.org/known.apps.json

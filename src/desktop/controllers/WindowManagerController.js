@@ -28,17 +28,19 @@ export const WindowManagerController = Controller(class extends Controller.Store
   }
 
   @command
-  async "window-close"({ window }) {
-    await window("close");
-    const sorted = this.windows.concat().sort((a,b)=>a.zIndex-b.zIndex);
-//    const sorted = this.windows.concat();
-    let index = sorted.findIndex( w => w===window);
-    this._windows.delete(window.wid)
-    if (index >= this.windows.length) index = this.windows.length-1;
-    this.action("window-activate",{window:sorted[index]})
+  async "window-close"({ window, confirmed = false }) {
+    if (typeof window !== "function") debugger;
+    await window("close",{confirmed});
+    const sorted = this.windows.concat().sort((a, b) => a.zIndex - b.zIndex);
+    //    const sorted = this.windows.concat();
+    let index = sorted.findIndex(w => w === window);
+    this._windows.delete(window.wid);
+    if (!this._windows.length) return;
+    if (index >= this.windows.length) index = this.windows.length - 1;
+    this.action("window-activate", { window: sorted[index] })
   }
 
-  @command 
+  @command
   @action
   "open-app"({ proc }) {
     return this.addWindow(
