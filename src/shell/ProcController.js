@@ -37,6 +37,7 @@ export const ProcController = Controller(class ProcStore extends Controller.Stor
   }
 
   _init() {
+    console.log("no")
   }
 
   _connected() {
@@ -70,6 +71,6 @@ export const ProcController = Controller(class ProcStore extends Controller.Stor
 
   @command
   'init'() {
-    return this._init;
+    return this._init();
   }
 });

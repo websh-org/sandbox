@@ -7,21 +7,35 @@ import { Icon } from "~/desktop/ui/Icon.js"
 
 @observer
 export class Window extends React.Component {
+  @computed
+  get classes() {
+    const ret = [];
+    const { active } = this.props.window;
+    active && ret.push("active");
+
+    
+
+    return ret.join(" ");
+  }
   render() {
     const { window, children } = this.props;
-    const { title, icon, wid } = window;
+    const { title, icon, wid, active, zIndex } = window;
     return (
-      <div className="sh window ui segments" title={wid}>
+      <div 
+        className={"sh window ui segments "+this.classes}
+        title={wid}
+        style={{ zIndex }}
+      >
         <div className="titlebar ui form inverted segment">
           <span className="title">
             <Icon image={window.icon} />
             {title}
           </span>
           {
-            window.proc.file &&
-            <span className="file">
+            window.file &&
+            <span className="file" title={JSON.stringify(window.file,null,2)}>
               <Icon icon="file"/>
-              {window.proc.file.name}
+              {window.file.name}
             </span>
           }
         </div>
@@ -30,7 +44,7 @@ export class Window extends React.Component {
           {children}
         </div>
         <div className="statusbar ui tight secondary segment">
-          <small>{window.proc.state}</small>
+          <small>{window.state}</small>
         </div>
       </div>
     );

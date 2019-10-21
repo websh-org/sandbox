@@ -1,27 +1,28 @@
 import { observable, action, reaction, computed } from "mobx";
-import { Controller, readonly, command } from "../../lib/Controller";
+import { Controller, readonly, command, internal } from "../../lib/Controller";
 import { getter } from "../../lib/utils";
 
-export const WindowController = Controller(class extends Controller.Store {
- 
-  static $id = "wid";
+var maxZ = 0;
 
-  constructor({ proc, ...rest }) {
-    super(rest);
-    this.proc = proc;
-  }
+export const WindowController = Controller(class extends Controller.Store {
+
+  static $id = "wid";
 
   @readonly 
   @observable
-  proc = null;
+  maximized = false;
 
   @readonly 
   @observable
   closed = false;
 
-  @readonly 
   @observable
-  maximized = false;
+  active = false;
+  
+
+  @readonly
+  @observable
+  zIndex = 0;
 
   @computed
   get title() {
@@ -33,14 +34,52 @@ export const WindowController = Controller(class extends Controller.Store {
     return this.proc.state;
   }
 
-  @command
-  'rendered'({ element }) {
-    console.log({ element });
+  @computed
+  get info() {
+    return this.proc.info;
+  }
+
+  constructor({ proc, ...rest }) {
+    super(rest);
+    this.proc = proc;
+  }
+
+  @internal 
+  @observable
+  proc = null;
+
+  @computed
+  get icon() {
+    return this.info.about.icon;
   }
 
   @command
-  'maximize'() {
+  @action
+  "activate"() {
+    this.zIndex = ++ maxZ;
+    this.active = true;
+  }
+
+  @command
+  @action
+  "deactivate"() {
+    this.active = false;
+    return this;
+  }
+
+  @command
+  "load"({ element }) {
+    this.proc("load", { element })
+  }
+
+  @command
+  "maximize"() {
     this.maximized = true;
+  }
+
+  @command
+  "close"() {
+    this.closed = true;
   }
 })
 

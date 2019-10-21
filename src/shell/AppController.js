@@ -1,7 +1,8 @@
-import { observable, action, reaction, computed } from "mobx";
+import { observable, action, reaction, computed, toJS } from "mobx";
 import { Controller, internal, command, readonly } from "~/lib/Controller";
 import { RemoteController } from "./RemoteController";
 import { getter } from "~/lib/utils";
+import { ShellFile } from "~/lib/ShellFile";
 
 export const AppController = Controller(class AppStore extends RemoteController.Store {
 
@@ -28,33 +29,35 @@ export const AppController = Controller(class AppStore extends RemoteController.
   @command
   async "file-new"({ format }) {
     this.assert(this.info.file.supported, "not-supported");
-    return await this.request("file-new", { format });
+    const file = new ShellFile(this.info.file.newFile({format}));
+    const res = await this.request("file-new", { format });
+    this.file = file;
+    return res;
+
   }
 
   @command
   async "file-open"({ file, format }) {
-    const { content, extension, type } = file;
+    const { extension, type } = file;
+    const content = await file.getContent();
+    const res = await this.request("file-open", { format, content, extension, type });
     this.file = file;
-    return await this.request("file-open", { format, content, extension, type });
+    return res;
   }
   
   @command
   async "file-save"({ format }) {
     const res = await this.request("file-save", { format });
     const { content, type } = res;
-    return Object.assign({}, this.file, { content, type });
+    this.file.setContent({content,type});
+    console.log("app",this.file)
+    return this.file;
   }
 
-  @action
-  _init() {
-    if (this.info.file.supported) {
-      const format = this.info.file.formats.new[0];
-      if (format) {
-        this.file = {
-          format: format.id,
-          name: "New " + format.title
-        }
-      }
+  async _init() {
+    const def = this.info.file
+    if (def.supported && def.formats.default) {
+      this.action("file-new",{format:def.formats.default.id})
     }
   }
 });

@@ -10,6 +10,7 @@
     "mobx-react": "^6.1.4",
     "react": "^16.10.2",
     "react-dom": "^16.8.6",
+    "spdx-license-list": "^6.1.0",
     "src": "^1.1.2",
     "stores": "^1.0.0",
     "undefined": "^0.1.0"
@@ -21,7 +22,9 @@
     "@babel/preset-env": "^7.6.3",
     "@babel/preset-react": "^7.6.3",
     "cssnano": "^4.1.10",
-    "less": "^3.10.3"
+    "less": "^3.10.3",
+    "parcel-bundler": "^1.12.4",
+    "parcel-plugin-static-files-copy": "^2.2.1"
   },
   "scripts": {
     "build": "(rm -rf docs/*; cd src; NODE_ENV=production parcel build index.html --public-url=/sandbox/ --out-dir=../docs)"

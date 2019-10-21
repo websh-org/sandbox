@@ -15,33 +15,32 @@ body {
 
   >.launcher {
     grid-area: launcher;
-
+    z-index:2;
   }
 
   >.windows {
+    z-index:1;
     grid-area: windows;
-    display  : flex;
+    position: relative;
   }
 
   >.modals {
+    z-index: 100;
     position        : fixed;
     top             : 0;
     left            : 0;
     right           : 0;
     bottom          : 0;
     background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4woSFgQLB7GHdwAAAB1pVFh0Q29tbWVudAAAAAAAQ3JlYXRlZCB3aXRoIEdJTVBkLmUHAAAAIUlEQVQI103HsQEAMAwCIMzjPd2ushG8tiCJ28Bt2roNfL8jDIfI9ZGeAAAAAElFTkSuQmCC);
-    display         : flex;
-    flex-direction  : column;
-    justify-content : center;
-    align-items     : center;
 
-    >* {
-      margin   : 0 auto;
-    }
+    display         : grid;
+    grid: "top top top" 1fr "left center right" minmax(30rem,max-content)  "bottom bottom bottom" 2fr;
+    grid-template-columns: 1fr max-content 1fr;
   }
 }
 
 .sh.dialog {
+  grid-area: center;
   user-select: none;
   margin     : 0;
   padding    : 0;
@@ -50,7 +49,6 @@ body {
 }
 
 .sh.window {
-  flex      : 1;
   display   : grid;
   background: #eee;
   box-shadow: 0 0 8px #fff8, 0 0 4px #0008;
@@ -58,6 +56,15 @@ body {
   min-height: 100px;
   margin    : 0;
   padding   : 0;
+  
+  position:absolute;
+  top:0;
+  left:0;
+  bottom:0;
+  right:0;
+
+  &.active {
+  }
 
   grid:
     "titlebar"max-content "toolbar"max-content "client"1fr "statusbar"max-content;

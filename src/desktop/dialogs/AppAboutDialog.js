@@ -10,22 +10,29 @@ export class AppAboutDialog extends React.Component {
   render() {
     const { dialog } = this.props;
     const { about } = dialog.data;
-    const { name, icon, description } = about;
+    console.log(about)
+    const { name, icon, description, license, homepage, repository } = about;
     return (
       <Dialog 
         dialog={dialog}
         title="About app" 
         icon="info"
-        OK
       >
-        <div className="ui secondary very padded center aligned form segment">
+        <div className="ui secondary very padded center aligned secondary segment">
           <div className="ui small image">
             <img src={icon}/>
           </div>
+         </div>
+        <div className="ui padded center aligned form segment">
           <div className="ui large header">
             {name}
             <div className="sub header">{description}</div>
           </div>
+          <p>
+            {license.name} 
+            { homepage && <> &middot; <a target="_blank" href={homepage} >homepage</a> </>}
+            { repository && <> &middot; <a target="_blank" href={repository} >source</a> </>}
+          </p>
         </div>
       </Dialog>
     );

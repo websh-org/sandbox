@@ -8,13 +8,23 @@ export const AppWindowController = Controller(class extends WindowController.Sto
   toolbar = new MenuItem(AppToolbar, this);
 
   @computed
-  get icon() {
-    return this.proc.info.about.icon;
+  get file() {
+    return this.proc.file;
   }
 
   @command
-  "load"({ element }) {
-    this.proc("load", { element })
+  "file-new"({ format }) {
+    return this.proc("file-new", { format })
+  }
+
+  @command
+  "file-open"({ file, format }) {
+    return this.proc("file-open", { file, format })
+  }
+
+  @command
+  "file-save"({ format }) {
+    return this.proc("file-save", { format })
   }
 })
 

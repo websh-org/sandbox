@@ -1,5 +1,7 @@
 import { uuid } from "../lib/utils";
 
+import { action } from "mobx"
+
 const parents = new WeakMap;
 
 class ControllerEvent {
@@ -70,7 +72,7 @@ class ControllerStore {
   }
 
   _trigger(type,data={}) {
-    const event = new ControllerEvent({type,data,target:this});
+    const event = new ControllerEvent({type,data,target:this.action});
     this._dispatch(event);
   }
 
@@ -135,15 +137,18 @@ Controller.Store = ControllerStore;
 
 export function internal(obj, prop, desc) {
   obj._internal = Object.assign({}, obj._internal, { [prop]: true })
+  return desc;
 }
 
 export function readonly(obj, prop, desc) {
-  obj._readonly = Object.assign({}, obj._internal, { [prop]: true })
+  obj._readonly = Object.assign({}, obj._readonly, { [prop]: true })
+  return desc;
 }
 
 export function command(obj, prop, desc) {
   var value = desc.initializer ? desc.initializer() : desc.value;
   if (typeof value === "function") value = { execute: value }
+  value.execute = action(value.execute);
   obj._actions = Object.assign({}, obj._actions, { [prop]: value })
   return {value:undefined};
 }

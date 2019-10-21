@@ -1,7 +1,7 @@
 import React from "react";
 import { observer } from "mobx-react";
 import { observable, computed } from "mobx";
-
+import { ShellFile } from "~/lib/ShellFile";
 import { Dialog } from "./Dialog";
 import { UrlInput } from "~/desktop/ui/UrlInput";
 @observer
@@ -46,14 +46,11 @@ function openFromDisk() {
     const input = document.createElement("input");
     input.type = "file";
     input.addEventListener("change", async function readFile(e) {
+      if (!e.target.files.length) resolve(null);
       const localFile = e.target.files[0];
-      const { name, type, size, lastModified: mtime } = localFile;
-      const file = { name, type, size, mtime };
-      file.fid = "file";
-      file.pid = "";
-      file.content = await localFile.text();
+      const file = ShellFile.fromLocal(localFile);
       resolve(file);
     }, true);
-    input.click();
+    requestIdleCallback(()=>input.click());
   })
-} 
+}

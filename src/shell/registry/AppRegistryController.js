@@ -25,7 +25,6 @@ export const AppRegistryController = Controller(class AppRegistryStore extends C
   @internal
   async _load() {
     const saved = await this.registry("load",{key:"apps",initial:{}});
-    console.log("load",saved)
     for (var url in saved) {
       this._update({url,manifest:saved[url]})
     }
@@ -38,7 +37,6 @@ export const AppRegistryController = Controller(class AppRegistryStore extends C
       saved[info.url] = info.manifest;
     }
     this.registry("save",{key:"apps",value:saved});
-    console.log("save",toJS(saved))
   }
 
   @internal

@@ -1,9 +1,9 @@
 import React from "react";
 import { observer } from "mobx-react";
 import { AppWindow } from "./AppWindow";
-import { Launcher } from "./Launcher";
 import { ErrorBoundary } from "./ErrorBoundary"
 import { dialogs } from "../dialogs";
+import { Icon } from "../ui/Icon";
 
 @observer
 export class Desktop extends React.Component {
@@ -11,14 +11,14 @@ export class Desktop extends React.Component {
     const { desktop } = this.props;
     return (
       <div className="sh desktop">
-        <Launcher desktop={desktop}/>
+        <Dock desktop={desktop} />
         <div className="windows">
           {desktop.windows.map(window => (
             <AppWindow key={window.wid} window={window} />
           ))}
         </div>
         <ErrorBoundary>
-          <Modal dialog={desktop.modal} desktop={desktop}/>
+          <Modal dialog={desktop.modal} desktop={desktop} />
         </ErrorBoundary>
       </div>
     );
@@ -29,22 +29,51 @@ export class Desktop extends React.Component {
 class Modal extends React.Component {
   render() {
     const { dialog } = this.props;
-    if(!dialog) return null;
+    if (!dialog) return null;
 
     const Dialog = dialogs[dialog.type];
-    if(!Dialog) return null;
+    if (!Dialog) return null;
 
     return (
-      <div className="sh modals" onClick={e=>dialog("resolve",null)}>
-        <div onClick={e=>e.stopPropagation()}>
-          <Dialog 
-            dialog={dialog} 
-            data={dialog.data}
-            resolve={res=>dialog("resolve",res)}
-            reject={err=>dialog("reject",err)}
-          />
-        </div>
+      <div className="sh modals" onClick={e => dialog("resolve", null)}>
+        <Dialog
+          dialog={dialog}
+          data={dialog.data}
+          resolve={res => dialog("resolve", res)}
+          reject={err => dialog("reject", err)}
+        />
       </div>
     )
+  }
+}
+
+@observer class Dock extends React.Component {
+  render() {
+    const { desktop } = this.props;
+    return (
+      <div className="sh dock ui attached inverted menu">
+        <a className="item" onClick={() => desktop("show-launcher")}>
+          <Icon icon="large" image="/web-shell-logo.png" />
+        </a>
+        {desktop.windows.map(window => (
+          <a
+            onClick={() => desktop("window-activate", { window })}
+            key={window.wid}
+            className={"item" + (window.active ? " active" : "")}
+          >
+            <Icon image={window.icon} />
+            {window.title}
+            <span
+              onClick={() => desktop("window-close", { window })}
+              style={{
+                marginLeft: "1em",
+                marginRight: "-0.5em"
+              }}>
+              <Icon icon="small link close" />
+            </span>
+          </a>
+        ))}
+      </div>
+    );
   }
 }

@@ -26,7 +26,7 @@ export class Dialog extends React.Component {
   render() {
     const { dialog, title, icon, OK, cancel, children } = this.props;
     return (
-      <div className="sh dialog">
+      <div className="sh dialog" onClick={e=>e.stopPropagation()}>
         <div className="ui segments">
           <div className="ui small inverted header segment">
             <span>
