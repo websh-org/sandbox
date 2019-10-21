@@ -4,6 +4,7 @@ import { PromptDialog } from "./PromptDialog";
 import { AppAboutDialog } from "./AppAboutDialog";
 import { LauncherDialog } from "./LauncherDialog";
 import { FileUnsavedDialog } from "./FileUnsavedDialog";
+import { ErrorDialog } from "./ErrorDialog";
 
 export const dialogs = {
   'file-unsaved': FileUnsavedDialog,
@@ -11,5 +12,6 @@ export const dialogs = {
   'file-save': FileSaveDialog,
   'prompt': PromptDialog,
   'app-about': AppAboutDialog,
-  'launcher': LauncherDialog
+  'launcher': LauncherDialog,
+  'error': ErrorDialog
 }

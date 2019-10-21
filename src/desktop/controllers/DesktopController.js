@@ -56,6 +56,13 @@ export const DesktopController = Controller(class DesktopStore extends Controlle
     this.action("launch-app", { url })
   }
 
+  @internal
+  async catch(error) {
+    console.error(error);
+    console.log(error.code,error.source)
+    await this.showModal("error",{error})
+  }
+
   /**
    * 
    * WINDOW COMMANDS
@@ -64,8 +71,8 @@ export const DesktopController = Controller(class DesktopStore extends Controlle
 
 
   @command
-  "window-activate"({ window }) {
-    this.wm("window-activate",{window});
+  async "window-activate"({ window }) {
+    await this.wm("window-activate",{window});
   }
 
   @command
@@ -80,10 +87,10 @@ export const DesktopController = Controller(class DesktopStore extends Controlle
           if (res.save) {
             await this.action("app-file-save",{app:window,format:window.file.format})
           }
-          await this.wm("window-close",{window,confirmed:true});
-          return;
       }
-      this.throw(e);
+      await this.wm("window-close",{window,confirmed:true});
+      return;
+      //this.throw(e);
     }
   }
 
@@ -96,18 +103,19 @@ export const DesktopController = Controller(class DesktopStore extends Controlle
   @command
   async "launch-app"({ url }) {
     const proc = await this.shell("ready-app", { url })
-    const window = this.wm("open-app", { proc });
+    const window = await this.wm("open-app", { proc });
     this.action("window-activate", { window })
   }
 
   @command
-  "app-file-new"({ app, format }) {
-    return app("file-new", { format })
+  async "app-file-new"({ app, format }) {
+    return await app("file-new", { format })
   }
 
   @command
   async "app-file-open"({ app, format }) {
-    const { file } = await this.showModal("file-open") || {};
+    const formatInfo = app.info.file.formats.get(format);
+    const { file } = await this.showModal("file-open",{format:formatInfo}) || {};
     if (!file) return;
     return app("file-open", { file, format })
   }

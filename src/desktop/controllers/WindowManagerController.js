@@ -17,13 +17,13 @@ export const WindowManagerController = Controller(class extends Controller.Store
   }
 
   @command
-  "window-activate"({ window }) {
+  async "window-activate"({ window }) {
     for (const w of this.windows) {
       if (w.active) {
-        w("deactivate")
+        await w("deactivate")
       }
     }
-    window("activate");
+    if(window) await window("activate");
     this.activeWindow = window;
   }
 

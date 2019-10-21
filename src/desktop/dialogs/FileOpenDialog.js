@@ -7,7 +7,8 @@ import { UrlInput } from "~/desktop/ui/UrlInput";
 @observer
 export class FileOpenDialog extends React.Component {
   render() {
-    const { dialog } = this.props;
+    const { dialog, data } = this.props;
+    const { format } = data;
     return (
       <Dialog 
         dialog={dialog}
@@ -21,7 +22,7 @@ export class FileOpenDialog extends React.Component {
             <button
               className="ui large left labeled icon button"
               onClick={async e => {
-                const file = await openFromDisk();
+                const file = await openFromDisk(format);
                 dialog("resolve", { file })
               }}
             >
@@ -41,10 +42,12 @@ export class FileOpenDialog extends React.Component {
   }
 }
 
-function openFromDisk() {
+function openFromDisk(format) {
   return new Promise(resolve => {
     const input = document.createElement("input");
     input.type = "file";
+    input.accept = (format.extensions.includes("*") ? [] : format.extensions.map(e=>"."+e).concat(format.types).join(","))
+    console.log(input.accept);
     input.addEventListener("change", async function readFile(e) {
       if (!e.target.files.length) resolve(null);
       const localFile = e.target.files[0];

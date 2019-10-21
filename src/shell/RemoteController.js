@@ -30,9 +30,12 @@ export const RemoteController = Controller(class AppStore extends ProcController
 
   @internal
   async request(...args) {
-    const res = await this._masterPort.request(...args);
-    console.log('req', ...args, { res });
-    return res;
+    try {
+      const res = await this._masterPort.request(...args);
+      return res;
+    } catch ({error,data}) {
+      this.throw(error,data)
+    }
   }
 
   _load({ element: iframe }) {
@@ -88,18 +91,10 @@ export const RemoteController = Controller(class AppStore extends ProcController
 }
 
   async _close({confirmed}) {
-    try {
-      return await this.request("proc-close",{confirmed});
-    }
-    catch(error) {
-      if (!confirmed) {
-        this.assert(false,error);
-      }
-      await this.action("kill");
-    }
+     return await this.request("proc-close",{confirmed});
   }
 
-  async __unload() {
+  async _kill() {
     this.iframe.removeAttribute('src');
     this.iframe.srcdoc = "Not loaded";
     await this._masterPort.disconnect();

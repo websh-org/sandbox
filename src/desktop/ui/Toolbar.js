@@ -2,7 +2,7 @@ import React from "react";
 import { observer } from "mobx-react";
 import { observable, computed } from "mobx";
 
-@observer 
+@observer
 export class Toolbar extends React.Component {
   render() {
     const { items } = this.props;
@@ -17,11 +17,26 @@ export class Toolbar extends React.Component {
 @observer
 class ToolbarItems extends React.Component {
   render() {
-    const { items } = this.props;
-    return items.filter(Boolean).map((item, key) => {
-      if (item.items) return <ToolbarDropdown key={key} item={item} />
-      return <ToolbarButton key={key} item={item} />
-    })
+    const { items = [] } = this.props;
+    return items.map((item, key) => <ToolbarItem key={key} item={item} />)
+  }
+}
+
+@observer
+class ToolbarItem extends React.Component {
+  render() {
+    const { item } = this.props;
+    const { type, available, items } = item;
+    if (!available) return null;
+    if (type === 'group') {
+      return (
+        <div className="menu">
+          <ToolbarItems items={items} />
+        </div>
+      )
+    }
+    if (items) return <ToolbarDropdown item={item} />
+    return <ToolbarButton item={item} />
   }
 }
 
@@ -34,7 +49,11 @@ class ToolbarButton extends React.Component {
     return (
       <a
         className="item"
-        onClick={item.execute}
+        tabIndex={-1}
+        onClick={e => {
+          document.activeElement.blur()
+          item.execute();
+        }}
       >
         {icon && <i className={"icon " + icon} />}
         {label}
@@ -45,18 +64,21 @@ class ToolbarButton extends React.Component {
 
 @observer
 class ToolbarDropdown extends React.Component {
+
+  @observable
+  open = false;
+
   render() {
-    const { icon, label, items, toggle, active } = this.props.item;
+    const { icon, label, items } = this.props.item;
     if (items.length === 1) return <ToolbarButton item={this.props.item.items[0]} label={label} icon={icon} />
 
     return (
-      <div className={"ui simple dropdown item"}>
-        <span onMouseDown={toggle}>
+      <div className={"ui dropdown item"} tabIndex={-1} onBlur={e => { if (!e.target.contains(e.relatedTarget)) this.open = false }}>
+        <span onMouseDown={() => this.open = !this.open}>
           {icon && <i className={"left floated icon " + icon} />}
           {label}
         </span>
-        <i className="dropdown icon"></i>
-        <div className="menu">
+        <div className={"menu transition " + (this.open ? " visible" : "")}>
           <ToolbarItems items={items} />
         </div>
       </div>

@@ -17,13 +17,17 @@ export class MenuItem {
     }
   }
 
+  @computed get type() {
+    return this._def.type;
+  }
+
   @computed get execute() {
     if (this._def.execute) return this._bind(this._def.execute);
     if (this._def.action) return this._bind(function(...args) { this.action(args[args.length-1])})
   }
 
   @computed get available() {
-    if (!("available") in this._def) return true;
+    if (!("available" in this._def)) return true;
     return this._resolve(this._def.available)
   }
 

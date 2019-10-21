@@ -38,7 +38,9 @@ export const AppController = Controller(class AppStore extends RemoteController.
 
   @command
   async "file-open"({ file, format }) {
+    this.assert(this.info.file.supported, "not-supported");
     const { extension, type } = file;
+    console.log("opening",{format,extension,type})
     const content = await file.getContent();
     const res = await this.request("file-open", { format, content, extension, type });
     this.file = file;
@@ -47,6 +49,7 @@ export const AppController = Controller(class AppStore extends RemoteController.
   
   @command
   async "file-save"({ format }) {
+    this.assert(this.info.file.supported, "not-supported");
     const res = await this.request("file-save", { format });
     const { content, type } = res;
     this.file.setContent({content,type});

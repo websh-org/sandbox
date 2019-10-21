@@ -48,7 +48,7 @@ export class AppInfo {
       supported: !!def,
       formats: {
         get(id) {
-          return this.formats[id];
+          return formats[id];
         },
         all: [],
         new: [],

@@ -82,21 +82,38 @@ class ControllerStore {
 
   }
   @internal
-  throw(error,data,message) {
-    if (typeof error=="string") {
-      error = {error,data,message}
-    } 
-    throw new ControllerError(error)
+  throw(code,data,message) {
+    if (typeof code=="string") {
+      code = {code,data,message}
+    }
+    const error = new ControllerError(code)
+    error.source = error.source || this;
+    throw error;
+  }
+
+  @internal
+  catch(error) {
+    console.log(this.constructor.name)
+    this.throw(error);
   }
 
 }
 
 class ControllerError extends Error {
-  constructor({error,message,data={}}) {
-    super(error||message)
-    this.error = error || "internal-error";
-    this.message = message || error || "Internal Error";
-    this.data = data;
+  constructor(error) {
+    if (error instanceof ControllerError) return error;
+    if (error instanceof Error) {
+      const {message} = error;
+      super(error.message)
+      this.code="internal-error";
+      this.message = error.message;
+      this.data = {}
+    } else {
+      super(error.message)
+      this.code = error.code || "internal-error";
+      this.message = error.message || error.code || "Internal Error";
+      this.data = error.data || {};
+    }
   }
 }
 
@@ -107,13 +124,14 @@ export function Controller(Store) {
     const store = new Store(args);
     const controller = function(){};
     const pub = new Proxy(controller, {
-      apply(target, thisArg, [action, ...args]) {
+      async apply(target, thisArg, [action, ...args]) {
         try {
           store.assert(store._actions[action], "bad-action",{action});
-          return store._actions[action].execute.call(store, ...args);
-        } catch (error) {
-          console.log(error);
-          throw error;
+          return await store._actions[action].execute.call(store, ...args);
+        } catch (e) {
+          const error = new ControllerError(e);
+          error.source = store;
+          store.catch(error);
         }
       },
       get(target, prop, receiver) {
@@ -133,7 +151,7 @@ export function Controller(Store) {
         store.assert(false, "bad-prop-" + prop);
       }
     });
-    store.action = pub;
+    store.action = store.call = pub;
     return pub;
   };
   factory.isFactory = true;

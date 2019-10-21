@@ -2,7 +2,7 @@
 
 ## Features
 * orderly open app
-* orderly close app
+* <s>orderly close app</s>
 * display errors/logs
 * handle multi formats
 * add info page for users
