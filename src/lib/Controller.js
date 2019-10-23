@@ -78,12 +78,10 @@ export class Controller {
     this._dispatch(event);
   }
 
-  @internal
   assert(cond, ...args) {
     if (!cond) this.throw(...args);
 
   }
-  @internal
   throw(code, data, message) {
     if (typeof code == "string") {
       code = { code, data, message }
@@ -93,7 +91,6 @@ export class Controller {
     throw error;
   }
 
-  @internal
   catch(error) {
     this.throw(error);
   }

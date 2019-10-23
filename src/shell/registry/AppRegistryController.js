@@ -11,8 +11,7 @@ export class AppRegistryController extends Controller {
     this._load();
   }
 
-
-  @internal 
+ 
   @observable 
   _infos = new Map;
 
@@ -21,7 +20,6 @@ export class AppRegistryController extends Controller {
   }
 
 
-  @internal
   async _load() {
     const saved = await this.registry("load",{key:"apps",initial:{}});
     for (var url in saved) {
@@ -29,7 +27,6 @@ export class AppRegistryController extends Controller {
     }
   }
 
-  @internal
   async _save() {
     const saved = {};
     for (var info of this.infos) {
@@ -39,7 +36,6 @@ export class AppRegistryController extends Controller {
     this.registry("save",{key:"apps",value:saved});
   }
 
-  @internal
   _get({url}) {
     if (!this._infos.has(url)) {
       this._infos.set(url,new AppInfo({url}))
@@ -48,7 +44,6 @@ export class AppRegistryController extends Controller {
     return this._infos.get(url)
   }
 
-  @internal
   _update({url,manifest}) {
     this._get({url}).manifest = manifest
     this._infos.get(url).unknown = false;

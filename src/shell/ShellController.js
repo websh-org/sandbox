@@ -1,5 +1,5 @@
 import { observable, action, when, reaction, computed } from "mobx";
-import { Controller, readonly, command, internal } from "../lib/Controller";
+import { Controller, readonly, command, internal,state } from "../lib/Controller";
 import { procTypes } from "./proc";
 import { AppRegistryController } from "./registry/AppRegistryController";
 import { AppController } from "./proc/AppController";
@@ -19,10 +19,8 @@ export class ShellController extends Controller {
     this.appRegistry = AppRegistryController.create({ registry: this.registry });
   }
 
-  @internal
   registry = null;
 
-  @internal
   appRegistry = null;
 
   @observable
@@ -33,12 +31,12 @@ export class ShellController extends Controller {
     return [...this._ps.values()];
   }
 
+  @state
   @computed
   get infos() {
     return this.appRegistry.infos;
   }
 
-  @internal
   addProc(proc) {
     this._ps.set(proc.pid, proc);
     when(
