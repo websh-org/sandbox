@@ -8,24 +8,20 @@ export class WindowController extends Controller {
 
   static $id = "wid";
 
-  @state
-  @readonly 
+  @state 
   @observable
   maximized = false;
 
-  @state
-  @readonly 
+  @state 
   @observable
   closed = false;
 
-  @state
-  @readonly 
+  @state 
   @observable
   active = false;
   
 
   @state
-  @readonly
   @observable
   zIndex = 0;
 
@@ -61,7 +57,6 @@ export class WindowController extends Controller {
 
   @observable
   proc = null;
-
   
   @command
   @action

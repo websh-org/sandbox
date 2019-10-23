@@ -11,7 +11,7 @@ export class AppRegistryController extends Controller {
     this._load();
   }
 
-
+ 
   @observable 
   _infos = new Map;
 

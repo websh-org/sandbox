@@ -7,10 +7,10 @@ import { ShellController } from "~/shell/ShellController";
 import { DialogController } from "./DialogController";
 export class DesktopController extends Controller {
 
-  @readonly
+  @state
   shell = ShellController.create({ parent: this });
 
-  @readonly
+  @state
   wm = WindowManagerController.create({ parent: this });
 
   @state
@@ -31,7 +31,6 @@ export class DesktopController extends Controller {
     })
   }
 
-  @readonly
   @state
   @observable
   modal = null;

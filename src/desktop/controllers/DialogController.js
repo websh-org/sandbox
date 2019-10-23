@@ -10,12 +10,10 @@ export class DialogController extends Controller {
   }
 
   @state
-  @readonly
   @observable
   type = null;
 
   @state
-  @readonly
   @observable
   data = null;
 

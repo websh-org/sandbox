@@ -11,16 +11,13 @@ export class AppController extends RemoteController {
   }
 
   @state
-  @readonly
   type = "app";
 
   @state
-  @readonly
   @observable
   file = null
 
   @state
-  @readonly
   @observable 
   info
 

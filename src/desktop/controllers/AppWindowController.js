@@ -10,7 +10,6 @@ import { MenuItem } from "~/lib/MenuItem"
 export class AppWindowController extends WindowController {
 
   @state
-  @readonly
   toolbar = new MenuItem(AppToolbar, this);
 
   @state
