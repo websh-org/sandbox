@@ -59,7 +59,6 @@ export class WindowController extends Controller {
     this.proc = proc;
   }
 
-  @internal 
   @observable
   proc = null;
 

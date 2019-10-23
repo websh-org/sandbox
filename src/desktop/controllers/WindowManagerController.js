@@ -10,11 +10,9 @@ export class WindowManagerController extends Controller {
     return [...this._windows.values()];
   }
 
-  @internal
   @observable 
   _windows = new Map();
 
-  @internal
   async addWindow(window) {
     this._windows.set(window.wid, window);
     return window;

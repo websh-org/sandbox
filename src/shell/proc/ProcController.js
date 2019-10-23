@@ -25,7 +25,6 @@ export class ProcController extends Controller {
   @observable
   dead = false;
 
-  @internal
   @observable
   _title = null;
 
@@ -74,10 +73,8 @@ export class ProcController extends Controller {
     return this._connectedPromise.promise;
   }
 
-  @internal
   _activate() { }
 
-  @internal
   _deactivate() { }
 
 

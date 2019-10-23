@@ -1,3 +1,9 @@
+# Started
+* decorators
+  * @errors
+  * integrate @observable and @computed into @state
+* validate manifest
+
 # ToDo for 0.2
 
 ## Features

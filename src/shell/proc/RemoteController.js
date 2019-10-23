@@ -14,7 +14,6 @@ export class RemoteController extends ProcController {
     this.origin = parsed.origin;
   }
 
-  @internal
   _masterPort = null;
 
   @readonly @observable
@@ -23,15 +22,12 @@ export class RemoteController extends ProcController {
   @readonly @observable
   state = "INITIAL";
 
-  @internal
   iframe = null;
 
-  @internal
   send(...args) {
     return this._masterPort.send(...args);
   }
 
-  @internal
   @errors({
     "command-failed"(error) {
       console.log("app-failed")

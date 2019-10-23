@@ -36,7 +36,6 @@ export class DesktopController extends Controller {
   @observable
   modal = null;
 
-  @internal
   @action
   async showModal(type, data = {}) {
     this.modal = DialogController.create({ type, data });
@@ -45,7 +44,6 @@ export class DesktopController extends Controller {
     return result;
   }
 
-  @internal
   @observable
   activeWindow = null;
 
@@ -57,7 +55,6 @@ export class DesktopController extends Controller {
     this.call("launch-app", { url })
   }
 
-  @internal
   async catch(error) {
     console.error(error);
     if(error.originalError) console.error(error.originalError);
