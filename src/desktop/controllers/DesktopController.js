@@ -1,6 +1,6 @@
 import { observable, action, when, reaction, computed } from "mobx";
 
-import { Controller, readonly, internal, command, state } from "~/lib/Controller";
+import { Controller, command, state, errors } from "~/lib/Controller";
 
 import { WindowManagerController } from "./WindowManagerController";
 import { ShellController } from "~/shell/ShellController";
@@ -55,7 +55,6 @@ export class DesktopController extends Controller {
   }
 
   async catch(error) {
-    console.error(error);
     if(error.originalError) console.error(error.originalError);
     await this.showModal("error",{error})
   }
@@ -98,6 +97,11 @@ export class DesktopController extends Controller {
    */
 
   @command
+  .errors({
+    async "app-invalid-manifest"(error) {
+      await this.catch(error)
+    }
+  })
   async "launch-app"({ url }) {
       const proc = await this.shell("app-open", { url })
       const window = await this.wm("open-app", { proc });
@@ -109,8 +113,9 @@ export class DesktopController extends Controller {
           this.call("app-file-new",{app:proc,format:def.formats.default.id})
         }
       } catch (error) {
-        await this.catch(error);
+        //await this.catch(error);
         this.call("window-close",{window})
+        this.throw(error)
       }
   
   }

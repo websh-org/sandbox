@@ -2,6 +2,13 @@ body {
   background: #800;
 }
 
+.sh.uncaught-errors {
+  position:fixed;
+  bottom:0;
+  left:25vw;
+  right:25vw;
+}
+
 .sh.desktop {
   position  : fixed;
   top       : 0;
@@ -36,11 +43,13 @@ body {
     display         : grid;
     grid: "top top top" 1fr "left center right" max-content  "bottom bottom bottom" 2fr;
     grid-template-columns: 1fr max-content 1fr;
+    >* {
+      grid-area: center;
+    }
   }
 }
 
 .sh.dialog {
-  grid-area: center;
   user-select: none;
   margin     : 0;
   padding    : 0;

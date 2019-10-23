@@ -57,6 +57,7 @@ export class RemoteController extends ProcController {
     return new Promise(async (resolve, reject) => {
       try {
         const res = await fetch(this.url, {
+          mode:"no-cors",
           method:"head"
         })
         //console.log(res.headers);

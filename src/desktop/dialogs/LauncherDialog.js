@@ -23,7 +23,7 @@ export class LauncherDialog extends React.Component {
                   <div 
                     key={info.url} 
                     className="ui button" 
-                    title={info.about.description}
+                    title={JSON.stringify(info,null,2)}
                     onClick={()=>resolve({url:info.url})}
                   >
                     <AppIcon url={info.about.icon}/>

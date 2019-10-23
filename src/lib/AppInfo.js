@@ -1,6 +1,13 @@
 import { observable, action, reaction, computed, toJS } from "mobx";
 import licenses from 'spdx-license-list';
 
+import { ControllerError } from "./ControllerError"
+import { invalidator } from "~/lib/utils";
+
+import manifestSchema from "~/../static/schemas/app-manifest.json";
+const invalidate = invalidator(manifestSchema);
+
+
 function resolveURL(...args) {
   try {
     const url = new URL(...args);
@@ -12,19 +19,33 @@ function resolveURL(...args) {
 }
 
 export class AppInfo {
+
   url = null;
 
   @observable
-  manifest = null;
+  _manifest = null;
+
+  get manifest() {
+    return this._manifest;
+  }
+
+  set manifest(value) {
+    const errors = invalidate(value);
+    if (errors) {
+      throw new ControllerError({code:"app-invalid-manifest",data:{errors}})
+    }
+    if (!invalidate(value)) this._manifest=value;
+  }
 
   constructor({ url, manifest }) {
+    if(!url) debugger
     this.url = url;
     if (manifest) this.manifest = manifest;
-    else this.manifest = { api: {} }
   }
 
   @computed
   get about() {
+    if (!this.manifest) return {supported:false};
     const { name, icon, description, license, homepage, repository } = this.manifest;
     return {
       name,
@@ -42,7 +63,7 @@ export class AppInfo {
 
   @computed
   get file() {
-    const def = this.manifest.api && this.manifest.api.file;
+    const def = this.manifest && this.manifest.api && this.manifest.api.file;
     const formats = {};
     const ret = {
       supported: !!def,

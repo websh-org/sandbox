@@ -1,5 +1,5 @@
 import { uuid } from "../lib/utils";
-
+import { ControllerError } from "./ControllerError";
 import { action } from "mobx"
 
 const parents = new WeakMap;
@@ -100,24 +100,6 @@ export class Controller {
   }
 }
 
-class ControllerError {
-  constructor(error) {
-    if (error instanceof ControllerError) return error;
-    if (error instanceof Error) {
-      this.code = "internal-error";
-      this.message = error.message || "Internal Error";
-      this.data = {}
-      this.originalError = error;
-    } else {
-      this.code = error.code || "internal-error";
-      this.message = error.message || error.code || "Internal Error";
-      this.data = error.data || {};
-      this.originalError = error;
-    }
-  }
-}
-
-
 export function state(obj, prop, desc) {
   obj._state = Object.assign({}, obj._state, { [prop]: true })
   return desc;
@@ -143,37 +125,34 @@ export function command(obj, prop, desc) {
 
 command.errors = function (list) {
   return function (obj, prop, desc) {
-    var fn = desc.initializer ? desc.initializer() : desc.value;
+    var value = desc.initializer ? desc.initializer() : desc.value;
     return command(obj,prop,{
-      ...desc, value(...args) {
-        try {
-          fn(...args)
-        } catch (e) {
-          const error = new ControllerError(e);
-          if (list[error.code]) list[code].call(this, { ...error });
-          else this.catch(error);
-        }
-      }
+      ...desc, value:tryCatch(obj,value,list)
     })
   }
 }
 
 export function errors (list) {
   return function (obj, prop, desc) {
-    var value = desc.value;
+    var value = desc.initializer ? desc.initializer() : desc.value;
     return ({
       ...desc, value:tryCatch(obj,value,list)
     })
   }
 }
 
-function tryCatch(obj, fn,list) {
-  if (fn.constructor.name==="AsyncFunction") {
+function tryCatch(obj, fn,list={}) {
+  if (fn instanceof AsyncFunction ) {
     return async function (...args) {
+      if (Object.keys(list).length) {
+        console.log('list',Object.keys(list));
+      }
       try {
         const res = await fn.call(this,...args);
+        console.log("OK",res)
         return res;
       } catch (e) {
+        console.log("error",e.code)
         const error = new ControllerError(e);
         if (list[error.code]) {
           try {
@@ -217,7 +196,8 @@ function create(Store, args) {
         store.assert(store._actions[action], "bad-action", { action });
         return await store._actions[action].execute.call(store, ...args);
       } catch (error) {
-        store.catch(new ControllerError(error));
+        console.log('got error',error.code)
+        throw(new ControllerError(error));
       }
     },
     get(target, prop, receiver) {
@@ -225,7 +205,10 @@ function create(Store, args) {
       if (prop!==Store.$id && !store._state[prop] && typeof prop==="string") {
         const value = Reflect.get(store,prop,store)
         if(value!==undefined) {
-          console.warn(prop,value)
+          store.throw(new ControllerError({
+            code:"controller-access-violation", 
+            message: `${Store.name}.${prop} is not readable.`
+          }));
         }
         return undefined;
       }

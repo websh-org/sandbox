@@ -14,12 +14,12 @@ export class Desktop extends React.Component {
         <Dock desktop={desktop} />
         <div className="windows">
           {desktop.windows.map(window => (
-            <AppWindow key={window.wid} window={window} />
+            <ErrorBoundary>
+              <AppWindow key={window.wid} window={window} />
+            </ErrorBoundary>
           ))}
         </div>
-        <ErrorBoundary>
           <Modal dialog={desktop.modal} desktop={desktop} />
-        </ErrorBoundary>
       </div>
     );
   }
@@ -36,6 +36,7 @@ class Modal extends React.Component {
 
     return (
       <div className="sh modals" onClick={e => dialog("resolve", null)}>
+        <ErrorBoundary>
         <Dialog
           dialog={dialog}
           data={dialog.data}
@@ -43,6 +44,7 @@ class Modal extends React.Component {
           resolver={res => () => dialog("resolve", res)}
           reject={err => dialog("reject", err)}
         />
+        </ErrorBoundary>
       </div>
     )
   }

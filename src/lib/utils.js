@@ -10,10 +10,10 @@ export function uuid() {
   );
 }
 
-export function jsonSchemaInvalidator(jsonSchema) {
+export function invalidator(jsonSchema) {
   const validate = ajv.compile(jsonSchema);
   return (...args) => {
     if (validate(...args)) return false;
-    else return validateManifest.errors.map(({ dataPath, message }) => `${dataPath || "(root)"}: ${message}`).join("\n");
+    else return validate.errors.map(({ dataPath, message }) => `${dataPath || "(root)"}: ${message}`);
   }
 }
