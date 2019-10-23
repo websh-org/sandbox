@@ -9,19 +9,17 @@ export class ProcController extends Controller {
   static $id = "pid";
 
   @state
-  @readonly
   type = null;
 
   @state
-  @readonly
   @observable
   manifest = {};
 
-  @readonly
+  @state
   @observable
   isLoading = true;
 
-  @readonly
+  @state
   @observable
   dead = false;
 

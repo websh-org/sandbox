@@ -208,10 +208,12 @@ function tryCatch(obj, fn,list) {
 }
 
 
+const AsyncFunction = Reflect.getPrototypeOf(async function(){}).constructor;
+class ProxyFunction extends AsyncFunction {};
 
 function create(Store, args) {
   const store = new Store(args);
-  const controller = function () { };
+  const controller = new ProxyFunction("","");
   const proxy = new Proxy(controller, {
     async apply(target, thisArg, [action, ...args]) {
       try {
@@ -222,13 +224,16 @@ function create(Store, args) {
       }
     },
     get(target, prop, receiver) {
-      if (prop in target) return Reflect.get(target, prop);
-      if (store._internal[prop]) return undefined;
-      if (store._actions[prop]) return undefined;
-      if (!store._state[prop]) console.log("!STATE",prop,"in",store.constructor.name);
-      if (typeof prop === "string" && prop.startsWith("_")) return undefined;
+      if (prop in controller) return Reflect.get(controller, prop, controller);
+      if (prop!==Store.$id && !store._state[prop] && typeof prop==="string") {
+        const value = Reflect.get(store,prop,store)
+        if(value!==undefined) {
+          console.warn(prop,value)
+        }
+        return undefined;
+      }
       const value = Reflect.get(store, prop, store);
-      if (typeof value === "function" && !value.isController) return value.bind(store);
+      if (typeof value === "function" && !(value instanceof ProxyFunction)) return value.bind(store);
       return value;
     },
     set(target, prop, value) {

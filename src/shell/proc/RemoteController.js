@@ -1,5 +1,5 @@
 import { observable, action, reaction, computed } from "mobx";
-import { Controller, readonly, command, internal } from "/lib/Controller";
+import { Controller, readonly, command, internal, state } from "/lib/Controller";
 import { ProcController } from "./ProcController";
 import { RemoteMasterPort } from "@websh/remote-master-port";
 import { errors } from "~/lib/Controller";
@@ -17,10 +17,12 @@ export class RemoteController extends ProcController {
   @internal
   _masterPort = null;
 
-  @readonly @observable
+  @state
+  @observable
   url;
 
-  @readonly @observable
+  @state
+  @observable
   state = "INITIAL";
 
   @internal
