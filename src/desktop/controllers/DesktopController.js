@@ -1,25 +1,24 @@
 import { observable, action, when, reaction, computed } from "mobx";
 
-import { getter } from "~/lib/utils";
-
-import { Controller, readonly, internal, command } from "~/lib/Controller";
+import { Controller, readonly, internal, command, state } from "~/lib/Controller";
 
 import { WindowManagerController } from "./WindowManagerController";
 import { ShellController } from "~/shell/ShellController";
 import { DialogController } from "./DialogController";
-
-export const DesktopController = Controller(class DesktopStore extends Controller.Store {
-
-  @readonly
-  shell = ShellController({ parent: this });
+export class DesktopController extends Controller {
 
   @readonly
-  wm = WindowManagerController({ parent: this });
+  shell = ShellController.create({ parent: this });
 
+  @readonly
+  wm = WindowManagerController.create({ parent: this });
+
+  @state
   get windows() {
     return this.wm.windows;
   }
 
+  @state
   @computed
   get infos() {
     return this.shell.infos
@@ -28,17 +27,19 @@ export const DesktopController = Controller(class DesktopStore extends Controlle
   constructor({ ...rest }) {
     super({ ...rest });
     this.on("app-action", ({ target: app }, { action, params }) => {
-      this.action("app-" + action, { ...params, app });
+      this.call("app-" + action, { ...params, app });
     })
   }
 
   @readonly
-  @observable modal = null;
+  @state
+  @observable
+  modal = null;
 
   @internal
   @action
   async showModal(type, data = {}) {
-    this.modal = new DialogController({ type, data });
+    this.modal = DialogController.create({ type, data });
     const result = await this.modal("show");
     this.modal = null;
     return result;
@@ -53,13 +54,13 @@ export const DesktopController = Controller(class DesktopStore extends Controlle
     const me = this;
     const { url } = await this.showModal("launcher", { get infos() { return me.infos } }) || {};
     if (!url) return;
-    this.action("launch-app", { url })
+    this.call("launch-app", { url })
   }
 
   @internal
   async catch(error) {
     console.error(error);
-    console.log(error.code,error.source)
+    if(error.originalError) console.error(error.originalError);
     await this.showModal("error",{error})
   }
 
@@ -85,7 +86,7 @@ export const DesktopController = Controller(class DesktopStore extends Controlle
           const res = await this.showModal("file-unsaved",{})
           if (!res) return;
           if (res.save) {
-            await this.action("app-file-save",{app:window,format:window.file.format})
+            await this.call("app-file-save",{app:window,format:window.file.format})
           }
       }
       await this.wm("window-close",{window,confirmed:true});
@@ -102,9 +103,20 @@ export const DesktopController = Controller(class DesktopStore extends Controlle
 
   @command
   async "launch-app"({ url }) {
-    const proc = await this.shell("ready-app", { url })
-    const window = await this.wm("open-app", { proc });
-    this.action("window-activate", { window })
+      const proc = await this.shell("app-open", { url })
+      const window = await this.wm("open-app", { proc });
+      this.call("window-activate", { window })
+      try {
+        await this.shell("app-connect",{proc});
+        const def = proc.info.file
+        if (def.supported && def.formats.default) {
+          this.call("app-file-new",{app:proc,format:def.formats.default.id})
+        }
+      } catch (error) {
+        await this.catch(error);
+        this.call("window-close",{window})
+      }
+  
   }
 
   @command
@@ -130,5 +142,5 @@ export const DesktopController = Controller(class DesktopStore extends Controlle
   async "app-about"({ app }) {
     await this.showModal("app-about", { about: app.info.about }) || {};
   }
-})
+}
 

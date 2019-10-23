@@ -3,14 +3,17 @@
  */
 
 import { observable, action, reaction, computed } from "mobx";
-import { Controller, readonly, command } from "~/lib/Controller";
+import { Controller, readonly, command, state } from "~/lib/Controller";
 import { WindowController } from "./WindowController"
 import { MenuItem } from "~/lib/MenuItem"
 
-export const AppWindowController = Controller(class extends WindowController.Store {
+export class AppWindowController extends WindowController {
+
+  @state
   @readonly
   toolbar = new MenuItem(AppToolbar, this);
 
+  @state
   @computed
   get file() {
     return this.proc.file;
@@ -30,7 +33,7 @@ export const AppWindowController = Controller(class extends WindowController.Sto
   async "file-save"({ format }) {
     return await this.proc("file-save", { format })
   }
-})
+}
 
 
 const AppToolbar = {

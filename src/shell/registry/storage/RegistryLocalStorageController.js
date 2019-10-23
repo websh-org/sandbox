@@ -1,7 +1,7 @@
 import { Controller, internal, command, readonly } from "~/lib/Controller";
 import { GenericRegistryController} from "./GenericRegistryController"
 
-export const RegistryLocalStorageController = Controller(class RegistryLocalStorageControllerStore extends GenericRegistryController.Store {
+export class RegistryLocalStorageController extends GenericRegistryController {
   @command
   async save({key,value}){
     localStorage.setItem("shell_registry_"+key,JSON.stringify(value))
@@ -15,4 +15,4 @@ export const RegistryLocalStorageController = Controller(class RegistryLocalStor
       return initial
     }
   }
-})
+}

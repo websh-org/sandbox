@@ -2,27 +2,34 @@
 
 ## Features
 * orderly open app
-* <s>orderly close app</s>
-* display errors/logs
+  * <s>display loader</s>
+  * <s>timeout</s>
+  * validate manifest
+* timeout on all app api requests
+* orderly close app
+  * <s>unsaved file</s>
+  * timeout
+* <s>display errors</s>
 * handle multi formats
 * add info page for users
 * add help page for developers
+* donate button in AppAbout
 
 ## WebShellApp.js
-* autofocus
+* <s>autofocus</s>
   * opt out ?
 * move encoding/decoding?
 * set up dirty file tracking?
 
 ## Apps
-* textarea - add dirty check
-* ace - set more modes from extension
+* textarea
+* ace
 * quill 
+* image viewer
 
 ## Manifests
 * add manifest schema
 * websh.org/known.apps.json
-
 
 # Cosmetics  
 * make launcher prettier

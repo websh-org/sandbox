@@ -9,7 +9,7 @@ import "../styles/styles.less";
 
 @observer
 export class App extends React.Component {
-  desktop = DesktopController(this.props.config || {});
+  desktop = DesktopController.create(this.props.config || {});
   componentDidMount() {
     this.desktop("launch-app",{url:"http://localhost:42003"})
   }

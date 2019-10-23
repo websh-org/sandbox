@@ -20,6 +20,7 @@ export class Window extends React.Component {
   render() {
     const { window, children } = this.props;
     const { title, icon, wid, active, zIndex } = window;
+
     return (
       <div 
         className={"sh window ui segments "+this.classes}
@@ -46,6 +47,12 @@ export class Window extends React.Component {
         <div className="statusbar ui tight secondary segment">
           <small>{window.state}</small>
         </div>
+        {window.state === "READY" ||
+          <div className="ui active dimmer">
+            <div className="ui text active loader">{window.state}</div> 
+          </div>
+        }
+        
       </div>
     );
   }

@@ -1,24 +1,30 @@
 import { observable, action, reaction, computed, toJS } from "mobx";
-import { Controller, internal, command, readonly } from "~/lib/Controller";
+import { Controller, internal, command, readonly, state } from "~/lib/Controller";
 import { RemoteController } from "./RemoteController";
-import { getter } from "~/lib/utils";
 import { ShellFile } from "~/lib/ShellFile";
 
-export const AppController = Controller(class AppStore extends RemoteController.Store {
+export class AppController extends RemoteController {
 
   constructor({info,...rest}) {
     super(rest);
     this.info = info;
   }
 
+  @state
+  @readonly
+  type = "app";
+
+  @state
   @readonly
   @observable
   file = null
 
+  @state
   @readonly
   @observable 
   info
 
+  @state
   @computed
   get title() {
     return (
@@ -39,9 +45,10 @@ export const AppController = Controller(class AppStore extends RemoteController.
   @command
   async "file-open"({ file, format }) {
     this.assert(this.info.file.supported, "not-supported");
+    const formatInfo = this.info.file.formats.get(format);
     const { extension, type } = file;
-    console.log("opening",{format,extension,type})
-    const content = await file.getContent();
+    console.log("opening",formatInfo,{format,extension,type})
+    const content = await file.getContent({encoding:formatInfo.encoding});
     const res = await this.request("file-open", { format, content, extension, type });
     this.file = file;
     return res;
@@ -58,9 +65,6 @@ export const AppController = Controller(class AppStore extends RemoteController.
   }
 
   async _ready() {
-    const def = this.info.file
-    if (def.supported && def.formats.default) {
-      this.action("file-new",{format:def.formats.default.id})
-    }
+  
   }
-});
+};

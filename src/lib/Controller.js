@@ -8,11 +8,11 @@ class ControllerEvent {
   isStopped = false;
   isPrevented = false;
   isAborted = false;
-  
-  constructor({target,type,data}) {
+
+  constructor({ target, type, data }) {
     this.type = type;
     this.target = target;
-    this.data = Object.assign({},data);
+    this.data = Object.assign({}, data);
   }
 
   stop() {
@@ -26,25 +26,27 @@ class ControllerEvent {
   }
 }
 
-class ControllerStore {
+export class Controller {
   static $id = "id";
   isController = true;
 
   constructor({ parent, ...rest }) {
-    this._internal = Object.assign({},this._internal)
-    this._readonly = Object.assign({},this._readonly)
-    
-    this._actions = Object.assign({},this._actions)
-    if (parent) parents.set(this,parent);
+    this._internal = Object.assign({}, this._internal)
+    this._readonly = Object.assign({}, this._readonly)
+    this._actions = Object.assign({}, this._actions)
+    this._state = Object.assign({}, this._state)
+
+    if (parent) parents.set(this, parent);
     this._handlers = {};
     const { $id } = this.constructor;
     if ($id) Object.defineProperty(this, $id, {
       value: rest[$id] || uuid(),
-      writable: false
+      writable: false,
+      configurable: false
     })
   }
 
-  on(type,handler) {
+  on(type, handler) {
     if (!this._handlers[type]) {
       this._handlers[type] = new Set([handler])
     } else {
@@ -52,17 +54,17 @@ class ControllerStore {
     }
   }
 
-  off(type,handler) {
+  off(type, handler) {
     if (!this._handlers[type]) return;
     this._handlers[type].delete(handler);
   }
 
   _dispatch(event) {
-    const {type,data,target}=event;
+    const { type, data, target } = event;
     const handlers = this._handlers[type]
     if (handlers) {
       for (var handler of handlers) {
-        handler.call(this,event,data);
+        handler.call(this, event, data);
         if (event.isAborted) break;
       }
     }
@@ -71,20 +73,20 @@ class ControllerStore {
     }
   }
 
-  _trigger(type,data={}) {
-    const event = new ControllerEvent({type,data,target:this.action});
+  _trigger(type, data = {}) {
+    const event = new ControllerEvent({ type, data, target: this.action });
     this._dispatch(event);
   }
 
   @internal
   assert(cond, ...args) {
-   if (!cond) this.throw(...args);
+    if (!cond) this.throw(...args);
 
   }
   @internal
-  throw(code,data,message) {
-    if (typeof code=="string") {
-      code = {code,data,message}
+  throw(code, data, message) {
+    if (typeof code == "string") {
+      code = { code, data, message }
     }
     const error = new ControllerError(code)
     error.source = error.source || this;
@@ -93,73 +95,36 @@ class ControllerStore {
 
   @internal
   catch(error) {
-    console.log(this.constructor.name)
     this.throw(error);
   }
 
+  static create(args) {
+    return create(this, args);
+  }
 }
 
-class ControllerError extends Error {
+class ControllerError {
   constructor(error) {
     if (error instanceof ControllerError) return error;
     if (error instanceof Error) {
-      const {message} = error;
-      super(error.message)
-      this.code="internal-error";
-      this.message = error.message;
+      this.code = "internal-error";
+      this.message = error.message || "Internal Error";
       this.data = {}
+      this.originalError = error;
     } else {
-      super(error.message)
       this.code = error.code || "internal-error";
       this.message = error.message || error.code || "Internal Error";
       this.data = error.data || {};
+      this.originalError = error;
     }
   }
 }
 
 
-export function Controller(Store) {
-   
-  const factory = function (args) {   
-    const store = new Store(args);
-    const controller = function(){};
-    const pub = new Proxy(controller, {
-      async apply(target, thisArg, [action, ...args]) {
-        try {
-          store.assert(store._actions[action], "bad-action",{action});
-          return await store._actions[action].execute.call(store, ...args);
-        } catch (e) {
-          const error = new ControllerError(e);
-          error.source = store;
-          store.catch(error);
-        }
-      },
-      get(target, prop, receiver) {
-        if (prop in controller) return Reflect.get(controller, prop);
-        if (store._internal[prop]) return undefined;
-        if (store._actions[prop]) return undefined;
-        if (typeof prop === "string" && prop.startsWith("_")) return undefined;
-        const value = Reflect.get(store, prop, store);
-        if (typeof value === "function" && !value.isController) return value.bind(store);
-        return value;
-      },
-      set(target, prop, value) {
-        if (store._internal[prop]) return undefined;
-        if (store._readonly[prop]) return undefined;
-        if (typeof prop === "string" && prop.startsWith("_")) return undefined;
-        if (prop in store) return Reflect.set(store, prop, store);
-        store.assert(false, "bad-prop-" + prop);
-      }
-    });
-    store.action = store.call = pub;
-    return pub;
-  };
-  factory.isFactory = true;
-  factory.Store = Store;
-  return factory;
+export function state(obj, prop, desc) {
+  obj._state = Object.assign({}, obj._state, { [prop]: true })
+  return desc;
 }
-
-Controller.Store = ControllerStore;
 
 export function internal(obj, prop, desc) {
   obj._internal = Object.assign({}, obj._internal, { [prop]: true })
@@ -176,5 +141,104 @@ export function command(obj, prop, desc) {
   if (typeof value === "function") value = { execute: value }
   value.execute = action(value.execute);
   obj._actions = Object.assign({}, obj._actions, { [prop]: value })
-  return {value:undefined};
+  return { value: undefined };
 }
+
+command.errors = function (list) {
+  return function (obj, prop, desc) {
+    var fn = desc.initializer ? desc.initializer() : desc.value;
+    return command(obj,prop,{
+      ...desc, value(...args) {
+        try {
+          fn(...args)
+        } catch (e) {
+          const error = new ControllerError(e);
+          if (list[error.code]) list[code].call(this, { ...error });
+          else this.catch(error);
+        }
+      }
+    })
+  }
+}
+
+export function errors (list) {
+  return function (obj, prop, desc) {
+    var value = desc.value;
+    return ({
+      ...desc, value:tryCatch(obj,value,list)
+    })
+  }
+}
+
+function tryCatch(obj, fn,list) {
+  if (fn.constructor.name==="AsyncFunction") {
+    return async function (...args) {
+      try {
+        const res = await fn.call(this,...args);
+        return res;
+      } catch (e) {
+        const error = new ControllerError(e);
+        if (list[error.code]) {
+          try {
+            await list[error.code].call(this, { ...error });
+          } catch (e) {
+            this.throw(new ControllerError(e))
+          }
+        }
+        else this.catch(error);
+      }
+    }
+  } else {
+    return function (...args) {
+      try {
+        return fn.call(obj,...args)
+      } catch (e) {
+        const error = new ControllerError(e);
+        if (list[error.code]) {
+          try {
+            list[error.code].call(obj, { ...error });
+          } catch (e) {
+            obj.throw(new ControllerError(err))
+          }
+        }
+        else obj.catch(error);
+      }
+    }
+  }
+}
+
+
+
+function create(Store, args) {
+  const store = new Store(args);
+  const controller = function () { };
+  const proxy = new Proxy(controller, {
+    async apply(target, thisArg, [action, ...args]) {
+      try {
+        store.assert(store._actions[action], "bad-action", { action });
+        return await store._actions[action].execute.call(store, ...args);
+      } catch (error) {
+        store.catch(new ControllerError(error));
+      }
+    },
+    get(target, prop, receiver) {
+      if (prop in target) return Reflect.get(target, prop);
+      if (store._internal[prop]) return undefined;
+      if (store._actions[prop]) return undefined;
+      if (!store._state[prop]) console.log("!STATE",prop,"in",store.constructor.name);
+      if (typeof prop === "string" && prop.startsWith("_")) return undefined;
+      const value = Reflect.get(store, prop, store);
+      if (typeof value === "function" && !value.isController) return value.bind(store);
+      return value;
+    },
+    set(target, prop, value) {
+      if (store._internal[prop]) return undefined;
+      if (store._readonly[prop]) return undefined;
+      if (typeof prop === "string" && prop.startsWith("_")) return undefined;
+      if (prop in store) return Reflect.set(store, prop, store);
+      store.assert(false, "bad-prop-" + prop);
+    }
+  });
+  store.action = store.call = proxy;
+  return proxy;
+};

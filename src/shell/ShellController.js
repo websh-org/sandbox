@@ -1,12 +1,12 @@
 import { observable, action, when, reaction, computed } from "mobx";
 import { Controller, readonly, command, internal } from "../lib/Controller";
-import { ProcController } from "./ProcController";
+import { procTypes } from "./proc";
 import { AppRegistryController } from "./registry/AppRegistryController";
-import { AppController } from "./AppController";
+import { AppController } from "./proc/AppController";
 
 import { RegistryController } from "./registry/RegistryController"
 
-export const ShellController = Controller(class ShellStore extends Controller.Store {
+export class ShellController extends Controller {
 
   constructor({
     registry = {
@@ -15,8 +15,8 @@ export const ShellController = Controller(class ShellStore extends Controller.St
     ...rest
   }) {
     super(rest);
-    this.registry = RegistryController(registry)
-    this.appRegistry = AppRegistryController({ registry: this.registry });
+    this.registry = RegistryController.create(registry)
+    this.appRegistry = AppRegistryController.create({ registry: this.registry });
   }
 
   @internal
@@ -49,19 +49,30 @@ export const ShellController = Controller(class ShellStore extends Controller.St
   }
 
   @command
-  async "ready-app"({ url }) {
+  async "app-open"({ url }) {
     const info = await this.appRegistry("get", { url });
-    const app = this.addProc(AppController({ url, info }));
-    app("connect").then(async manifest => {
-      await this.appRegistry("update", { url, manifest })
-      await app("ready");
-    })
-    return app;
+    const proc = await this.addProc(AppController.create({ url, info }));
+    return proc;
   }
+
+  @command
+  async "app-connect"({ proc }) {
+    try {
+      const manifest = await proc("connect");
+      await this.appRegistry("update", { url:proc.url, manifest })
+      await proc("ready");
+      return proc;
+    } catch (error) {
+      await this.appRegistry("update", { url:proc.url, manifest:null })
+      throw error;
+    }
+  }
+
 
   @command
   "proc-kill"({ pid }) {
     this._ps.get(pid)("kill");
   }
-});
+ 
+};
 

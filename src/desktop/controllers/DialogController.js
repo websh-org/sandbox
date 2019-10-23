@@ -1,7 +1,7 @@
 import { observable, action, reaction, computed } from "mobx";
-import { Controller, readonly, internal, command } from "~/lib/Controller";
+import { Controller, readonly, internal, command, state } from "~/lib/Controller";
 
-export const DialogController = Controller(class DialogStore extends Controller.Store {
+export class DialogController extends Controller {
 
   constructor({ type, data = {}, ...rest }) {
     super(rest)
@@ -9,10 +9,12 @@ export const DialogController = Controller(class DialogStore extends Controller.
     this.type = type;
   }
 
+  @state
   @readonly
   @observable
   type = null;
 
+  @state
   @readonly
   @observable
   data = null;
@@ -32,4 +34,4 @@ export const DialogController = Controller(class DialogStore extends Controller.
       this._promise = { resolve, reject }
     })
   }
-})
+}

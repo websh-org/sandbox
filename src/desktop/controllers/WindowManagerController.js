@@ -1,17 +1,21 @@
 import { observable, action, when, reaction, computed } from "mobx";
-import { Controller, readonly, internal, command } from "../../lib/Controller";
+import { Controller, readonly, internal, command, state } from "../../lib/Controller";
 import { AppWindowController } from "./AppWindowController";
 
-export const WindowManagerController = Controller(class extends Controller.Store {
+export class WindowManagerController extends Controller {
 
-  @observable _windows = new Map();
-
-  @computed get windows() {
+  @state
+  @computed 
+  get windows() {
     return [...this._windows.values()];
   }
 
   @internal
-  addWindow(window) {
+  @observable 
+  _windows = new Map();
+
+  @internal
+  async addWindow(window) {
     this._windows.set(window.wid, window);
     return window;
   }
@@ -37,15 +41,14 @@ export const WindowManagerController = Controller(class extends Controller.Store
     this._windows.delete(window.wid);
     if (!this._windows.length) return;
     if (index >= this.windows.length) index = this.windows.length - 1;
-    this.action("window-activate", { window: sorted[index] })
+    this.call("window-activate", { window: sorted[index] })
   }
 
   @command
-  @action
-  "open-app"({ proc }) {
-    return this.addWindow(
-      AppWindowController({ parent: this, proc })
+  async "open-app"({ proc }) {
+    return await this.addWindow(
+      AppWindowController.create({ parent: this, proc })
     );
   }
 
-})
+}

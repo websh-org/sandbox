@@ -1,3 +1,6 @@
+import Ajv from "ajv";
+const ajv = new Ajv();
+
 const uuidPattern = "" + 1e7 + -1e3 + -4e3 + -8e3 + -1e11;
 
 export function uuid() {
@@ -7,14 +10,10 @@ export function uuid() {
   );
 }
 
-
-export function getter(obj,_prop,descriptor) {
-  if(!_prop.startsWith("_")) throw new Error("@getter only works on prop names starting with _");
-  const prop=_prop.substr(1);
-  Object.defineProperty(obj,prop,{
-    get() {
-      return this[_prop];
-    }
-  })
-  return descriptor;
+export function jsonSchemaInvalidator(jsonSchema) {
+  const validate = ajv.compile(jsonSchema);
+  return (...args) => {
+    if (validate(...args)) return false;
+    else return validateManifest.errors.map(({ dataPath, message }) => `${dataPath || "(root)"}: ${message}`).join("\n");
+  }
 }

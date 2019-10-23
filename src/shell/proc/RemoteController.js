@@ -1,10 +1,10 @@
 import { observable, action, reaction, computed } from "mobx";
 import { Controller, readonly, command, internal } from "/lib/Controller";
 import { ProcController } from "./ProcController";
-import { getter } from "/lib/utils";
 import { RemoteMasterPort } from "@websh/remote-master-port";
+import { errors } from "~/lib/Controller";
 
-export const RemoteController = Controller(class AppStore extends ProcController.Store {
+export class RemoteController extends ProcController {
 
   constructor({ url, ...rest }) {
     super({ ...rest });
@@ -13,6 +13,9 @@ export const RemoteController = Controller(class AppStore extends ProcController
     this.url = parsed.href;
     this.origin = parsed.origin;
   }
+
+  @internal
+  _masterPort = null;
 
   @readonly @observable
   url;
@@ -29,37 +32,58 @@ export const RemoteController = Controller(class AppStore extends ProcController
   }
 
   @internal
+  @errors({
+    "command-failed"(error) {
+      console.log("app-failed")
+      this.throw(error);
+    }
+  })
   async request(...args) {
     try {
+      if (!this._masterPort) debugger;
       const res = await this._masterPort.request(...args);
       return res;
-    } catch ({error,data}) {
-      this.throw(error,data)
+    } catch ({error:code,message,data}) {
+      this.throw({code,message,data})
     }
   }
 
   _load({ element: iframe }) {
+
+
     this.assert(iframe instanceof HTMLIFrameElement, "bad-mount-point")
     this.iframe = iframe;
-    const origin = iframe.sandbox && !iframe.sandbox.contains("allow-same-origin") ? "*" : this.origin
+    const origin = iframe.sandbox && !iframe.sandbox.contains("allow-same-origin") ? "*" : this.origin;
     this._masterPort = new RemoteMasterPort('SOUTH-TOOTH', iframe, { origin });
 
     return new Promise(async (resolve, reject) => {
+      try {
+        const res = await fetch(this.url, {
+          method:"head"
+        })
+        //console.log(res.headers);
+      } catch (error) {
+        this._connectedPromise.reject({
+          code:"app-load-fail",
+          message:"The supplied URL is either unreachable or not allowed in iframes."
+        });
+      }
+
 
       const iframe = this.iframe;
       const timeout = setTimeout(
         () => {
           this.state = "INVALID";
-          this.assert(false, "app-load-timeout");
+          this._connectedPromise.reject({code:"app-connect-timeout"});
         },
         10000
       );
 
-      iframe.onload = async () => {
+      iframe.onload = async (e) => {
         clearTimeout(timeout);
         this.state = "LOADED";
         this.iframe.onload = null;
-        resolve(await this._connect());
+        this._connectedPromise.resolve(await this._connect());
       }
       iframe.src = this.url;
     })
@@ -71,21 +95,23 @@ export const RemoteController = Controller(class AppStore extends ProcController
     const timeout = setTimeout(
       () => {
         this.state = "INVALID";
-        this.assert(false, "app-load-timeout");
+        this._connectedPromise.reject({
+          code:"app-connect-timeout",
+          message:"The app failed to connect. It's probably not a valid WebShell App."
+        });
       },
-      5000
+      2000
     );
     try {
       const manifest = await this._masterPort.connect();
       clearTimeout(timeout);
       this.state = "CONNECTED";
-      resolve();
       this.manifest = manifest;
+      resolve(manifest);
     } catch (err) {
       clearTimeout(timeout);
-      //await this.unload();
       this.state = "INVALID";
-      resolve();
+      this._connectedPromise.reject(err);
     }
   })
 }
@@ -101,4 +127,13 @@ export const RemoteController = Controller(class AppStore extends ProcController
     this.url = null;
     this.STATE = INITIAL;
   }
-});
+
+  _activate() {
+    this.iframe.focus();
+    this.iframe.contentWindow.focus();
+    //this.send("proc-activate");
+  }
+  _deactivate() {
+    //this.send("proc-deactivate");
+  }
+};

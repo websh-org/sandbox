@@ -92,6 +92,7 @@ class FileFormat {
     this.extension = this.extensions[0];
     this.types = (def.type || "").trim().split(/\s+/);
     this.type = this.types[0];
+    this.encoding = def.encoding || "text"
   }
 
   newFile() {

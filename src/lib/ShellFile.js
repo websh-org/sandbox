@@ -45,7 +45,13 @@ export class ShellFile  {
       case 'text':
         return await (new Response(this.content)).text();
       case 'blob':
-          return this.content._slice();
+        return this.content._slice();
+      case 'dataurl': 
+        return new Promise(resolve=>{
+          var a = new FileReader();
+          a.onload = function(e) {resolve(e.target.result);}
+          a.readAsDataURL(this.content);
+        })
       }
 }
 }

@@ -1,39 +1,54 @@
 import { observable, action, reaction, computed } from "mobx";
-import { Controller, readonly, command, internal } from "../../lib/Controller";
-import { getter } from "../../lib/utils";
+import { Controller, readonly, command, internal, state } from "../../lib/Controller";
+
 
 var maxZ = 0;
 
-export const WindowController = Controller(class extends Controller.Store {
+export class WindowController extends Controller {
 
   static $id = "wid";
 
+  @state
   @readonly 
   @observable
   maximized = false;
 
+  @state
   @readonly 
   @observable
   closed = false;
 
+  @state
+  @readonly 
   @observable
   active = false;
   
 
+  @state
   @readonly
   @observable
   zIndex = 0;
 
-  @computed
-  get title() {
-    return this.proc.title;
-  }
-
+  @state
   @computed
   get state() {
     return this.proc.state;
   }
 
+  @state
+  @computed
+  get title() {
+    return this.proc.title;
+  }
+
+  @state
+  @computed
+  get icon() {
+    return this.info.about.icon;
+  }
+
+
+  @state
   @computed
   get info() {
     return this.proc.info;
@@ -48,21 +63,19 @@ export const WindowController = Controller(class extends Controller.Store {
   @observable
   proc = null;
 
-  @computed
-  get icon() {
-    return this.info.about.icon;
-  }
-
+  
   @command
   @action
   "activate"() {
     this.zIndex = ++ maxZ;
     this.active = true;
+    this.proc("activate");
   }
 
   @command
   @action
   "deactivate"() {
+    this.proc("deactivate");
     this.active = false;
     return this;
   }
@@ -82,5 +95,4 @@ export const WindowController = Controller(class extends Controller.Store {
     await this.proc("close", {confirmed})
     this.closed = true;
   }
-})
-
+}

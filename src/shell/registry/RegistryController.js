@@ -4,6 +4,8 @@ export const registryTypes = {
   "local-storage": RegistryLocalStorageController
 }
 
-export function RegistryController({storage,...rest}) {
-  return registryTypes[storage](rest);
+export class RegistryController {
+  static create({storage,...rest}) {
+    return registryTypes[storage].create(rest);
+  }
 }
