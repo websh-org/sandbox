@@ -5,6 +5,8 @@ import { ErrorBoundary } from "./ErrorBoundary"
 import { dialogs } from "../dialogs";
 import { Icon, AppIcon } from "../ui";
 
+import logo from "~/../static/web-shell-logo.png"
+
 @observer
 export class Desktop extends React.Component {
   render() {
@@ -58,7 +60,7 @@ class Modal extends React.Component {
     return (
       <div className="sh dock ui attached inverted menu">
         <a className="item" onClick={() => desktop("show-launcher")}>
-          <Icon icon="large" image="web-shell-logo.png" />
+        <AppIcon url={logo} size="tiny"/> &nbsp; {window.title}
         </a>
         {desktop.windows.map(window => (
           <a
