@@ -8,7 +8,7 @@ import manifestSchema from "~/../static/schemas/app-manifest.json";
 const invalidate = invalidator(manifestSchema);
 
 translate({
-  "error:app-invalid-manifest": "Invalid app manifest.",
+  "error:app-invalid-manifest": "Invalid app manifest",
   "error:app-invalid-manifest:message": "The manifest prestented by the app at {url} failed to validate.",
 })
 
@@ -111,15 +111,14 @@ export class AppInfo {
 class FileFormat {
   constructor(id, def) {
     this.id = id;
-    this.label = def.title || def.label;
+    this.label = def.label;
     this.save = !!def.save;
     this.open = !!def.open;
     this.new = !!def.new;
-    this.extensions = (def.extension || "").trim().split(/\s+/);
-    this.extension = this.extensions[0];
-    this.types = (def.type || "").trim().split(/\s+/);
-    this.type = this.types[0];
-    this.encoding = def.encoding || "text"
+    this.extension = def.extension;
+    this.type = def.type;
+    this.accept = def.accept || this.extension && "."+this.extension;
+    this.encoding = def.encoding || "text";
   }
 
   newFile() {

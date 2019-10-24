@@ -3,7 +3,7 @@ import { observer } from "mobx-react";
 import { AppWindow } from "./AppWindow";
 import { ErrorBoundary } from "./ErrorBoundary"
 import { dialogs } from "../dialogs";
-import { Icon } from "../ui/Icon";
+import { Icon, AppIcon } from "../ui";
 
 @observer
 export class Desktop extends React.Component {
@@ -14,8 +14,8 @@ export class Desktop extends React.Component {
         <Dock desktop={desktop} />
         <div className="windows">
           {desktop.windows.map(window => (
-            <ErrorBoundary>
-              <AppWindow key={window.wid} window={window} />
+            <ErrorBoundary key={window}>
+              <AppWindow key={window} window={window} />
             </ErrorBoundary>
           ))}
         </div>
@@ -50,22 +50,23 @@ class Modal extends React.Component {
   }
 }
 
+
+
 @observer class Dock extends React.Component {
   render() {
     const { desktop } = this.props;
     return (
       <div className="sh dock ui attached inverted menu">
         <a className="item" onClick={() => desktop("show-launcher")}>
-          <Icon icon="large" image="/web-shell-logo.png" />
+          <Icon icon="large" image="web-shell-logo.png" />
         </a>
         {desktop.windows.map(window => (
           <a
             onClick={() => desktop("window-activate", { window })}
-            key={window.wid}
+            key={window}
             className={"item" + (window.active ? " active" : "")}
           >
-            <Icon image={window.icon} />
-            {window.title}
+             <AppIcon url={window.icon} size="tiny"/> &nbsp; {window.title}
             <span
               onClick={() => desktop("window-close", { window })}
               style={{

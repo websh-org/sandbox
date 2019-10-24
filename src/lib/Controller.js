@@ -144,15 +144,10 @@ export function errors (list) {
 function tryCatch(obj, fn,list={}) {
   if (fn instanceof AsyncFunction ) {
     return async function (...args) {
-      if (Object.keys(list).length) {
-        console.log('list',Object.keys(list));
-      }
       try {
         const res = await fn.call(this,...args);
-        console.log("OK",res)
         return res;
       } catch (e) {
-        console.log("error",e.code)
         const error = new ControllerError(e);
         if (list[error.code]) {
           try {
@@ -197,7 +192,6 @@ function create(Store, args) {
         store.assert(store._actions[action], "bad-action", { action });
         return await store._actions[action].execute.call(store, ...args);
       } catch (error) {
-        console.log('got error',error.code)
         throw(new ControllerError(error));
       }
     },

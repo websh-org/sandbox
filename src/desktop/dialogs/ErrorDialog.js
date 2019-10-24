@@ -21,7 +21,7 @@ export class ErrorDialog extends React.Component {
             <div className="header">{T("error",error.code)}</div>
             <p>{T("error",error.code,"message",error.data)}</p>
             <details>
-              <summary class="ui label">Details</summary>
+              <summary className="ui label">Details</summary>
             <div className="ui list">
               <DataToList data={error.data} id="Error Data"/>
             </div>

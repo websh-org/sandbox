@@ -31,7 +31,7 @@ export class UrlInput extends React.Component {
           }}
         />
         <button
-          className="ui button"
+          className="ui primary button"
           disabled = {!this.realUrl}
           onClick={() => onAction(this.realUrl)}
         >Open</button>

@@ -3,9 +3,11 @@ import { Controller, internal, command, readonly, state } from "~/lib/Controller
 import { RemoteController } from "../proc/RemoteController";
 import { AppInfo } from "~/lib/AppInfo";
 
+import knownApps from "~/../static/known.apps.json"
+
 function checkURL(url) {
   url = new URL(url);
-  if (url.protocol != "https:" && url.host!="localhost") throw {code:"app-not-https"}
+  //if (url.protocol !== "https:" && url.hostname!=="localhost") throw {code:"app-not-https"}
   return url.href;
 }
 
@@ -28,7 +30,7 @@ export class AppRegistryController extends Controller {
 
 
   async _load() {
-    const saved = await this.registry("load",{key:"apps",initial:{}});
+    const saved = await this.registry("load",{key:"apps",initial:knownApps});
     for (var url in saved) {
       this._update({url,manifest:saved[url]})
     }

@@ -1,10 +1,8 @@
 import React from "react";
 import { observer } from "mobx-react";
 import { observable, computed } from "mobx";
-import { UrlInput } from "~/desktop/ui/UrlInput";
 import { Dialog } from "./Dialog"
-import { Icon } from "../ui/Icon";
-import { AppIcon } from "../ui/AppIcon";
+import { UrlInput, AppIcon, ButtonTabs} from "../ui";
 
 @observer
 export class LauncherDialog extends React.Component {
@@ -15,33 +13,29 @@ export class LauncherDialog extends React.Component {
     const { infos } = data;
     return (
       <Dialog dialog={dialog} icon="rocket" title="Launch App">
-        <div className="ui form secondary segment">
-          <div className="field">
-          <label>Your Apps</label>
-              {
-                infos.map(info => (
-                  <div 
-                    key={info.url} 
-                    className="ui button" 
-                    title={JSON.stringify(info,null,2)}
-                    onClick={()=>resolve({url:info.url})}
-                  >
-                    <AppIcon url={info.about.icon}/>
-                    <b >
-                      {info.about.name}
-                    </b>
+        <ButtonTabs>
+          <ButtonTabs.Tab id="apps" label="Your Apps">
+            {
+              infos.map(info => (
+                <div
+                  key={info.url}
+                  className="sh launch button ui basic button"
+                  title={info.about.description}
+                  onClick={() => resolve({ url: info.url })}
+                >
+                  <AppIcon url={info.about.icon} />
+                  <div className="name">
+                    {info.about.name}
                   </div>
-                ))
-              }
-          </div>
-          <div className="field">
-            <label>Open App From URL</label>
+                </div>
+              ))
+            }
+          </ButtonTabs.Tab>
+          <ButtonTabs.Tab id="url" label="Open From URL">
             <UrlInput onAction={(url) => dialog("resolve", { url })} />
-          </div>
-        </div>
-
+          </ButtonTabs.Tab>
+        </ButtonTabs>
       </Dialog>
     );
   }
 }
-

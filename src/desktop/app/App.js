@@ -14,9 +14,9 @@ export class App extends React.Component {
   desktop = DesktopController.create(this.props.config || {});
 
   async componentDidMount() {
-    //await this.desktop("show-launcher");
+    await this.desktop("show-launcher");
 
-    await this.desktop("launch-app",{url:"https://websh.org/app-ace/"})
+    //await this.desktop("launch-app",{url:"http://localhost:42003"})
   }
   render() {
     return (

@@ -3,7 +3,7 @@ import React from "react";
 import { observer } from "mobx-react";
 import { computed } from "mobx";
 import { Toolbar } from "~/desktop/ui/Toolbar"
-import { Icon } from "~/desktop/ui/Icon.js"
+import { Icon, AppIcon } from "~/desktop/ui/"
 
 const stateLabels = {
   INITIAL: "Loading",
@@ -32,8 +32,7 @@ export class Window extends React.Component {
       >
         <div className="titlebar ui form inverted segment">
           <span className="title">
-            <Icon image={window.icon} />
-            {title}
+           <AppIcon url={window.icon} size="mini"/> &nbsp; {title}
           </span>
           {
             window.file &&

@@ -2,58 +2,42 @@ import React from "react";
 import { observer } from "mobx-react";
 import { observable, computed } from "mobx";
 import { ShellFile } from "~/lib/ShellFile";
+import { uuid } from "~/lib/utils";
 import { Dialog } from "./Dialog";
-import { UrlInput } from "~/desktop/ui/UrlInput";
+import { UrlInput, ButtonTabs } from "~/desktop/ui";
 @observer
 export class FileOpenDialog extends React.Component {
+
+  openFromDisk = async e => {
+    if (!e.target.files.length) return this.props.resolve(null);
+    const file = await ShellFile.fromLocal(e.target.files[0]);
+    this.props.dialog("resolve",{file});
+  }
+
   render() {
     const { dialog, data } = this.props;
     const { format } = data;
+    const id = uuid();
     return (
-      <Dialog 
+      <Dialog
         dialog={dialog}
-        title="Open File" 
+        title="Open File"
         icon="open folder"
         cancel
       >
-        <div className="ui secondary padded form segment">
-          <div className="field">
-            <label> Open from disk </label>
-            <button
-              className="ui large left labeled icon button"
-              onClick={async e => {
-                const file = await openFromDisk(format);
-                dialog("resolve", { file })
-              }}
-            >
+        <ButtonTabs>
+          <ButtonTabs.Tab label="From Disk">
+            <label className="ui left labeled icon button" htmlFor={id}>
               <i className="disk icon" />
-              Select File
-            </button>
-          </div>
-          <div className="field">
-            <label>
-              Open from URL
-              </label>
+              Select file
+            </label>
+            <input className="ui dimmer" id={id} type="file" accept={format.accept} onChange={this.openFromDisk} />
+          </ButtonTabs.Tab>
+          <ButtonTabs.Tab label="From URL">
             <UrlInput />
-          </div>
-        </div>
+          </ButtonTabs.Tab>
+        </ButtonTabs>
       </Dialog>
     );
   }
-}
-
-function openFromDisk(format) {
-  return new Promise(resolve => {
-    const input = document.createElement("input");
-    input.type = "file";
-    input.accept = (format.extensions.includes("*") ? [] : format.extensions.map(e=>"."+e).concat(format.types).join(","))
-    console.log(input.accept);
-    input.addEventListener("change", async function readFile(e) {
-      if (!e.target.files.length) resolve(null);
-      const localFile = e.target.files[0];
-      const file = ShellFile.fromLocal(localFile);
-      resolve(file);
-    }, true);
-    requestIdleCallback(()=>input.click());
-  })
 }

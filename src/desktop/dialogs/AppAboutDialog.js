@@ -10,7 +10,6 @@ export class AppAboutDialog extends React.Component {
   render() {
     const { dialog } = this.props;
     const { about } = dialog.data;
-    console.log(about)
     const { name, icon, description, license, homepage, repository, version } = about;
     return (
       <Dialog 
@@ -37,24 +36,5 @@ export class AppAboutDialog extends React.Component {
         </div>
       </Dialog>
     );
-  }
-}
-
-const formats = {
-  quill: {
-    encoding: "text",
-    label: "Quill File",
-    type: "application/json",
-    extension: "quill",
-    accept: "text/plain",
-    open: true,
-    save: true,
-    save_as: ["text","html"]
-  },
-  text: {
-    encoding: "text",
-    label: "Text File",
-    extension: ".txt",
-    opens: "quill"
   }
 }

@@ -1,7 +1,3 @@
-/**
- * The toolbar should move to DesktopController
- */
-
 import { observable, action, reaction, computed } from "mobx";
 import { Controller, readonly, command, state } from "~/lib/Controller";
 import { WindowController } from "./WindowController"
@@ -34,6 +30,9 @@ export class AppWindowController extends WindowController {
   }
 }
 
+/**
+ * CODE SMELL: The toolbar should move to DesktopController
+ */
 
 const AppToolbar = {
   items: [
@@ -75,7 +74,6 @@ const AppToolbar = {
         icon: "save",
         label: "Save",
         available() {
-          console.log("format",this.file && this.file.format)
           return this.file && !!this.info.file.formats.save.length;
         },
         items() {

@@ -42,7 +42,6 @@ export class RemoteController extends ProcController {
 
   @errors({
     "command-failed"(error) {
-      console.log("app-failed")
       this.throw(error);
     }
   })
@@ -69,7 +68,6 @@ export class RemoteController extends ProcController {
           mode:"no-cors",
           method:"head"
         })
-        console.log([...res.headers.keys()]);
       } catch (error) {
         this._connectedPromise.reject({
           code:"app-load-unreachable"

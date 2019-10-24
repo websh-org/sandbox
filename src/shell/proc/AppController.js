@@ -44,7 +44,6 @@ export class AppController extends RemoteController {
     this.assert(this.info.file.supported, "not-supported");
     const formatInfo = this.info.file.formats.get(format);
     const { extension, type } = file;
-    console.log("opening",formatInfo,{format,extension,type})
     const content = await file.getContent({encoding:formatInfo.encoding});
     const res = await this.request("file-open", { format, content, extension, type });
     this.file = file;
@@ -57,7 +56,6 @@ export class AppController extends RemoteController {
     const res = await this.request("file-save", { format });
     const { content, type } = res;
     this.file.setContent({content,type});
-    console.log("app",this.file)
     return this.file;
   }
 

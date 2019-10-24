@@ -18,7 +18,7 @@
   * [x] implement
   * [ ] specify all errors - started
   * [ ] specify ui strings - not critical
-* [ ] handle multi formats
+* [ ] correctly remember file format
 * [ ] add info page for users
 * [ ] add help page for developers
 
@@ -26,23 +26,23 @@
 * [x] autofocus
 
 ## Apps
-* textarea
-* ace
-* quill 
-* image viewer
+* [ ] textarea
+* [x] ace
+* [x] quill 
+* [ ] image viewer
 
 ## Public
-* [ ] app manifest schema
+* [x] app manifest schema
 * [ ] websh.org/known.apps.json
 
 # Cosmetics  
-* [ ] make launcher prettier
+* [x] make launcher prettier
 * [ ] add clock
 * [ ] donate button in AppAbout
 
 ## Project
-* add LICEMSE/README
-* fix package.json
-* fix docs at websh.org
-* transfer old repos to self
-* publish latest versions of core packages
+* [x] add LICEMSE/README
+* [x] fix package.json
+* [ ] fix docs at websh.org
+* [x] transfer old repos to self
+* [ ] publish latest versions of core packages

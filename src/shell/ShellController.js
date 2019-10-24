@@ -6,6 +6,8 @@ import { AppController } from "./proc/AppController";
 
 import { RegistryController } from "./registry/RegistryController"
 
+import knownApps from "~/../static/known.apps.json"
+
 export class ShellController extends Controller {
 
   constructor({

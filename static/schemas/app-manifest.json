@@ -1,40 +1,119 @@
 {
-  "$id": "https://websh.org/manifest.schema.json",
+  "$id": "https://websh.org/sandbox/schemas/manifest.schema.json",
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "App Manifest",
   "type": "object",
   "properties": {
+    "v": {
+      "type": "number",
+      "const": 0
+    },
     "name": {
       "type": "string",
+      "title": "App Name",
       "description": "The name of the app."
     },
     "icon": {
       "type": "string",
+      "title": "Icon URL",
       "format": "uri-reference",
-      "description": "The URL of the app's icon."
+      "description": "The URL of the app's icon. Can be relative to the app's URL."
     },
     "description": {
       "type": "string",
+      "title": "Short Description",
       "description": "Description of the app."
     },
     "version": {
       "type": "string",
-      "description": "Version of the app."
+      "title": "Version",
+      "description": "The semver-compliant version of the app.",
+      "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$"
     },
     "homepage": {
       "type": "string",
+      "title": "Homepage",
       "format": "uri",
-      "description": "The URL of the app's homepage."
+      "description": "The absolute URL of the app's homepage (e.g. for documentation)."
     },
     "repository": {
       "type": "string",
+      "title":"Source repository",
       "format": "uri",
-      "description": "The URL of the app's source code homepage."
+      "description": "The absolute URL of the app's source code repository."
     },
     "license": {
       "type": "string",
-      "description": "The SPDX-compliante license ID for the app."
+      "description": "The SPDX-compliant license ID for the app."
+    },
+    "api": {
+      "title": "App API specs",
+      "type": "object",
+      "properties": {
+        "file": {
+          "type": "object",
+          "title": "File App API specs",
+          "description": "File API specification.",
+          "properties": {
+            "formats": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "title": "File Type",
+                    "description": "The MIME type which will be used when saving files.",
+                    "pattern": "^(application|audio|font|image|model|multipart|text|video|x-(?:[0-9A-Za-z!#$%&'*+.^_`|~-]+))/([0-9A-Za-z!#$%&'*+.^_`|~-]+)$"
+                  },
+                  "extension": {
+                    "type": "string",
+                    "title": "File Extension",
+                    "description": "The extension (without the leading dot) that will be used when saving files.",
+                    "pattern": "^[-\\w]+$"
+                  },
+                  "accept": {
+                    "type" : "string",
+                    "title": "Accept String",
+                    "description": "The accept string (as in a HTML file input) that will be used for filtering files in open file dialogs."
+                  },
+                  "new": {
+                    "type": "boolean",
+                    "title": "Allow New",
+                    "description": "Can the App create this file format?"
+                  },
+                  "open": {
+                    "type": "boolean",
+                    "title": "Allow Open",
+                    "description": "Can the App open this file format?"
+                  },
+                  "save": {
+                    "type": "boolean",
+                    "title": "Allow Save",
+                    "description": "Can the App save this file format?"
+                  },
+                  "encoding": {
+                    "type":"string",
+                    "title": "Content encoding",
+                    "description": "Which encoding does the app ",
+                    "enum":["text","binary"]
+                  }
+                },
+                "required": [
+                  "type",
+                  "extension"
+                ]
+              }
+            }
+          }
+        }
+      }
     }
   },
-  "required": ["name","icon","description"]
+  "required": [
+    "v",
+    "name",
+    "icon",
+    "description"
+  ]
 }

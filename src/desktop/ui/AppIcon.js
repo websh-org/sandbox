@@ -1,5 +1,5 @@
 import React from "react";
 
-export function AppIcon({ url }) {
-  return <div className="sh app-icon" style={{backgroundImage:`url(${url})`}}/>
+export function AppIcon({ url, size="regular" }) {
+  return <div className={"sh app-icon "+size} style={{backgroundImage:`url(${url})`}}/>
 }
