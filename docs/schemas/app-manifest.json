@@ -10,12 +10,31 @@
     },
     "icon": {
       "type": "string",
-      "description": "The url of the app icon."
+      "format": "uri-reference",
+      "description": "The URL of the app's icon."
     },
     "description": {
       "type": "string",
       "description": "Description of the app."
+    },
+    "version": {
+      "type": "string",
+      "description": "Version of the app."
+    },
+    "homepage": {
+      "type": "string",
+      "format": "uri",
+      "description": "The URL of the app's homepage."
+    },
+    "repository": {
+      "type": "string",
+      "format": "uri",
+      "description": "The URL of the app's source code homepage."
+    },
+    "license": {
+      "type": "string",
+      "description": "The SPDX-compliante license ID for the app."
     }
   },
-  "required": ["name","icon","descriptions"]
+  "required": ["name","icon","description"]
 }

@@ -2,10 +2,15 @@ import { observable, action, reaction, computed, toJS } from "mobx";
 import licenses from 'spdx-license-list';
 
 import { ControllerError } from "./ControllerError"
-import { invalidator } from "~/lib/utils";
+import { translate, invalidator } from "~/lib/utils";
 
 import manifestSchema from "~/../static/schemas/app-manifest.json";
 const invalidate = invalidator(manifestSchema);
+
+translate({
+  "error:app-invalid-manifest": "Invalid app manifest.",
+  "error:app-invalid-manifest:message": "The manifest prestented by the app at {url} failed to validate.",
+})
 
 
 function resolveURL(...args) {
@@ -32,7 +37,7 @@ export class AppInfo {
   set manifest(value) {
     const errors = invalidate(value);
     if (errors) {
-      throw new ControllerError({code:"app-invalid-manifest",data:{errors}})
+      throw new ControllerError({code:"app-invalid-manifest",data:{errors,url:this.url}})
     }
     if (!invalidate(value)) this._manifest=value;
   }
@@ -46,9 +51,10 @@ export class AppInfo {
   @computed
   get about() {
     if (!this.manifest) return {supported:false};
-    const { name, icon, description, license, homepage, repository } = this.manifest;
+    const { name, icon, description, license, homepage, repository, version } = this.manifest;
     return {
       name,
+      version, 
       description,
       icon: resolveURL(icon, this.url),
       homepage: resolveURL(homepage),

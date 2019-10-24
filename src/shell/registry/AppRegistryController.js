@@ -3,6 +3,12 @@ import { Controller, internal, command, readonly, state } from "~/lib/Controller
 import { RemoteController } from "../proc/RemoteController";
 import { AppInfo } from "~/lib/AppInfo";
 
+function checkURL(url) {
+  url = new URL(url);
+  if (url.protocol != "https:" && url.host!="localhost") throw {code:"app-not-https"}
+  return url.href;
+}
+
 export class AppRegistryController extends Controller {
 
   constructor({registry,...rest}) {
@@ -38,6 +44,7 @@ export class AppRegistryController extends Controller {
   }
 
   _get({url}) {
+    url = checkURL(url);
     if (!this._infos.has(url)) {
       this._infos.set(url,new AppInfo({url}))
       this._infos.get(url).unknown = true;
@@ -46,6 +53,7 @@ export class AppRegistryController extends Controller {
   }
 
   _update({url,manifest}) {
+    url = checkURL(url);
     const info = this._get({url});
     if (!manifest) {
       if (!info.unknown) return;
@@ -57,13 +65,11 @@ export class AppRegistryController extends Controller {
 
   @command
   get({ url }) {
-    url = new URL(url).href
     return this._get({url});
   }
   
   @command
   update({url,manifest}) {
-    url = new URL(url).href
     if (manifest) {
       this._update({url,manifest})
       this._save();

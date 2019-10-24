@@ -108,10 +108,13 @@ export class DesktopController extends Controller {
       this.call("window-activate", { window })
       try {
         await this.shell("app-connect",{proc});
+
+        // TODO: Should this be here? Probably not
         const def = proc.info.file
         if (def.supported && def.formats.default) {
           this.call("app-file-new",{app:proc,format:def.formats.default.id})
         }
+        
       } catch (error) {
         //await this.catch(error);
         this.call("window-close",{window})

@@ -184,6 +184,7 @@ function tryCatch(obj, fn,list={}) {
 }
 
 
+
 const AsyncFunction = Reflect.getPrototypeOf(async function(){}).constructor;
 class ProxyFunction extends AsyncFunction {};
 

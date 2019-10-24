@@ -1,11 +1,10 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { observable } from "mobx";
-
 import { observer } from "mobx-react";
-
 import { Desktop } from "../components/Desktop";
 import { DesktopController } from "../controllers/DesktopController";
+import { T } from "~/lib/utils";
 
 import "../styles/styles.less";
 
@@ -14,9 +13,10 @@ import "../styles/styles.less";
 export class App extends React.Component {
   desktop = DesktopController.create(this.props.config || {});
 
-  componentDidMount() {
-    //this.desktop("show-launcher");
-    //this.desktop("launch-app",{url:"http://localhost:42003"})
+  async componentDidMount() {
+    //await this.desktop("show-launcher");
+
+    await this.desktop("launch-app",{url:"https://websh.org/app-ace/"})
   }
   render() {
     return (
@@ -31,6 +31,7 @@ export class App extends React.Component {
 const uncaughtErrors = observable.set();
 const handleError = event => {
   uncaughtErrors.add(event);
+  setTimeout(()=>uncaughtErrors.delete(event),10000);
 }
 window.addEventListener("unhandledrejection",handleError);
 window.addEventListener("error",handleError);

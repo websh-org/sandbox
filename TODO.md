@@ -1,31 +1,29 @@
-# Started
-* decorators
-  * @errors
-  * integrate @observable and @computed into @state
-* validate manifest
-
 # ToDo for 0.2
 
 ## Features
-* orderly open app
-  * <s>display loader</s>
-  * <s>timeout</s>
-  * validate manifest
-* timeout on all app api requests
-* orderly close app
-  * <s>unsaved file</s>
-  * timeout
-* <s>display errors</s>
-* handle multi formats
-* add info page for users
-* add help page for developers
-* donate button in AppAbout
++ [ ] orderly open app
+  * [x] display loader
+  * [ ] redirect based on manifest.url
+  * [x] handle timeout
+  * [x] validate manifest
+  * [x] close app if failed
+* [ ] timeout on all app api requests
+* [ ] orderly close app
+  * [x] unsaved file
+  * [ ] timeout
+* [x] display errors
+  * [x] catch and display errors
+  * [x] display uncaught errors
+* [ ] translation strings
+  * [x] implement
+  * [ ] specify all errors - started
+  * [ ] specify ui strings - not critical
+* [ ] handle multi formats
+* [ ] add info page for users
+* [ ] add help page for developers
 
 ## WebShellApp.js
-* <s>autofocus</s>
-  * opt out ?
-* move encoding/decoding?
-* set up dirty file tracking?
+* [x] autofocus
 
 ## Apps
 * textarea
@@ -33,13 +31,14 @@
 * quill 
 * image viewer
 
-## Manifests
-* add manifest schema
-* websh.org/known.apps.json
+## Public
+* [ ] app manifest schema
+* [ ] websh.org/known.apps.json
 
 # Cosmetics  
-* make launcher prettier
-* add clock
+* [ ] make launcher prettier
+* [ ] add clock
+* [ ] donate button in AppAbout
 
 ## Project
 * add LICEMSE/README

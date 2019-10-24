@@ -76,6 +76,7 @@ body {
   &.active {
   }
 
+ 
   grid:
     "titlebar"max-content "toolbar"max-content "client"1fr "statusbar"max-content;
 
@@ -99,9 +100,22 @@ body {
     grid-area: "statusbar"
   }
 
+  &[data-state="READY"] {
+    >.client {
+      opacity:1;
+      transition:opacity 0.5s;
+    }
+    >.loader {
+      display:none;
+    }
+  }
+  >.loader {
+    display:block;
+  }
   >.client {
     grid-area: "client";
     position : relative;
+    opacity:0;
 
     >iframe {
       position: absolute;

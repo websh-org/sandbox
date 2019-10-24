@@ -2,6 +2,7 @@ import React from "react";
 import { observer } from "mobx-react";
 import { observable, computed } from "mobx";
 import { Dialog } from "./Dialog";
+import { T } from "~/lib/utils";
 
 @observer
 export class ErrorDialog extends React.Component {
@@ -12,16 +13,19 @@ export class ErrorDialog extends React.Component {
     const { dialog, resolve, resolver, reject, data } = this.props;
     const { error } = data;
     return (
-      <Dialog dialog={dialog} icon="question" title="Unhandled error">
+      <Dialog dialog={dialog} icon="question" title="Error">
         <div className="ui padded  segment">
           <div className="ui error icon message">
           <i className="red ban icon"></i>
           <div className="content">
-            <div className="header">{error.code}</div>
-            <p>{error.message}</p>
-            <ul className="ui list">
+            <div className="header">{T("error",error.code)}</div>
+            <p>{T("error",error.code,"message",error.data)}</p>
+            <details>
+              <summary class="ui label">Details</summary>
+            <div className="ui list">
               <DataToList data={error.data} id="Error Data"/>
-            </ul>
+            </div>
+            </details>
           </div>
           </div>
         </div>
@@ -37,7 +41,7 @@ export class ErrorDialog extends React.Component {
 function DataToList({data,id}) {
 
     function isArrayLike(a){
-      console.log(typeof a,a)
+      
      return (
       a!=null &&
       typeof(a[Symbol.iterator])==='function' &&
@@ -54,17 +58,17 @@ function DataToList({data,id}) {
       case 'undefined': return null;
       case "object": 
         if (!data) return String(data);
-        if (isArrayLike(data)) return <ul>{[...data].map((d,k)=><DataToList data={d} key={k} />)}</ul>
+        if (isArrayLike(data)) return <div className="ui list">{[...data].map((d,k)=><DataToList data={d} key={k} />)}</div>
         if (data.constructor !== Object) return data.constructor.name || null;
-        return <ul>{Object.keys(data).map((k)=><DataToList data={data[k]} key={k} id={k}/>)}</ul>
+        return <div className="ui list">{Object.keys(data).map((k)=><DataToList data={data[k]} key={k} id={k}/>)}</div>
       default: 
         return String(data);
     }
   }
 
   return (
-    <li>
+    <div className="item">
       {id && <b>{id}</b>} {render(data)}
-    </li>
+    </div>
   )
 }

@@ -11,15 +11,16 @@ export class AppAboutDialog extends React.Component {
     const { dialog } = this.props;
     const { about } = dialog.data;
     console.log(about)
-    const { name, icon, description, license, homepage, repository } = about;
+    const { name, icon, description, license, homepage, repository, version } = about;
     return (
       <Dialog 
         dialog={dialog}
-        title="About app" 
+        title={"About " + name}
         icon="info"
       >
         <div className="ui secondary very padded center aligned secondary segment">
           <div className="ui small image">
+            {version && <div className="ui blue ribbon label">{version}</div>  }
             <img src={icon}/>
           </div>
          </div>
@@ -36,5 +37,24 @@ export class AppAboutDialog extends React.Component {
         </div>
       </Dialog>
     );
+  }
+}
+
+const formats = {
+  quill: {
+    encoding: "text",
+    label: "Quill File",
+    type: "application/json",
+    extension: "quill",
+    accept: "text/plain",
+    open: true,
+    save: true,
+    save_as: ["text","html"]
+  },
+  text: {
+    encoding: "text",
+    label: "Text File",
+    extension: ".txt",
+    opens: "quill"
   }
 }

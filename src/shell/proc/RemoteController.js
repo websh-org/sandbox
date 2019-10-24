@@ -1,8 +1,18 @@
 import { observable, action, reaction, computed } from "mobx";
-import { Controller, readonly, command, internal, state } from "/lib/Controller";
-import { ProcController } from "./ProcController";
 import { RemoteMasterPort } from "@websh/remote-master-port";
-import { errors } from "~/lib/Controller";
+
+import { Controller, command, state, errors } from "/lib/Controller";
+import { ProcController } from "./ProcController";
+import { translate } from "~/lib/utils";
+
+translate({
+  "error:app-load-unreachable": "The app is unreachable",
+  "error:app-load-unreachable:message": "The app url cannot be reached.",
+  "error:app-load-timeout": "The app failed to load",
+  "error:app-load-timeout:message": "The app took too long to load.",
+  "error:app-connect-timeout": "The app failed to connect",
+  "error:app-connect-timeout:message": "This is probably not a valid WebShell app.",
+})
 
 export class RemoteController extends ProcController {
 
@@ -45,9 +55,8 @@ export class RemoteController extends ProcController {
       this.throw({code,message,data})
     }
   }
-
+ 
   _load({ element: iframe }) {
-
 
     this.assert(iframe instanceof HTMLIFrameElement, "bad-mount-point")
     this.iframe = iframe;
@@ -60,11 +69,10 @@ export class RemoteController extends ProcController {
           mode:"no-cors",
           method:"head"
         })
-        //console.log(res.headers);
+        console.log([...res.headers.keys()]);
       } catch (error) {
         this._connectedPromise.reject({
-          code:"app-load-fail",
-          message:"The supplied URL is either unreachable or not allowed in iframes."
+          code:"app-load-unreachable"
         });
       }
 
@@ -73,9 +81,9 @@ export class RemoteController extends ProcController {
       const timeout = setTimeout(
         () => {
           this.state = "INVALID";
-          this._connectedPromise.reject({code:"app-connect-timeout"});
+          this._connectedPromise.reject({code:"app-load-timeout"});
         },
-        10000
+        30000
       );
 
       iframe.onload = async (e) => {

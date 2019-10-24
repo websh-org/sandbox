@@ -5,6 +5,11 @@ import { computed } from "mobx";
 import { Toolbar } from "~/desktop/ui/Toolbar"
 import { Icon } from "~/desktop/ui/Icon.js"
 
+const stateLabels = {
+  INITIAL: "Loading",
+  LOADED: "Connecting to"
+}
+
 @observer
 export class Window extends React.Component {
   @computed
@@ -12,9 +17,6 @@ export class Window extends React.Component {
     const ret = [];
     const { active } = this.props.window;
     active && ret.push("active");
-
-    
-
     return ret.join(" ");
   }
   render() {
@@ -26,6 +28,7 @@ export class Window extends React.Component {
         className={"sh window ui segments "+this.classes}
         title={wid}
         style={{ zIndex }}
+        data-state={window.state}
       >
         <div className="titlebar ui form inverted segment">
           <span className="title">
@@ -47,12 +50,7 @@ export class Window extends React.Component {
         <div className="statusbar ui tight secondary segment">
           <small>{window.state}</small>
         </div>
-        {window.state === "READY" ||
-          <div className="ui active dimmer">
-            <div className="ui text active loader">{window.state}</div> 
-          </div>
-        }
-        
+        <div className="sh loader ui text loader">{stateLabels[window.state]||window.state} {title}...</div> 
       </div>
     );
   }

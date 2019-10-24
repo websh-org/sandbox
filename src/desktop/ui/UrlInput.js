@@ -26,6 +26,9 @@ export class UrlInput extends React.Component {
           placeholder="Open From URL..."
           value={this.url}
           onChange={e => this.url = e.target.value}
+          onKeyPress={e=>{
+            if (e.key === "Enter" ) onAction(this.realUrl)
+          }}
         />
         <button
           className="ui button"
