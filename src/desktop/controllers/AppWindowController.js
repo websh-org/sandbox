@@ -6,12 +6,11 @@ import { MenuItem } from "~/lib/MenuItem"
 export class AppWindowController extends WindowController {
 
   @state
-  @observable 
-  file = null;
+  @computed 
+  get file() {
+    return this.proc.file;
+  } 
 
-  @state
-  @observable 
-  fileFormat = null;
 
   @command
   async "file-new"({ format }) {
