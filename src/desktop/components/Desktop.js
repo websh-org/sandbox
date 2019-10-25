@@ -16,8 +16,8 @@ export class Desktop extends React.Component {
         <Dock desktop={desktop} />
         <div className="windows">
           {desktop.windows.map(window => (
-            <ErrorBoundary key={window}>
-              <AppWindow key={window} window={window} />
+            <ErrorBoundary key={window.wid}>
+              <AppWindow window={window} toolbar={desktop.toolbarFor(window)}/>
             </ErrorBoundary>
           ))}
         </div>
@@ -65,7 +65,8 @@ class Modal extends React.Component {
         {desktop.windows.map(window => (
           <a
             onClick={() => desktop("window-activate", { window })}
-            key={window}
+            key={window.wid}
+            title={window.wid}
             className={"item" + (window.active ? " active" : "")}
           >
              <AppIcon url={window.icon} size="tiny"/> &nbsp; {window.title}

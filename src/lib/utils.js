@@ -37,3 +37,4 @@ export function translate(id,def) {
   if (id in translations) throw {code:"duplicate-translation", data:{id}}
   translations[id] = def;
 }
+

@@ -1,6 +1,7 @@
 import { uuid } from "../lib/utils";
 import { ControllerError } from "./ControllerError";
 import { action } from "mobx"
+import { reject } from "q";
 
 const parents = new WeakMap;
 
@@ -126,26 +127,49 @@ export function command(obj, prop, desc) {
 command.errors = function (list) {
   return function (obj, prop, desc) {
     var value = desc.initializer ? desc.initializer() : desc.value;
-    return command(obj,prop,{
-      ...desc, value:tryCatch(obj,value,list)
+    return command(obj, prop, {
+      ...desc, value: tryCatch(obj, value, list)
     })
   }
 }
 
-export function errors (list) {
+export function errors(list) {
   return function (obj, prop, desc) {
     var value = desc.initializer ? desc.initializer() : desc.value;
     return ({
-      ...desc, value:tryCatch(obj,value,list)
+      ...desc, value: tryCatch(obj, value, list)
     })
   }
 }
 
-function tryCatch(obj, fn,list={}) {
-  if (fn instanceof AsyncFunction ) {
+export function timeout(time, code = "timeout", data = {}) {
+  return function (obj, prop, desc) {
+    var value = desc.initializer ? desc.initializer() : desc.value;
+    return ({
+      ...desc, value(...args) {
+        return new Promise(async (resolve, reject) => {
+          console.log('trying', time, this);
+          const t = setTimeout(() => reject({ code, data }), time);
+          try {
+            const res = await value.call(this, ...args);
+            clearTimeout(t);
+            resolve(res);
+          } catch (error) {
+            clearTimeout(t);
+            obj.throw(error);
+          }
+        })
+      }
+    })
+  }
+}
+
+
+function tryCatch(obj, fn, list = {}) {
+  if (fn instanceof AsyncFunction) {
     return async function (...args) {
       try {
-        const res = await fn.call(this,...args);
+        const res = await fn.call(this, ...args);
         return res;
       } catch (e) {
         const error = new ControllerError(e);
@@ -162,7 +186,7 @@ function tryCatch(obj, fn,list={}) {
   } else {
     return function (...args) {
       try {
-        return fn.call(obj,...args)
+        return fn.call(obj, ...args)
       } catch (e) {
         const error = new ControllerError(e);
         if (list[error.code]) {
@@ -180,28 +204,28 @@ function tryCatch(obj, fn,list={}) {
 
 
 
-const AsyncFunction = Reflect.getPrototypeOf(async function(){}).constructor;
-class ProxyFunction extends AsyncFunction {};
+const AsyncFunction = Reflect.getPrototypeOf(async function () { }).constructor;
+class ProxyFunction extends AsyncFunction { };
 
 function create(Store, args) {
   const store = new Store(args);
-  const controller = new ProxyFunction("","");
+  const controller = new ProxyFunction("", "");
   const proxy = new Proxy(controller, {
-    async apply(target, thisArg, [action, ...args]) {
+    async apply(target, thisArg, [command, args, { timeout = 0 } = {}]) {
+      store.assert(store._actions[command], "bad-command", { command });
       try {
-        store.assert(store._actions[action], "bad-action", { action });
-        return await store._actions[action].execute.call(store, ...args);
+        return await store._actions[command].execute.call(store, args);
       } catch (error) {
-        throw(new ControllerError(error));
+        throw (new ControllerError(error));
       }
     },
     get(target, prop, receiver) {
       if (prop in controller) return Reflect.get(controller, prop, controller);
-      if (prop!==Store.$id && !store._state[prop] && typeof prop==="string") {
-        const value = Reflect.get(store,prop,store)
-        if(value!==undefined) {
+      if (prop !== Store.$id && !store._state[prop] && typeof prop === "string") {
+        const value = Reflect.get(store, prop, store)
+        if (value !== undefined) {
           store.throw(new ControllerError({
-            code:"controller-access-violation", 
+            code: "controller-access-violation",
             message: `${Store.name}.${prop} is not readable.`
           }));
         }

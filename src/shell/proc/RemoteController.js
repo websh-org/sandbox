@@ -1,7 +1,7 @@
 import { observable, action, reaction, computed } from "mobx";
 import { RemoteMasterPort } from "@websh/remote-master-port";
 
-import { Controller, command, state, errors } from "/lib/Controller";
+import { Controller, command, state, errors, timeout } from "/lib/Controller";
 import { ProcController } from "./ProcController";
 import { translate } from "~/lib/utils";
 
@@ -10,8 +10,8 @@ translate({
   "error:app-load-unreachable:message": "The app url cannot be reached.",
   "error:app-load-timeout": "The app failed to load",
   "error:app-load-timeout:message": "The app took too long to load.",
-  "error:app-connect-timeout": "The app failed to connect",
-  "error:app-connect-timeout:message": "This is probably not a valid WebShell app.",
+  "error:remote-connect-timeout": "The app failed to connect",
+  "error:remote-connect-timeout:message": "This is probably not a valid WebShell app.",
 })
 
 export class RemoteController extends ProcController {
@@ -50,27 +50,25 @@ export class RemoteController extends ProcController {
       if (!this._masterPort) debugger;
       const res = await this._masterPort.request(...args);
       return res;
-    } catch ({error:code,message,data}) {
-      this.throw({code,message,data})
+    } catch ({ error: code, message, data }) {
+      this.throw({ code, message, data })
     }
   }
- 
-  _load({ element: iframe }) {
 
+  _load({ element: iframe }) {
     this.assert(iframe instanceof HTMLIFrameElement, "bad-mount-point")
     this.iframe = iframe;
     const origin = iframe.sandbox && !iframe.sandbox.contains("allow-same-origin") ? "*" : this.origin;
     this._masterPort = new RemoteMasterPort('SOUTH-TOOTH', iframe, { origin });
-
     return new Promise(async (resolve, reject) => {
       try {
         const res = await fetch(this.url, {
-          mode:"no-cors",
-          method:"head"
+          mode: "no-cors",
+          method: "head"
         })
       } catch (error) {
         this._connectedPromise.reject({
-          code:"app-load-unreachable"
+          code: "app-load-unreachable"
         });
       }
 
@@ -79,50 +77,35 @@ export class RemoteController extends ProcController {
       const timeout = setTimeout(
         () => {
           this.state = "INVALID";
-          this._connectedPromise.reject({code:"app-load-timeout"});
+          this._connectedPromise.reject({ code: "app-load-timeout" });
         },
         30000
       );
 
-      iframe.onload = async (e) => {
+      iframe.onload = e => {
         clearTimeout(timeout);
         this.state = "LOADED";
         this.iframe.onload = null;
-        this._connectedPromise.resolve(await this._connect());
+        this._connect();
       }
       iframe.src = this.url;
     })
   }
 
-  _connect() {
-    return new Promise(async (resolve,reject)=>{
-
-    const timeout = setTimeout(
-      () => {
-        this.state = "INVALID";
-        this._connectedPromise.reject({
-          code:"app-connect-timeout",
-          message:"The app failed to connect. It's probably not a valid WebShell App."
-        });
-      },
-      2000
-    );
+  async _connect() {
     try {
       const manifest = await this._masterPort.connect();
-      clearTimeout(timeout);
       this.state = "CONNECTED";
       this.manifest = manifest;
-      resolve(manifest);
-    } catch (err) {
-      clearTimeout(timeout);
+      this._connectedPromise.resolve(manifest);
+    } catch (error) {
       this.state = "INVALID";
-      this._connectedPromise.reject(err);
+      this._connectedPromise.reject(error);
     }
-  })
-}
+  }
 
-  async _close({confirmed}) {
-     return await this.request("proc-close",{confirmed});
+  async _close({ confirmed }) {
+    return await this.request("proc-close", { confirmed });
   }
 
   async _kill() {

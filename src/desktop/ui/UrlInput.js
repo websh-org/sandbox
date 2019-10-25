@@ -23,6 +23,7 @@ export class UrlInput extends React.Component {
         <i className="world icon" />
         <input
           type="text"
+          autoFocus={true}
           placeholder="Open From URL..."
           value={this.url}
           onChange={e => this.url = e.target.value}

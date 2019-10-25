@@ -30,7 +30,6 @@ export class ProcController extends Controller {
     return this.title;
   }
 
-
   constructor({ title, ...rest }) {
     super(rest);
     this._title = title || "p" + (counter++);
@@ -38,6 +37,30 @@ export class ProcController extends Controller {
       this._connectedPromise = { resolve, reject }
     })
     this._connectedPromise.promise = promise;
+  }
+
+  _INITIAL() {
+    this.state = "INITIAL";
+  }
+
+  _LOADING() {
+    this.state = "LOADING";
+  }
+
+  _CONNECTING() {
+    this.state = "CONNECTING";
+  }
+
+  _READY() {
+    this.state = "READY";
+  }
+
+  _INVALID() {
+    this.state = "INVALID"
+  }
+
+  _DEAD() {
+    this.state = "DEAD";
   }
 
   _load({ element }) {
@@ -67,7 +90,7 @@ export class ProcController extends Controller {
   }
 
   @command
-  'connect'() {
+  async 'connect'() {
     return this._connectedPromise.promise;
   }
 

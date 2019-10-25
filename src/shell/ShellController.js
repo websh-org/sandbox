@@ -63,8 +63,9 @@ export class ShellController extends Controller {
       await proc("ready");
       return proc;
     } catch (error) {
+      console.log('caught?')
       await this.appRegistry("update", { url:proc.url, manifest:null })
-      throw error;
+      this.throw(error);
     }
   }
 

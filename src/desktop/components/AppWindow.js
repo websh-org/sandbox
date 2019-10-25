@@ -10,9 +10,9 @@ export class AppWindow extends React.Component {
   }
 
   render() {
-    const { window } = this.props;
+    const { window, toolbar } = this.props;
     return (
-      <Window window={window}>
+      <Window window={window} toolbar={toolbar}>
         <iframe sandbox="allow-scripts" ref={this.refIframe} />
       </Window>
     );

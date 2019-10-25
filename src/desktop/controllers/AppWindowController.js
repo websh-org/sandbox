@@ -6,17 +6,17 @@ import { MenuItem } from "~/lib/MenuItem"
 export class AppWindowController extends WindowController {
 
   @state
-  toolbar = new MenuItem(AppToolbar, this);
+  @observable 
+  file = null;
 
   @state
-  @computed
-  get file() {
-    return this.proc.file;
-  }
+  @observable 
+  fileFormat = null;
 
   @command
   async "file-new"({ format }) {
-    return await this.proc("file-new", { format })
+    await this.proc("file-new", { format })
+    this.fileFormat = format;
   }
 
   @command
@@ -29,73 +29,3 @@ export class AppWindowController extends WindowController {
     return await this.proc("file-save", { format })
   }
 }
-
-/**
- * CODE SMELL: The toolbar should move to DesktopController
- */
-
-const AppToolbar = {
-  items: [
-    {
-      type: "group",
-      available() {
-        return this.info.file.supported;
-      },
-      items: [{
-        icon: "file",
-        label: "New",
-        available() {
-          return !!this.info.file.formats.new.length;
-        },
-          items() {
-          return this.proc.info.file.formats.new.map(f => ({
-            label: f.label || f.title || f.id,
-            execute() {
-              this._trigger("app-action", { action: "file-new", params: { format: f.id } });
-            }
-          }))
-        },
-      }, {
-        icon: "open folder",
-        label: "Open",
-        available() {
-          return !!this.info.file.formats.open.length;
-        },
-        items() {
-          return this.proc.info.file.formats.open.map(f => ({
-            label: f.label || f.title || f.id,
-            execute() {
-              this._trigger("app-action", { action: "file-open", params: { format: f.id } });
-            }
-          }))
-        },
-      },
-      {
-        icon: "save",
-        label: "Save",
-        available() {
-          return this.file && !!this.info.file.formats.save.length;
-        },
-        items() {
-          return this.proc.info.file.formats.save.map(f => ({
-            label: f.label || f.title || f.id,
-            execute() {
-              this._trigger("app-action", { action: "file-save", params: { format: f.id } });
-            }
-          }))
-        },
-      },
-      ]
-    },
-    {
-      icon: "info",
-      label: "About",
-      execute() {
-        this._trigger("app-action", { action: "about" });
-      }
-    }
-  ]
-}
-
-
-
