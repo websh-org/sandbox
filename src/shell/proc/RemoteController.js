@@ -1,7 +1,7 @@
 import { observable, action, reaction, computed } from "mobx";
 import { RemoteMasterPort } from "@websh/remote-master-port";
 
-import { Controller, command, state, errors, timeout } from "/lib/Controller";
+import { Controller, command, state, errors, timeout, promise } from "/lib/Controller";
 import { ProcController } from "./ProcController";
 import { translate } from "~/lib/utils";
 
@@ -30,15 +30,86 @@ export class RemoteController extends ProcController {
   @observable
   url;
 
-  @state
-  @observable
-  state = "INITIAL";
-
-  iframe = null;
-
   send(...args) {
     return this._masterPort.send(...args);
   }
+
+
+  @action
+  async INITIAL() {
+    await super.INITIAL()
+  }
+
+  @action
+  async LOADING({element,...rest}) {
+    this.assert(element instanceof HTMLIFrameElement, "bad-mount-point")
+    super.LOADING({element,...rest});
+
+    try {
+      const origin = element.sandbox && !element.sandbox.contains("allow-same-origin") ? "*" : this.origin;
+      this._masterPort = new RemoteMasterPort('SOUTH-TOOTH', element, { origin });
+      await this.checkAvailable();
+      await this.loadIframe();
+      this.resolve("load");
+      this.CONNECTING();
+    } catch (error) {
+      this.INVALID({code:"app-load-fail"});
+    }
+  }
+
+  async CONNECTING() {
+    await super.CONNECTING();
+    try {
+      const manifest = await this._masterPort.connect();
+      this.state = "CONNECTED";
+      this.manifest = manifest;
+      this.resolve("connect",manifest);
+    } catch (error) {
+      this.INVALID(error)
+    }
+  }
+
+  @timeout(5000, "app-load-timeout")
+  async checkAvailable() {
+    await fetch(this.url, {
+      method: "head",
+      cache: "no-cache"
+    })
+  }
+
+  @timeout(5000, "app-load-timeout")
+  @promise
+  async loadIframe(resolve) {
+    const { element: iframe } = this
+    iframe.onload = e => {
+      clearTimeout(timeout);
+      this.element.onload = ()=>this.INVALID({code:"double-load"});
+      resolve();
+      //this._connect();
+    }
+    iframe.src = this.url;
+  }
+
+  async _close({ confirmed }) {
+    return await this.request("proc-close", { confirmed });
+  }
+
+  async _kill() {
+    this.element.removeAttribute('src');
+    this.element.srcdoc = "Not loaded";
+    await this._masterPort.disconnect();
+    this.url = null;
+  }
+
+  _activate() {
+    this.element.focus();
+    this.element.contentWindow.focus();
+    //this.send("proc-activate");
+  }
+  _deactivate() {
+    //this.send("proc-deactivate");
+  }
+
 
   @errors({
     "command-failed"(error) {
@@ -53,75 +124,5 @@ export class RemoteController extends ProcController {
     } catch ({ error: code, message, data }) {
       this.throw({ code, message, data })
     }
-  }
-
-  _load({ element: iframe }) {
-    this.assert(iframe instanceof HTMLIFrameElement, "bad-mount-point")
-    this.iframe = iframe;
-    const origin = iframe.sandbox && !iframe.sandbox.contains("allow-same-origin") ? "*" : this.origin;
-    this._masterPort = new RemoteMasterPort('SOUTH-TOOTH', iframe, { origin });
-    return new Promise(async (resolve, reject) => {
-      try {
-        const res = await fetch(this.url, {
-          mode: "no-cors",
-          method: "head"
-        })
-      } catch (error) {
-        this._connectedPromise.reject({
-          code: "app-load-unreachable"
-        });
-      }
-
-
-      const iframe = this.iframe;
-      const timeout = setTimeout(
-        () => {
-          this.state = "INVALID";
-          this._connectedPromise.reject({ code: "app-load-timeout" });
-        },
-        30000
-      );
-
-      iframe.onload = e => {
-        clearTimeout(timeout);
-        this.state = "LOADED";
-        this.iframe.onload = null;
-        this._connect();
-      }
-      iframe.src = this.url;
-    })
-  }
-
-  async _connect() {
-    try {
-      const manifest = await this._masterPort.connect();
-      this.state = "CONNECTED";
-      this.manifest = manifest;
-      this._connectedPromise.resolve(manifest);
-    } catch (error) {
-      this.state = "INVALID";
-      this._connectedPromise.reject(error);
-    }
-  }
-
-  async _close({ confirmed }) {
-    return await this.request("proc-close", { confirmed });
-  }
-
-  async _kill() {
-    this.iframe.removeAttribute('src');
-    this.iframe.srcdoc = "Not loaded";
-    await this._masterPort.disconnect();
-    this.url = null;
-    this.STATE = INITIAL;
-  }
-
-  _activate() {
-    this.iframe.focus();
-    this.iframe.contentWindow.focus();
-    //this.send("proc-activate");
-  }
-  _deactivate() {
-    //this.send("proc-deactivate");
   }
 };

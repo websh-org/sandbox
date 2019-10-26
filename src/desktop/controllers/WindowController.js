@@ -31,6 +31,7 @@ export class WindowController extends Controller {
     return this.proc.state;
   }
 
+  
   @state
   @computed
   get title() {

@@ -128,6 +128,8 @@ export class DesktopController extends Controller {
         await this.call("app-file-new", { app: proc, format: def.formats.default.id })
       }
 
+      await proc("closed");
+      console.log("closed")
     } catch (error) {
       //await this.catch(error);
       this.call("window-close", { window })

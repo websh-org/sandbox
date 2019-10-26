@@ -2,11 +2,15 @@ import { observable, action, reaction, when, computed } from "mobx";
 import { Controller, internal, readonly, command, state } from "../../lib/Controller";
 
 import { resolve } from "dns";
+import { ControllerError } from "~/lib/ControllerError";
 
 let counter = 0;
 
 export class ProcController extends Controller {
+  element = null;
+
   static $id = "pid";
+
 
   @state
   type = null;
@@ -17,7 +21,7 @@ export class ProcController extends Controller {
 
   @state
   @observable
-  isLoading = true;
+  state = null;
 
   @state
   @observable
@@ -33,55 +37,64 @@ export class ProcController extends Controller {
   constructor({ title, ...rest }) {
     super(rest);
     this._title = title || "p" + (counter++);
-    const promise = new Promise((resolve, reject) => {
-      this._connectedPromise = { resolve, reject }
-    })
-    this._connectedPromise.promise = promise;
+    this.INITIAL();
   }
 
-  _INITIAL() {
+  @action
+  INITIAL() {
+    this.assert(this.state === null, "unexpected-state", {
+      state: this.state,
+      expected: null
+    }); 
+    this.promise("closed");
+    this.promise("connect");
+    this.promise("load");
     this.state = "INITIAL";
   }
 
-  _LOADING() {
+
+  @action
+  async LOADING({ element }) {
+    this.assert(this.state === "INITIAL", "unexpected-state", {
+      state: this.state,
+      expected: "INITIAL"
+    });
+    this.element = element;
     this.state = "LOADING";
   }
 
-  _CONNECTING() {
+  @action
+  async CONNECTING() {
+    this.assert(this.state === "LOADING", "unexpected-state", {
+      state: this.state,
+      expected: "LOADING"
+    });
     this.state = "CONNECTING";
+    this.resolve("load");
   }
 
-  _READY() {
+  @action
+  async READY() {
     this.state = "READY";
   }
 
-  _INVALID() {
-    this.state = "INVALID"
+  @action
+  async INVALID(error) {
+    error = new ControllerError(error);
+    this.state = "INVALID";
+    this.reject("load",error);
+    this.reject("connect",error);
+    this.reject("closed",error);
   }
 
-  _DEAD() {
+  async DEAD() {
     this.state = "DEAD";
-  }
-
-  _load({ element }) {
-  }
-
-  _ready() {
-  }
-
-  _close() {
   }
 
 
   @command
   async 'load'({ element }) {
-    try {
-      await this._load({ element });
-      this.isLoading = false;
-    } catch (error) {
-      this.isLoading = false;
-      this.assert(false, error)
-    }
+    this.LOADING({ element });
   }
 
   @command
@@ -91,36 +104,69 @@ export class ProcController extends Controller {
 
   @command
   async 'connect'() {
-    return this._connectedPromise.promise;
+    await this.await("load","connect");
+    return this.manifest;
   }
 
-  _activate() { }
-
-  _deactivate() { }
-
+  
 
   @command
   async 'ready'() {
-    await this._ready();
-    this.state="READY";
+    await this.READY();
   }
+
+  @command
+  async 'closed'() {
+    return this.await("closed");
+  }
+
+  _activate() { }
 
   @command
   async "activate"() {
     await this._activate()
   }
 
+  _deactivate() { }
+
   @command
   async "deactivate"() {
     await this._deactivate()
   }
 
+
   @command
   async "close"({ confirmed = false }) {
+    if (this.state!=="READY") return;
     try {
       await this._close({ confirmed });
     } catch (e) {
       if (!confirmed) this.throw(e)
     }
   }
+
+  promises = {};
+  promise(name) {
+    this.assert(!this.promises[name], "duplicate-promise")
+    const promise = new Promise((resolve, reject) => {
+      this.promises[name] = { resolve, reject }
+    })
+    this.promises[name].promise = promise;
+  }
+  async await(...names) {
+    console.log("await", names)
+    return (
+      await Promise.all(names.map(name=>this.promises[name].promise))
+    )
+  }
+  reject(name, error) {
+    this.promises[name].reject(error);
+    //delete this.promises[name];
+  }
+  resolve(name, res) {
+    console.log("resolve",name,res)
+    this.promises[name].resolve(res);
+    //delete this.promises[name];
+  }
+
 };

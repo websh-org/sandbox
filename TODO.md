@@ -29,6 +29,7 @@
 * [ ] textarea
 * [x] ace
 * [x] quill 
+* [x] JSON Editor
 * [ ] image viewer
 
 ## Public

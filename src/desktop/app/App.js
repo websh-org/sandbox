@@ -30,6 +30,7 @@ export class App extends React.Component {
 
 const uncaughtErrors = observable.set();
 const handleError = event => {
+  debugger;
   uncaughtErrors.add(event);
   setTimeout(()=>uncaughtErrors.delete(event),10000);
 }

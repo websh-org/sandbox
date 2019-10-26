@@ -79,8 +79,9 @@ export class Controller {
     this._dispatch(event);
   }
 
-  assert(cond, ...args) {
-    if (!cond) this.throw(...args);
+  assert(cond, code="assertion-failed",data={}) {
+    if (!cond && process.env.NODE_ENV!="production") debugger;
+    if (!cond) this.throw({code,data});
 
   }
   throw(code, data, message) {
@@ -147,20 +148,36 @@ export function timeout(time, code = "timeout", data = {}) {
     var value = desc.initializer ? desc.initializer() : desc.value;
     return ({
       ...desc, value(...args) {
-        return new Promise(async (resolve, reject) => {
-          console.log('trying', time, this);
-          const t = setTimeout(() => reject({ code, data }), time);
-          try {
-            const res = await value.call(this, ...args);
-            clearTimeout(t);
-            resolve(res);
-          } catch (error) {
-            clearTimeout(t);
-            obj.throw(error);
-          }
+        return new Promise((resolve, reject) => {
+          const t = setTimeout(() => {
+            console.log('timeout')
+            reject(new ControllerError({ code, data }))
+          }, time);
+          setTimeout(async () => {
+            try {
+              const res = value.call(this, ...args);
+              clearTimeout(t);
+              resolve(res);
+            } catch (error) {
+              reject(new ControllerError(error));
+              clearTimeout(t);
+            }
+          }, 0)
         })
       }
     })
+  }
+}
+
+export function promise(obj, prop, desc) {
+  var value = desc.initializer ? desc.initializer() : desc.value;
+  return {
+    ...desc,
+    value(...args) {
+      return new Promise(async (resolve, reject) => {
+        await value.call(this, resolve, reject, ...args)
+      })
+    }
   }
 }
 
