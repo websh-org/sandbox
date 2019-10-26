@@ -42,48 +42,40 @@ export class RemoteController extends ProcController {
 
   @action
   async LOADING({element,...rest}) {
-    this.assert(element instanceof HTMLIFrameElement, "bad-mount-point")
-    super.LOADING({element,...rest});
-
-    try {
+    await super.LOADING({element,...rest});
       const origin = element.sandbox && !element.sandbox.contains("allow-same-origin") ? "*" : this.origin;
       this._masterPort = new RemoteMasterPort('SOUTH-TOOTH', element, { origin });
       await this.checkAvailable();
       await this.loadIframe();
-      this.resolve("load");
-      this.CONNECTING();
-    } catch (error) {
-      this.INVALID({code:"app-load-fail"});
-    }
+      await this.setState("CONNECTING");
   }
 
   async CONNECTING() {
     await super.CONNECTING();
-    try {
-      const manifest = await this._masterPort.connect();
-      this.state = "CONNECTED";
-      this.manifest = manifest;
-      this.resolve("connect",manifest);
-    } catch (error) {
-      this.INVALID(error)
-    }
+    var manifest = await this._masterPort.connect();
+    this.setState("CONNECTED",{manifest});
   }
 
   @timeout(5000, "app-load-timeout")
   async checkAvailable() {
-    await fetch(this.url, {
-      method: "head",
-      cache: "no-cache"
-    })
+    try {
+      await fetch(this.url, {
+        method: "head",
+        mode:"no-cors",
+        cache: "no-cache"
+      })
+    } catch (error) {
+      this.throw("app-load-fail", { reason: String(error)} )
+    }
   }
 
   @timeout(5000, "app-load-timeout")
   @promise
   async loadIframe(resolve) {
     const { element: iframe } = this
+
     iframe.onload = e => {
-      clearTimeout(timeout);
-      this.element.onload = ()=>this.INVALID({code:"double-load"});
+      this.element.onload = ()=>this.setState("INVALID",{code:"double-load"});
       resolve();
       //this._connect();
     }

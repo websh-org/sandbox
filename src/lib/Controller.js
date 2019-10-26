@@ -148,6 +148,9 @@ export function timeout(time, code = "timeout", data = {}) {
     var value = desc.initializer ? desc.initializer() : desc.value;
     return ({
       ...desc, value(...args) {
+
+//        return timeoutPromise(time,value.call(obj,...args),{code,data});
+
         return new Promise((resolve, reject) => {
           const t = setTimeout(() => {
             console.log('timeout')
@@ -263,3 +266,14 @@ function create(Store, args) {
   store.action = store.call = proxy;
   return proxy;
 };
+
+async function timeoutPromise(time,promise,{code="timeout",data={}}) {
+  try {
+  return await Promise.race(
+    promise,
+    new Promise(()=>setTimeout(()=>{throw {code,data}}))
+  )
+  } catch (error) {
+    throw new ControllerError(error);
+  }
+}

@@ -37,54 +37,84 @@ export class ProcController extends Controller {
   constructor({ title, ...rest }) {
     super(rest);
     this._title = title || "p" + (counter++);
-    this.INITIAL();
+    this.promise("loaded");
+    this.promise("connected");
+    this.promise("closed");
+    this.setState("INITIAL");
+  }
+
+  states = {
+    INITIAL: {
+      enter: () => { },
+      from: null
+    },
+    LOADING: {
+      from: "INITIAL",
+    },
+    CONNECTING: {
+      from: "LOADING",
+    },
+    CONNECTED: {
+      from: "CONNECTING",
+    },
+    READY: {
+      from: "CONNECTED"
+    },
+    INVALID: {
+
+    }
+  }
+
+  async setState(STATE, data={}) {
+    if (STATE==="INVALID") {
+      this.state = "INVALID";
+      this.INVALID({...data,state:this.state});
+      return;
+    }
+    const state = this.states[STATE];
+    try {
+      this.assert(state, "proc-unknown-state", { state: STATE });
+      this.assert(!("from" in state) || this.state === state.from, "proc-unexpected-state", { state: STATE, from: this.state });
+      this.state = STATE;
+      this[STATE] && await this[STATE](data);
+      return;
+    } catch (error) {
+      await this.setState("INVALID",{error})
+    }
+    
   }
 
   @action
-  INITIAL() {
-    this.assert(this.state === null, "unexpected-state", {
-      state: this.state,
-      expected: null
-    }); 
-    this.promise("closed");
-    this.promise("connect");
-    this.promise("load");
-    this.state = "INITIAL";
-  }
+  INITIAL() { }
 
 
   @action
   async LOADING({ element }) {
-    this.assert(this.state === "INITIAL", "unexpected-state", {
-      state: this.state,
-      expected: "INITIAL"
-    });
     this.element = element;
-    this.state = "LOADING";
   }
 
   @action
   async CONNECTING() {
-    this.assert(this.state === "LOADING", "unexpected-state", {
-      state: this.state,
-      expected: "LOADING"
-    });
-    this.state = "CONNECTING";
-    this.resolve("load");
+    this.resolve("loaded");
+  }
+
+  @action
+  async CONNECTED({ manifest }) {
+    this.manifest = manifest;
+    this.resolve("connected");
   }
 
   @action
   async READY() {
-    this.state = "READY";
   }
 
   @action
-  async INVALID(error) {
+  async INVALID({error,state}) {
+    //console.log({state,error})
     error = new ControllerError(error);
-    this.state = "INVALID";
-    this.reject("load",error);
-    this.reject("connect",error);
-    this.reject("closed",error);
+    this.reject("loaded", error);
+    this.reject("connected", error);
+    this.reject("closed", error);
   }
 
   async DEAD() {
@@ -94,7 +124,7 @@ export class ProcController extends Controller {
 
   @command
   async 'load'({ element }) {
-    this.LOADING({ element });
+    this.setState("LOADING",{ element });
   }
 
   @command
@@ -104,20 +134,20 @@ export class ProcController extends Controller {
 
   @command
   async 'connect'() {
-    await this.await("load","connect");
+    await this.await("loaded", "connected");
     return this.manifest;
   }
 
-  
+
 
   @command
   async 'ready'() {
-    await this.READY();
+    await this.setState("READY");
   }
 
   @command
   async 'closed'() {
-    return this.await("closed");
+    return this.await("loaded", "connected", "closed");
   }
 
   _activate() { }
@@ -137,7 +167,7 @@ export class ProcController extends Controller {
 
   @command
   async "close"({ confirmed = false }) {
-    if (this.state!=="READY") return;
+    if (this.state !== "READY") return;
     try {
       await this._close({ confirmed });
     } catch (e) {
@@ -148,25 +178,31 @@ export class ProcController extends Controller {
   promises = {};
   promise(name) {
     this.assert(!this.promises[name], "duplicate-promise")
+    const p = this.promises[name] = {};
     const promise = new Promise((resolve, reject) => {
-      this.promises[name] = { resolve, reject }
+      Object.assign(p, { resolve, reject, count: 0, committed: false })
     })
-    this.promises[name].promise = promise;
-  }
-  async await(...names) {
-    console.log("await", names)
-    return (
-      await Promise.all(names.map(name=>this.promises[name].promise))
-    )
-  }
-  reject(name, error) {
-    this.promises[name].reject(error);
-    //delete this.promises[name];
-  }
-  resolve(name, res) {
-    console.log("resolve",name,res)
-    this.promises[name].resolve(res);
-    //delete this.promises[name];
+    p.promise = promise;
   }
 
+  commit(name) {
+    this.promises[name].commited = true;
+  }
+  async await(...names) {
+    await Promise.all(
+      names.map(async name => {
+        this.promises[name].committed = true;
+        return this.promises[name].promise
+      })
+    )
+  }
+
+  reject(name, error) {
+    const p = this.promises[name];
+    console.log(name)
+    if (p.committed) p.reject(error);
+  }
+  resolve(name, res) {
+    this.promises[name].resolve(res);
+  }
 };

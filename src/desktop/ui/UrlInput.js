@@ -4,7 +4,7 @@ import { observable, computed } from "mobx";
 
 @observer
 export class UrlInput extends React.Component {
-  @observable url = "";
+  @observable url = "https://";
   @computed get realUrl() {
     if (!this.url) return null;
     try {

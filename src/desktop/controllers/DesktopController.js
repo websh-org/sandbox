@@ -69,7 +69,7 @@ export class DesktopController extends Controller {
   }
 
   async catch(error) {
-    if (error.originalError) console.error(error.originalError);
+    //if (error.originalError) console.error(error.originalError);
     await this.showModal("error", { error })
   }
 
