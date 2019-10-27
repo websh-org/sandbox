@@ -6,7 +6,7 @@
   "keywords": [],
   "main": "src/index.js",
   "dependencies": {
-    "@websh/remote-master-port": "^0.1.2",
+    "@websh/remote-master-port": "^0.1.5",
     "mobx": "^5.14.0",
     "mobx-react": "^6.1.4",
     "react": "^16.10.2",
@@ -26,7 +26,7 @@
   },
   "scripts": {
     "build": "(rm -rf docs/*; cd src; NODE_ENV=production parcel build index.html --public-url=/sandbox/ --out-dir=../docs)",
-    "dev": "(cd src; parcel index.html)",   
+    "dev": "(cd src; parcel index.html)",
     "publish": "npm run build; git add -A; git commit -m publish; git push"
   },
   "browserslist": [

@@ -1,6 +1,6 @@
 import { observable, action, reaction, computed } from "mobx";
 import { Controller, readonly, command, internal, state } from "../../lib/Controller";
-
+import unknownProc from "~/../assets/icons/proc/unknown.svg"
 
 var maxZ = 0;
 
@@ -40,8 +40,15 @@ export class WindowController extends Controller {
 
   @state
   @computed
+  get type() {
+    return this.proc.type;
+  }
+
+
+  @state
+  @computed
   get icon() {
-    return this.info.about.icon;
+    return this.info.about.icon || unknownProc;
   }
 
 
@@ -53,9 +60,11 @@ export class WindowController extends Controller {
 
   constructor({ proc, ...rest }) {
     super(rest);
+
     this.proc = proc;
   }
 
+  @state
   @observable
   proc = null;
   

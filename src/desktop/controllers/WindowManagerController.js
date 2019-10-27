@@ -1,6 +1,6 @@
 import { observable, action, when, reaction, computed } from "mobx";
 import { Controller, readonly, internal, command, state } from "../../lib/Controller";
-import { AppWindowController } from "./AppWindowController";
+import { WindowController } from "./WindowController";
 
 export class WindowManagerController extends Controller {
 
@@ -43,9 +43,9 @@ export class WindowManagerController extends Controller {
   }
 
   @command
-  async "open-app"({ proc }) {
+  async "window-open"({ proc }) {
     return await this.addWindow(
-      AppWindowController.create({ parent: this, proc })
+      WindowController.create({ parent: this, proc })
     );
   }
 

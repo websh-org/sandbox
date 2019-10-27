@@ -1,28 +1,14 @@
 import { observable, action, when, reaction, computed } from "mobx";
-import { Controller, readonly, command, internal,state } from "../lib/Controller";
-import { procTypes } from "./proc";
+import { Controller, readonly, command, internal, state } from "../lib/Controller";
+import { ProcController } from "./proc/ProcController";
 import { AppRegistryController } from "./registry/AppRegistryController";
-import { AppController } from "./proc/AppController";
 
 import { RegistryController } from "./registry/RegistryController"
 
 import knownApps from "~/../static/known.apps.json"
 
 export class ShellController extends Controller {
-
-  constructor({
-    registry = {
-      storage: "local-storage",
-    },
-    ...rest
-  }) {
-    super(rest);
-    this.registry = RegistryController.create(registry)
-    this.appRegistry = AppRegistryController.create({ registry: this.registry });
-  }
-
   registry = null;
-
   appRegistry = null;
 
   @observable
@@ -39,6 +25,36 @@ export class ShellController extends Controller {
     return this.appRegistry.infos;
   }
 
+  config = {
+    registry : {
+      storage: "local-storage",
+    }
+  }
+
+  registry = RegistryController.create(this.config.registry);
+  appRegistry = AppRegistryController.create({ registry: this.registry });
+  
+
+  @command
+  async "proc-open"({ type, ...rest }) {
+    const info = await this.registry_getProcInfo({ type, ...rest });
+    const proc = await this.addProc(ProcController.create({ type, info, ...rest }));
+    return proc;
+  }
+
+  @command
+  async "proc-connect"({ proc }) {
+    try {
+      await proc("connect");
+      await this.registry_updateProcInfo({ proc });
+      await proc("ready");
+      return proc;
+    } catch (error) {
+      await this.registry_resetProcInfo({ proc });
+      this.throw(error);
+    }
+  }
+
   addProc(proc) {
     this._ps.set(proc.pid, proc);
     when(
@@ -48,31 +64,37 @@ export class ShellController extends Controller {
     return proc;
   }
 
-  @command
-  async "app-open"({ url }) {
-    const info = await this.appRegistry("get", { url });
-    const proc = await this.addProc(AppController.create({ url, info }));
-    return proc;
-  }
-
-  @command
-  async "app-connect"({ proc }) {
-    try {
-      const manifest = await proc("connect");
-      await this.appRegistry("update", { url:proc.url, manifest })
-      await proc("ready");
-      return proc;
-    } catch (error) {
-      await this.appRegistry("update", { url:proc.url, manifest:null })
-      this.throw(error);
+  async registry_getProcInfo({ type, ...rest }) {
+    switch (type) {
+      case "app":
+        const { url } = rest;
+        return await this.appRegistry("get", { url });
+      default:
+        return { about: {} };
     }
   }
 
-
-  @command
-  "proc-kill"({ pid }) {
-    this._ps.get(pid)("kill");
+  async registry_updateProcInfo({ proc }) {
+    const { manifest, type } = proc;
+    switch (type) {
+      case "app":
+        const { url } = proc;
+        return await this.appRegistry("update", { url, manifest });
+      default:
+        return { about: {} };
+    }
   }
- 
+
+  async registry_resetProcInfo({ proc }) {
+    const { manifest, type } = proc;
+    switch (type) {
+      case "app":
+        const { url } = proc;
+        return await this.appRegistry("update", { url, manifest: null });
+      default:
+        return { about: {} };
+    }
+  }
+
 };
 

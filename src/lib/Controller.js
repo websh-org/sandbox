@@ -1,7 +1,12 @@
-import { uuid } from "../lib/utils";
+import { translate, uuid  } from "../lib/utils";
 import { ControllerError } from "./ControllerError";
 import { action } from "mobx"
 import { reject } from "q";
+
+translate({
+  'error:bad-command' : "No such command.",
+  'error:bad-command:message': "{controller}({command}) is not a known command."
+})
 
 const parents = new WeakMap;
 
@@ -230,9 +235,11 @@ class ProxyFunction extends AsyncFunction { };
 function create(Store, args) {
   const store = new Store(args);
   const controller = new ProxyFunction("", "");
+  Object.defineProperty(controller, 'name', {value: `${Store.name} [${Store.$id}=${store[Store.$id]}]`, writable: false});
+
   const proxy = new Proxy(controller, {
     async apply(target, thisArg, [command, args, { timeout = 0 } = {}]) {
-      store.assert(store._actions[command], "bad-command", { command });
+      store.assert(store._actions[command], "bad-command", { command, controller:Store.name });
       try {
         return await store._actions[command].execute.call(store, args);
       } catch (error) {

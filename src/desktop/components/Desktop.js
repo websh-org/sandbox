@@ -1,8 +1,8 @@
 import React from "react";
 import { observer } from "mobx-react";
-import { AppWindow } from "./AppWindow";
+import { Window } from "./Window";
 import { ErrorBoundary } from "./ErrorBoundary"
-import { dialogs } from "../dialogs";
+import { dialogs } from "./dialogs";
 import { Icon, AppIcon } from "../ui";
 
 import logo from "~/../static/web-shell-logo.png"
@@ -17,8 +17,8 @@ export class Desktop extends React.Component {
         <div className="windows">
           {desktop.windows.map(window => (
             <ErrorBoundary key={window.wid}>
-              <AppWindow window={window} toolbar={desktop.toolbarFor(window)}/>
-            </ErrorBoundary>
+              <Window window={window} toolbar={desktop.toolbarFor(window)}/>
+            </ErrorBoundary> 
           ))}
         </div>
           <Modal dialog={desktop.modal} desktop={desktop} />

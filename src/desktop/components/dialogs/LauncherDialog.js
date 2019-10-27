@@ -2,7 +2,7 @@ import React from "react";
 import { observer } from "mobx-react";
 import { observable, computed } from "mobx";
 import { Dialog } from "./Dialog"
-import { UrlInput, AppIcon, ButtonTabs} from "../ui";
+import { UrlInput, AppIcon, ButtonTabs} from "../../ui";
 
 @observer
 export class LauncherDialog extends React.Component {

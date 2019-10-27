@@ -5,10 +5,6 @@ import { ShellFile } from "~/lib/ShellFile";
 
 export class AppController extends RemoteController {
 
-  constructor({info,...rest}) {
-    super(rest);
-    this.info = info;
-  }
 
   @state
   type = "app";
@@ -17,9 +13,6 @@ export class AppController extends RemoteController {
   @observable
   file = null
 
-  @state
-  @observable 
-  info
 
   @state
   @computed
@@ -30,13 +23,12 @@ export class AppController extends RemoteController {
   }
 
   @command
-  async "file-new"({ format }) {
+  async "file-new"({}) {
     this.assert(this.info.file.supported, "not-supported");
-    const file = new ShellFile(this.info.file.newFile({format}));
-    const res = await this.request("file-new", { format });
+    const file = new ShellFile(this.info.file.defaultNewFile);
+    const res = await this.request("file-new", { });
     this.file = file;
     return res;
-
   }
 
   @command

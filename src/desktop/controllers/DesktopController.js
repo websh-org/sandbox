@@ -35,19 +35,29 @@ export class DesktopController extends Controller {
 
   toolbars = new WeakMap()
 
-  @state 
+  @state
   toolbarFor(window) {
     if (!this.toolbars.has(window)) {
-      //if (window.Store === AppWindowController) 
-        this.toolbars.set(window,new MenuItem(AppToolbar,this,window));
-      //else this.toolbars.set(window,new MenuItem({},this));
-    } 
+      var toolbar = {};
+      switch (window.proc.type) {
+        case "app":
+          toolbar = AppToolbar;
+          break;
+        default:
+          toolbar = {};
+      }
+      this.toolbars.set(window, new MenuItem(toolbar, this, window));
+    }
     return this.toolbars.get(window);
   }
 
   @state
   @observable
   modal = null;
+
+
+  @observable
+  activeWindow = null;
 
   @action
   async showModal(type, data = {}) {
@@ -57,8 +67,12 @@ export class DesktopController extends Controller {
     return result;
   }
 
-  @observable
-  activeWindow = null;
+
+  async catch(error) {
+    if (error.originalError) console.error(error.originalError);
+    await this.showModal("error", { error })
+  }
+
 
   @command
   async "show-launcher"() {
@@ -67,12 +81,6 @@ export class DesktopController extends Controller {
     if (!url) return;
     this.call("launch-app", { url })
   }
-
-  async catch(error) {
-    //if (error.originalError) console.error(error.originalError);
-    await this.showModal("error", { error })
-  }
-
   /**
    * 
    * WINDOW COMMANDS
@@ -95,7 +103,7 @@ export class DesktopController extends Controller {
           const res = await this.showModal("file-unsaved", {})
           if (!res) return;
           if (res.save) {
-            await this.call("app-file-save", { app: window, format: window.file.format })
+            await this.call("app-file-save", { window, format: window.file.format })
           }
       }
       await this.wm("window-close", { window, confirmed: true });
@@ -116,50 +124,47 @@ export class DesktopController extends Controller {
         await this.catch(error)
       }
     })
-  async "launch-app"({ url }) {
-    const proc = await this.shell("app-open", { url })
-    const window = await this.wm("open-app", { proc });
+  async "launch-proc"({ type, ...rest }) {
+    const proc = await this.shell("proc-open", { type, ...rest })
+    const window = await this.wm("window-open", { type, proc });
     await this.call("window-activate", { window })
     try {
-      const res = await this.shell("app-connect", { proc });
-      // TODO: Should this be here? Probably not
-      const def = proc.info.file
-      if (def.supported && def.formats.default) {
-        await this.call("app-file-new", { app: proc, format: def.formats.default.id })
-      }
-
+      await this.shell("proc-connect", { proc });
       await proc("closed");
-      console.log("closed")
     } catch (error) {
       //await this.catch(error);
-      this.call("window-close", { window })
+      //this.call("window-close", { window })
       this.throw(error)
     }
-
   }
 
   @command
-  async "app-file-new"({ app, format }) {
-    return await app("file-new", { format })
+  async "launch-app"({ url }) {
+    return await this.call("launch-proc", { type: "app", url })
   }
 
   @command
-  async "app-file-open"({ app, format }) {
-    const formatInfo = app.info.file.formats.get(format);
+  async "app-file-new"({ window }) {
+    return await window.proc("file-new", {})
+  }
+
+  @command
+  async "app-file-open"({ window, format }) {
+    const formatInfo = window.info.file.formats.get(format);
     const { file } = await this.showModal("file-open", { format: formatInfo }) || {};
     if (!file) return;
-    return app("file-open", { file, format })
+    return window.proc("file-open", { file, format })
   }
 
   @command
-  async "app-file-save"({ app, format }) {
-    const file = await app("file-save", { format });
+  async "app-file-save"({ window, format }) {
+    const file = await window.proc("file-save", { format });
     await this.showModal("file-save", { file }) || {};
   }
 
   @command
-  async "app-about"({ app }) {
-    await this.showModal("app-about", { about: app.info.about }) || {};
+  async "app-about"({ window }) {
+    await this.showModal("app-about", { about: window.info.about }) || {};
   }
 }
 
@@ -169,34 +174,28 @@ const AppToolbar = {
   items: [
     {
       type: "group",
-      available(app) {
-        return app.info.file.supported;
+      available(window) {
+        return window.info.file.supported;
       },
       items: [{
         icon: "file",
         label: "New",
-        available(app) {
-          return !!app.info.file.formats.new.length;
-        },
-        items(app) {
-          return app.info.file.formats.new.map(f => ({
-            label: f.label || f.id,
-            execute() {
-              this.call("app-file-new", { app, format: f.id });
-            }
-          }))
+        command: "app-file-new",
+        params: (window) => ({ window }),
+        available(window) {
+          return !!window.info.file.formats.new.length;
         },
       }, {
         icon: "open folder",
         label: "Open",
-        available(app) {
-          return !!app.info.file.formats.open.length;
+        available(window) {
+          return !!window.info.file.formats.open.length;
         },
-        items(app) {
-          return app.info.file.formats.open.map(f => ({
+        items(window) {
+          return window.info.file.formats.open.map(f => ({
             label: f.label || f.id,
-            execute(app) {
-              this.call("app-file-open", { app, format: f.id });
+            execute(window) {
+              this.call("app-file-open", { window, format: f.id });
             }
           }))
         },
@@ -204,14 +203,14 @@ const AppToolbar = {
       {
         icon: "save",
         label: "Save",
-        available(app) {
-          return app.file && !!app.info.file.formats.save.length;
+        available(window) {
+          return window && !!window.info.file.formats.save.length;
         },
-        items(app) {
-          return app.info.file.formats.save.map(f => ({
+        items(window) {
+          return window.info.file.formats.save.map(f => ({
             label: f.label || f.title || f.id,
             execute() {
-              this.call("app-file-save", { app, format: f.id });
+              this.call("app-file-save", { window, format: f.id });
             }
           }))
         },
@@ -221,8 +220,8 @@ const AppToolbar = {
     {
       icon: "info",
       label: "About",
-      execute(app) {
-        this.call("app-about", { app });
+      execute(window) {
+        this.call("app-about", { window });
       }
     }
   ]

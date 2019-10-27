@@ -4,6 +4,7 @@ import { observer } from "mobx-react";
 import { computed } from "mobx";
 import { Toolbar } from "~/desktop/ui/Toolbar"
 import { Icon, AppIcon } from "~/desktop/ui/"
+import { windowTypes } from "./windows"
 
 const stateLabels = {
   INITIAL: "Loading",
@@ -21,7 +22,8 @@ export class Window extends React.Component {
   }
   render() {
     const { window, children } = this.props;
-    const { title, icon, wid, active, zIndex } = window;
+    const { type, title, icon, wid, active, zIndex } = window;
+    const Inner = windowTypes[type];
 
     return (
       <div 
@@ -44,7 +46,7 @@ export class Window extends React.Component {
         </div>
         {this.props.toolbar && <Toolbar items={this.props.toolbar.items} />}
         <div className="client">
-          {children}
+          <Inner window={window}/>
         </div>
         <div className="statusbar ui tight secondary segment">
           <small>{window.state}</small>
