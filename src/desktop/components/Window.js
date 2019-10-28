@@ -44,7 +44,7 @@ export class Window extends React.Component {
             </span>
           }
         </div>
-        {this.props.toolbar && <Toolbar items={this.props.toolbar.items} />}
+        {this.props.toolbar && this.props.toolbar.items && <Toolbar items={this.props.toolbar.items} />}
         <div className="client">
           <Inner window={window}/>
         </div>

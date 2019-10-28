@@ -19,8 +19,8 @@
   * [ ] specify all errors - started
   * [ ] specify ui strings - not critical
 * [ ] correctly remember file format
-* [ ] add info page for users
-* [ ] add help page for developers
+* [x] add info page for users
+* [x] add help page for developers
 
 ## WebShellApp.js
 * [x] autofocus
@@ -46,4 +46,4 @@
 * [x] fix package.json
 * [ ] fix docs at websh.org
 * [x] transfer old repos to self
-* [ ] publish latest versions of core packages
+* [x] publish latest versions of core packages

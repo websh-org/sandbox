@@ -3,6 +3,7 @@ import { observer } from "mobx-react";
 import { observable, computed } from "mobx";
 import { Dialog } from "./Dialog";
 import { T } from "~/lib/utils";
+import { DataList } from "~/desktop/ui";
 
 @observer
 export class ErrorDialog extends React.Component {
@@ -23,7 +24,7 @@ export class ErrorDialog extends React.Component {
             <details>
               <summary className="ui label">Details</summary>
             <div className="ui list">
-              <DataToList data={error.data} id="Error Data"/>
+              <DataList data={error.data} id="Error Data"/>
             </div>
             </details>
           </div>
@@ -35,40 +36,4 @@ export class ErrorDialog extends React.Component {
       </Dialog>
     );
   }
-}
-
-
-function DataToList({data,id}) {
-
-    function isArrayLike(a){
-      
-     return (
-      a!=null &&
-      typeof(a[Symbol.iterator])==='function' &&
-      typeof(a.length)==='number' &&
-      typeof(a)!=='string'
-     );
-    }
-
-  data = JSON.parse(JSON.stringify(data));
-
-  const render = (data) => {
-    switch (typeof data) {
-      case 'function': 
-      case 'undefined': return null;
-      case "object": 
-        if (!data) return String(data);
-        if (isArrayLike(data)) return <div className="ui list">{[...data].map((d,k)=><DataToList data={d} key={k} />)}</div>
-        if (data.constructor !== Object) return data.constructor.name || null;
-        return <div className="ui list">{Object.keys(data).map((k)=><DataToList data={data[k]} key={k} id={k}/>)}</div>
-      default: 
-        return String(data);
-    }
-  }
-
-  return (
-    <div className="item">
-      {id && <b>{id}</b>} {render(data)}
-    </div>
-  )
 }
