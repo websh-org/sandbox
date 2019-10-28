@@ -38,7 +38,7 @@ export class WindowController extends Controller {
   @state
   @computed
   get title() {
-    return this.proc.title;
+    return this.info.about ? this.info.about.short_name : this.proc.title;
   }
 
   @state

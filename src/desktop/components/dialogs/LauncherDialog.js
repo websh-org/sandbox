@@ -25,7 +25,7 @@ export class LauncherDialog extends React.Component {
                 >
                   <AppIcon url={info.about.icon} />
                   <div className="name">
-                    {info.about.name}
+                    {info.about.short_name}
                   </div>
                 </div>
               ))

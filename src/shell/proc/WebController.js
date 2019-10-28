@@ -89,8 +89,8 @@ export class WebController extends BaseProcController {
   }
 
   _activate() {
-    // this.element.focus();
-    //this.element.contentWindow.focus();
+    this.element.focus();
+    this.element.contentWindow.focus();
     //this.send("proc-activate");
   }
   _deactivate() {

@@ -1,0 +1,64 @@
+body {
+  a {
+    color: inherit;
+  }
+}
+
+body {
+  --bg       : #fff;
+  --fg       : #000;
+  --bg-hover : #333;
+  --fg-hover : #333;
+  --bg-active: #ccc;
+  --fg-active: #555;
+
+  --panel-bg       : #211;
+  --panel-fg       : #ccc;
+  --panel-bg-hover : #322;
+  --panel-fg-hover : #fff;
+  --panel-bg-active: #433;
+  --panel-fg-active: #eee;
+  
+}
+
+.panel() {
+  --bg       : var(--panel-bg);
+  --fg       : var(--panel-fg);
+  --bg-active: var(--panel-bg-active);
+  --fg-active: var(--panel-fg-active);
+  --bg-hover : var(--panel-bg-hover);
+  --fg-hover : var(--panel-fg-hover);
+}
+
+.colors() {
+  background: var(--bg);
+  color     : var(--fg);
+}
+
+.selectable() {
+  background: var(--bg);
+  color     : var(--fg);
+
+
+  &:hover {
+    background: var(--bg-hover);
+    color     : var(--fg-hover);
+  }
+  
+  &[data-active="true"] {
+    background: var(--bg-active);
+    color     : var(--fg-active);
+  }
+}
+
+.hoverable() {
+  color: var(--fg);
+
+  &[data-active="true"] {
+    color: var(--fg-active);
+  }
+
+  &:hover {
+    color: var(--fg-hover);
+  }
+}

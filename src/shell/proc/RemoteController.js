@@ -36,14 +36,7 @@ export class RemoteController extends WebController {
     this.url = null;
   }
 
-  _activate() {
-
-    //this.send("proc-activate");
-  }
-  _deactivate() {
-    //this.send("proc-deactivate");
-  }
-
+ 
   send(...args) {
     return this._masterPort.send(...args);
   }

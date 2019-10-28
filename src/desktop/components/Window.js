@@ -5,7 +5,7 @@ import { computed } from "mobx";
 import { Toolbar } from "~/desktop/ui/Toolbar"
 import { Icon, AppIcon } from "~/desktop/ui/"
 import { windowTypes } from "./windows"
-
+import "./Window.less";
 const stateLabels = {
   INITIAL: "Loading",
   LOADED: "Connecting to"
@@ -34,7 +34,9 @@ export class Window extends React.Component {
       >
         <div className="titlebar ui form inverted segment">
           <span className="title">
-           <AppIcon url={window.icon} size="mini"/> &nbsp; {title}
+           <AppIcon url={window.icon} size="mini"/> 
+           &nbsp; 
+           {title}
           </span>
           {
             window.proc.file &&

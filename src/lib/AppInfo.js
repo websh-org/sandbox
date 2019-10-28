@@ -18,7 +18,7 @@ function resolveURL(...args) {
     const url = new URL(...args);
     return url.href;
   } catch (error) {
-    console.log("bad url",...args)
+    console.log("bad url", ...args)
     return null;
   }
 }
@@ -37,25 +37,26 @@ export class AppInfo {
   set manifest(value) {
     const errors = invalidate(value);
     if (errors) {
-      throw new ControllerError({code:"app-invalid-manifest",data:{errors,url:this.url}})
+      throw new ControllerError({ code: "app-invalid-manifest", data: { errors, url: this.url } })
     }
-    if (!invalidate(value)) this._manifest=value;
+    if (!invalidate(value)) this._manifest = value;
   }
 
   constructor({ url, manifest }) {
-    if(!url) debugger
+    if (!url) debugger
     this.url = url;
     if (manifest) this.manifest = manifest;
   }
 
   @computed
   get about() {
-    if (!this.manifest) return {supported:false};
-    const { name, icon, description, license, homepage, repository, version } = this.manifest;
+    if (!this.manifest) return { supported: false };
+    const { name, short_name, icon, description, license, homepage, repository, version } = this.manifest;
     return {
       name,
-      version, 
+      version,
       description,
+      short_name: short_name || name,
       icon: resolveURL(icon, this.url),
       homepage: resolveURL(homepage),
       repository: resolveURL(repository),
@@ -68,18 +69,20 @@ export class AppInfo {
   }
 
   @computed
-  
+
   get file() {
     const def = this.manifest && this.manifest.api && this.manifest.api.file;
     const formats = {};
     const ret = {
       supported: !!def,
+      new: null,
+      save: [],
+      open: [],
       formats: {
         get(id) {
           return formats[id];
         },
         all: [],
-        new: [],
         open: [],
         save: [],
         default: null
@@ -87,45 +90,60 @@ export class AppInfo {
       get defaultNewFile() {
         return ret.formats.default && ret.formats.default.newFile()
       },
-      newFile({format,...rest}) {
+      newFile({ format, ...rest }) {
         return formats[format].newFile(rest)
       }
     }
     if (!ret.supported) return ret;
+
+    /**
+     * TODO : THROW ERRORS;
+     */
+
+    if (def.new in def.formats) {
+      ret.new = def.new;
+    }
 
     for (var id in def.formats) {
       const f = def.formats[id]
       const format = new FileFormat(id, f);
       formats[id] = format;
       ret.formats.all.push(format);
+      if (def.open && def.open.includes(id)) {
+        ret.open.push(id)
+        ret.formats.open.push(format);
+      }
+      if (def.save && def.save.includes(id)) {
+        ret.save.push(id)
+        ret.formats.save.push(format);
+      }
     }
+       
+    ret.formats.open = ret.formats.all.filter(f => ret.open.includes(f.id));
+    ret.formats.save = ret.formats.all.filter(f => ret.save.includes(f.id));
+    ret.formats.default = def.new && ret.formats.get(def.new);
 
-    ret.formats.new = ret.formats.all.filter(f => f.new);
-    ret.formats.open = ret.formats.all.filter(f => f.open);
-    ret.formats.save = ret.formats.all.filter(f => f.save);
-    ret.formats.default = ret.formats.new[0];
-  
     return ret;
   }
 }
 
 class FileFormat {
   constructor(id, def) {
+    console.log(toJS(def));
     this.id = id;
-    this.label = def.label;
+    this.name = def.name;
     this.save = !!def.save;
     this.open = !!def.open;
     this.new = !!def.new;
     this.extension = def.extension;
     this.type = def.type;
-    this.accept = def.accept || this.extension && "."+this.extension;
+    this.accept = def.accept || this.extension && "." + this.extension || this.type;
     this.encoding = def.encoding || "text";
   }
 
   newFile() {
-    if (!this.new) return null;
     return {
-      name: "New " + this.label + (this.extension ? "." + this.extension : ""),
+      name: "New " + this.name + (this.extension ? "." + this.extension : ""),
       format: this.id,
       extension: this.extension,
       type: this.type

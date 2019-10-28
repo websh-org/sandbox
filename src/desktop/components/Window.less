@@ -1,0 +1,84 @@
+
+.sh.window {
+  display   : grid;
+  background: #eee;
+  box-shadow: 0 0 8px #fff8, 0 0 4px #0008;
+  margin    : 0;
+  padding   : 0;
+  overflow:hidden;
+  position:absolute;
+  top:0;
+  left:0;
+  bottom:0;
+  right:0;
+  min-height: 0;  /* NEW */
+  min-width: 0; 
+
+  &.active {
+  }
+
+
+ 
+  grid:
+    "titlebar"max-content "toolbar"max-content "client"1fr "statusbar" max-content;
+
+  >.titlebar {
+    grid-area: titlebar;
+    line-height:32px;
+    padding:0 6px 2px;
+    >.title {
+      font-size:16px;
+      vertical-align:middle;
+    }
+
+    font-weight:bold;
+
+    >.file {
+      vertical-align:middle;
+      margin-left: 1em;
+    }
+  }
+
+  >.toolbar {
+    grid-area: toolbar;
+    &.ui.menu:empty {
+      display:none;
+    }
+  }
+
+  >.statusbar {
+    grid-area: statusbar;
+    line-height:1.2;
+    padding:4px 8px;
+  }
+
+  >.loader {
+    display:block;
+  }
+  >.client {
+    grid-area: client;
+    min-width:0;
+    min-height:0;
+    position : relative;
+    opacity:0;
+    overflow:auto;
+    >iframe {
+      position: absolute;
+      top     : 0;
+      left    : 0;
+      width   : 100%;
+      height  : 100%;
+    }
+  }
+
+
+  &[data-state="READY"] {
+    >.client {
+      opacity:1;
+      transition:opacity 0.5s;
+    }
+    >.loader {
+      display:none;
+    }
+  }
+}

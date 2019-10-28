@@ -134,7 +134,7 @@ export class DesktopController extends Controller {
 
 //      await proc("ready");
 
-      if (window.info.file && window.info.file.supported) {
+      if (window.info.file && window.info.file.new) {
         await this.call("app-file-new",{window})
       }
 
@@ -191,7 +191,7 @@ const AppToolbar = {
         command: "app-file-new",
         params: (window) => ({ window }),
         available(window) {
-          return !!window.info.file.formats.new.length;
+          return !!window.info.file.formats.default;
         },
       }, {
         icon: "open folder",

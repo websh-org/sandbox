@@ -11,9 +11,9 @@ export class AppWindowController extends WindowController {
     return this.proc.file;
   } 
 
-
   @command
   async "file-new"({ format }) {
+    debugger;
     await this.proc("file-new", { format })
     this.fileFormat = format;
   }
