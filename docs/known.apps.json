@@ -1,1 +1,63 @@
-{}
+{
+  "https://websh.org/template-app-vanilla/": {
+    "v": 0,
+    "name": "Vanilla Example App",
+    "short_name": "Vanilla",
+    "version": "0.0.1",
+    "icon": "icon.svg",
+    "description": "The Vanilla JS example app for WebShell ",
+    "license": "MIT",
+    "homepage": "https://github.com/websh-org/template-app-vanilla#readme",
+    "repository": "https://github.com/websh-org/template-app-vanilla.git",
+    "issues": "https://github.com/websh-org/template-app-vanilla/issues",
+    "api": {
+      "file": {
+        "new": "text",
+        "open": [
+          "text"
+        ],
+        "save": [
+          "text"
+        ],
+        "formats": {
+          "text": {
+            "name": "Text File",
+            "extension": "txt",
+            "type": "text/plain",
+            "accept": "text/*"
+          }
+        }
+      }
+    }
+  },
+  "https://websh.org/app-ace/": {
+    "v": 0,
+    "name": "ACE",
+    "icon": "icon.svg",
+    "description": "Ace Code Editor for WebShell",
+    "version": "1.4.6",
+    "license": "MIT",
+    "homepage": "https://github.com/websh-org/app-ace#readme",
+    "repository": "https://github.com/websh-org/app-ace.git",
+    "api": {
+      "file": {
+        "new": "text",
+        "open": [
+          "text"
+        ],
+        "save": [
+          "text"
+        ],
+        "formats": {
+          "text": {
+            "type": "text/plain",
+            "name": "Text File",
+            "extension": "txt",
+            "accept": "text/*,application/json",
+            "encoding": "text"
+          }
+        }
+      }
+    }
+  }
+}
