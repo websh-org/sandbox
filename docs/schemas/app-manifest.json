@@ -11,7 +11,16 @@
     "name": {
       "type": "string",
       "title": "App Name",
-      "description": "The name of the app."
+      "description": "The name of the app.",
+      "minLength":3,
+      "maxLength":32
+    },
+    "short_name": {
+      "type": "string",
+      "title": "App Name",
+      "description": "The short name of the app, to be used on icons. Defaults to name.",
+      "minLength":3,
+      "maxLength":16
     },
     "icon": {
       "type": "string",
@@ -32,15 +41,21 @@
     },
     "homepage": {
       "type": "string",
-      "title": "Homepage",
+      "title": "Homepage URL",
       "format": "uri",
       "description": "The absolute URL of the app's homepage (e.g. for documentation)."
     },
     "repository": {
       "type": "string",
-      "title":"Source repository",
+      "title":"Source repository URL",
       "format": "uri",
       "description": "The absolute URL of the app's source code repository."
+    },
+    "bugs": {
+      "type": "string",
+      "title":"Bugs tracker URL",
+      "format": "uri",
+      "description": "The absolute URL of the app's issue tracker."
     },
     "license": {
       "type": "string",
@@ -55,14 +70,42 @@
           "title": "File App API specs",
           "description": "File API specification.",
           "properties": {
+            "new": {
+              "type":"string",
+              "title":"New Format",
+              "description": "The ID of the default file format for new files. Provide this to enable File > New."
+            },
+            "open": {
+              "title":"Open Formats",
+              "description": "The file formats that the app can open. Provide this to enable File > Open.",
+              "type": "array",
+              "items": {
+                "type":"string",
+                "title":"Format ID"
+              }
+            },
+            "save": {
+              "title":"Save Formats",
+              "description": "The file formats that the app can save. Provide this to enable File > Save.",
+              "type": "array",
+              "items": {
+                "type":"string",
+                "title":"Format ID"
+              }
+            },
             "formats": {
               "type": "object",
               "additionalProperties": {
                 "type": "object",
                 "properties": {
+                  "name": {
+                    "type": "string",
+                    "title": "File Format Name",
+                    "description": "The name for this file format which will be displayed in dialogs and used for new file names."
+                  },
                   "type": {
                     "type": "string",
-                    "title": "File Type",
+                    "title": "Content Type",
                     "description": "The MIME type which will be used when saving files.",
                     "pattern": "^(application|audio|font|image|model|multipart|text|video|x-(?:[0-9A-Za-z!#$%&'*+.^_`|~-]+))/([0-9A-Za-z!#$%&'*+.^_`|~-]+)$"
                   },
@@ -77,21 +120,6 @@
                     "title": "Accept String",
                     "description": "The accept string (as in a HTML file input) that will be used for filtering files in open file dialogs."
                   },
-                  "new": {
-                    "type": "boolean",
-                    "title": "Allow New",
-                    "description": "Can the App create this file format?"
-                  },
-                  "open": {
-                    "type": "boolean",
-                    "title": "Allow Open",
-                    "description": "Can the App open this file format?"
-                  },
-                  "save": {
-                    "type": "boolean",
-                    "title": "Allow Save",
-                    "description": "Can the App save this file format?"
-                  },
                   "encoding": {
                     "type":"string",
                     "title": "Content encoding",
@@ -101,7 +129,7 @@
                 },
                 "required": [
                   "type",
-                  "extension"
+                  "name"
                 ]
               }
             }
