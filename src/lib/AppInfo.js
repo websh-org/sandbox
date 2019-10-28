@@ -68,6 +68,7 @@ export class AppInfo {
   }
 
   @computed
+  
   get file() {
     const def = this.manifest && this.manifest.api && this.manifest.api.file;
     const formats = {};
@@ -83,7 +84,7 @@ export class AppInfo {
         save: [],
         default: null
       },
-      defaultNewFile() {
+      get defaultNewFile() {
         return ret.formats.default && ret.formats.default.newFile()
       },
       newFile({format,...rest}) {

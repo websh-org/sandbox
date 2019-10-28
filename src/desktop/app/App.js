@@ -22,7 +22,7 @@ export class App extends React.Component {
 
   async componentDidMount() {
     //await this.desktop("show-launcher");
-    await this.desktop("launch-proc",{type:"local",kind:"about-shell"}),
+    await this.desktop("launch-proc",{type:"local",kind:"about-shell",keepOpen:true}),
     await this.desktop("launch-proc",{type:"web",url:"https://websh.org"})
   }
 }

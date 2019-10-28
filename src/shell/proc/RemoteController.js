@@ -49,8 +49,8 @@ export class RemoteController extends WebController {
   }
 
   @errors({
-    "command-failed"(error) {
-      this.throw(error);
+    async "command-failed"(error) {
+      await this.throw(error);
     }
   })
   async request(...args) {
@@ -58,8 +58,9 @@ export class RemoteController extends WebController {
       if (!this._masterPort) debugger;
       const res = await this._masterPort.request(...args);
       return res;
-    } catch ({ error: code, message, data }) {
-      this.throw({ code, message, data })
+    } catch ({ error: code, data }) {
+      console.log("remote error",{code,data})
+      return await this.throw({ code, data })
     }
   }
 };

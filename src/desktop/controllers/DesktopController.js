@@ -69,6 +69,7 @@ export class DesktopController extends Controller {
 
 
   async catch(error) {
+    console.log('caught')
     if (error.originalError) console.error(error.originalError);
     await this.showModal("error", { error })
   }
@@ -124,16 +125,23 @@ export class DesktopController extends Controller {
         await this.catch(error)
       }
     })
-  async "launch-proc"({ type, ...rest }) {
+  async "launch-proc"({ type, keepOpen, ...rest }) {
     const proc = await this.shell("proc-open", { type, ...rest })
-    const window = await this.wm("window-open", { type, proc });
+    const window = await this.wm("window-open", { type, keepOpen, proc });
     await this.call("window-activate", { window })
     try {
       await this.shell("proc-connect", { proc });
+
+//      await proc("ready");
+
+      if (window.info.file && window.info.file.supported) {
+        await this.call("app-file-new",{window})
+      }
+
       await proc("closed");
     } catch (error) {
-      //await this.catch(error);
-      //this.call("window-close", { window })
+      await this.catch(error);
+      await this.call("window-close", { window })
       this.throw(error)
     }
   }
@@ -153,7 +161,7 @@ export class DesktopController extends Controller {
     const formatInfo = window.info.file.formats.get(format);
     const { file } = await this.showModal("file-open", { format: formatInfo }) || {};
     if (!file) return;
-    return window.proc("file-open", { file, format })
+    return await window.proc("file-open", { file, format })
   }
 
   @command
@@ -194,8 +202,10 @@ const AppToolbar = {
         items(window) {
           return window.info.file.formats.open.map(f => ({
             label: f.label || f.id,
-            execute(window) {
-              this.call("app-file-open", { window, format: f.id });
+            params: (window) => ({ window,format: f.id  }),
+            command: "app-file-open",
+            async xexecute(window) {
+              return await this.call("app-file-open", { window,format: f.id });
             }
           }))
         },

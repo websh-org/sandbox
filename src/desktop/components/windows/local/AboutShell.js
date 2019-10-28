@@ -29,13 +29,13 @@ export class AboutShell extends React.Component {
                   WebShell is under development.
                 </div>
                 <p>
-                  WebShell is an online desktop environment. It allows easy integration
-                  of single-page web apps and provides them with file menu operations and 
-                  the required user interface.
+                  WebShell is an <b>online desktop</b> environment. It allows <b>easy integration</b> of 
+                  single-page web apps and provides them with <b>file menu</b> operations and 
+                  the required <b>user interface</b>.
                 </p>
                 <p>
-                  WebShell provides the user with a consistent experience for all apps, 
-                  while freeing the app developer from great amounts of work.
+                  WebShell provides a <b>consistent user experience</b> for all apps, 
+                  while freeing the app developer from <b>great amounts of work</b>.
                 </p>
                 <p>
                   For now, files can be opened and saved from the local computer. In the

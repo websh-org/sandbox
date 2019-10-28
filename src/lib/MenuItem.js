@@ -29,8 +29,10 @@ export class MenuItem {
     if (execute) return this._bind(execute);
     if (command) {
       const params = this._resolve("params",{});
-      console.log(command,params)
-      return this._bind(async function(...args) { return await this.call(command, params) });
+      return this._bind(async function(...args) { 
+        var res = await this.call(command, params);
+        return res;
+      });    
     }
   }
 

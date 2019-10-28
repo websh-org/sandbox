@@ -37,10 +37,10 @@ export class Window extends React.Component {
            <AppIcon url={window.icon} size="mini"/> &nbsp; {title}
           </span>
           {
-            window.file &&
-            <span className="file" title={JSON.stringify(window.file,null,2)}>
+            window.proc.file &&
+            <span className="file" title={JSON.stringify(window.proc.file,null,2)}>
               <Icon icon="file"/>
-              {window.file.name}
+              {window.proc.file.name}
             </span>
           }
         </div>

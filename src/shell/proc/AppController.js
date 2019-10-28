@@ -2,6 +2,12 @@ import { observable, action, reaction, computed, toJS } from "mobx";
 import { Controller, internal, command, readonly, state } from "~/lib/Controller";
 import { RemoteController } from "./RemoteController";
 import { ShellFile } from "~/lib/ShellFile";
+import { translate } from "~/lib/utils";
+
+translate({
+  "error:file-cannot-open": "Cannot open file",
+  "error:file-cannot-open:message": "The app failed to open the file: {reason}",
+})
 
 export class AppController extends RemoteController {
 

@@ -43,9 +43,9 @@ export class WindowManagerController extends Controller {
   }
 
   @command
-  async "window-open"({ proc }) {
+  async "window-open"({ proc, ...rest }) {
     return await this.addWindow(
-      WindowController.create({ parent: this, proc })
+      WindowController.create({ parent: this, proc,...rest })
     );
   }
 

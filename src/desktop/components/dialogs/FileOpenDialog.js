@@ -27,15 +27,19 @@ export class FileOpenDialog extends React.Component {
       >
         <ButtonTabs>
           <ButtonTabs.Tab label="From Disk">
-            <label className="ui left labeled icon button" htmlFor={id}>
-              <i className="disk icon" />
-              Select file
-            </label>
-            <input className="ui dimmer" id={id} type="file" accept={format.accept} onChange={this.openFromDisk} />
+            <div className="ui basic center aligned segment">
+              <label className="ui left big labeled icon blue button" htmlFor={id}>
+                <i className="upload icon" />
+                Upload File
+              </label>
+              <input className="ui dimmer" id={id} type="file" accept={format.accept} onChange={this.openFromDisk} />
+             </div>
           </ButtonTabs.Tab>
+          {false && 
           <ButtonTabs.Tab label="From URL">
             <UrlInput />
           </ButtonTabs.Tab>
+          }
         </ButtonTabs>
       </Dialog>
     );

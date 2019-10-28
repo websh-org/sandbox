@@ -243,7 +243,7 @@ function create(Store, args) {
       try {
         return await store._actions[command].execute.call(store, args);
       } catch (error) {
-        throw (new ControllerError(error));
+        store.catch (new ControllerError(error));
       }
     },
     get(target, prop, receiver) {

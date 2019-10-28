@@ -31,6 +31,9 @@ export class WindowController extends Controller {
     return this.proc.state;
   }
 
+  @state
+  @observable
+  keepOpen = false;
   
   @state
   @computed
@@ -58,9 +61,9 @@ export class WindowController extends Controller {
     return this.proc.info;
   }
 
-  constructor({ proc, ...rest }) {
+  constructor({ proc, keepOpen, ...rest }) {
     super(rest);
-
+    this.keepOpen = keepOpen
     this.proc = proc;
   }
 

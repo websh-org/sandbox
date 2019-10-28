@@ -24,7 +24,7 @@ export class ErrorDialog extends React.Component {
             <details>
               <summary className="ui label">Details</summary>
             <div className="ui list">
-              <DataList data={error.data} id="Error Data"/>
+              <DataList data={error.data} id={error.code}/>
             </div>
             </details>
           </div>
