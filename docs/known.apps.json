@@ -29,7 +29,7 @@
       }
     }
   },
-  "http://websh.org/app-quill/": {
+  "https://websh.org/app-quill/": {
     "v": 0,
     "name": "Quill",
     "icon": "icon.svg",
@@ -73,7 +73,7 @@
       }
     }
   },
-  "http://websh.org/app-jsoneditor/": {
+  "https://websh.org/app-jsoneditor/": {
     "v": 0,
     "name": "JSON Editor",
     "icon": "icon.svg",
@@ -136,7 +136,7 @@
       }
     }
   },
-  "http://websh.org/template-app-parcel/": {
+  "https://websh.org/template-app-parcel/": {
     "v": 0,
     "name": "Parcel Example App",
     "short_name": "Parcel Example",
