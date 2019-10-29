@@ -7,7 +7,7 @@ import { translate } from "~/lib/utils";
 
 translate({
   "error:app-load-unreachable": "The app is unreachable",
-  "error:app-load-unreachable:message": "The app url cannot be reached.",
+  "error:app-load-unreachable:message": "The app's URL cannot be reached.",
   "error:app-load-timeout": "The app failed to load",
   "error:app-load-timeout:message": "The app took too long to load.",
 })
@@ -56,7 +56,7 @@ export class WebController extends BaseProcController {
         cache: "no-cache"
       })
     } catch (error) {
-      this.throw("app-load-fail", { reason: String(error) })
+      this.throw("app-load-unreachable", { url: this.url, reason: String(error) })
     }
   }
 

@@ -142,7 +142,6 @@ export class DesktopController extends Controller {
     } catch (error) {
       await this.catch(error);
       await this.call("window-close", { window })
-      this.throw(error)
     }
   }
 

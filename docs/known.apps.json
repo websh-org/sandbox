@@ -1,35 +1,4 @@
 {
-  "https://websh.org/template-app-vanilla/": {
-    "v": 0,
-    "name": "Vanilla Example App",
-    "short_name": "Vanilla",
-    "version": "0.0.1",
-    "icon": "icon.svg",
-    "description": "The Vanilla JS example app for WebShell ",
-    "license": "MIT",
-    "homepage": "https://github.com/websh-org/template-app-vanilla#readme",
-    "repository": "https://github.com/websh-org/template-app-vanilla.git",
-    "issues": "https://github.com/websh-org/template-app-vanilla/issues",
-    "api": {
-      "file": {
-        "new": "text",
-        "open": [
-          "text"
-        ],
-        "save": [
-          "text"
-        ],
-        "formats": {
-          "text": {
-            "name": "Text File",
-            "extension": "txt",
-            "type": "text/plain",
-            "accept": "text/*"
-          }
-        }
-      }
-    }
-  },
   "https://websh.org/app-ace/": {
     "v": 0,
     "name": "ACE",
@@ -55,38 +24,6 @@
             "extension": "txt",
             "accept": "text/*,application/json",
             "encoding": "text"
-          }
-        }
-      }
-    }
-  },
-  "http://websh.org/app-jsoneditor/": {
-    "v": 0,
-    "name": "JSON Editor",
-    "icon": "icon.svg",
-    "description": "JSON Editor packaged for WebShell",
-    "version": "1.3.7",
-    "license": "ISC",
-    "homepage": "https://github.com/websh-org/app-jsoneditor#readme",
-    "repository": "https://github.com/websh-org/app-jsoneditor.git",
-    "api": {
-      "file": {
-        "new": "json",
-        "open": [
-          "json"
-        ],
-        "save": [
-          "json"
-        ],
-        "formats": {
-          "json": {
-            "name": "JSON File",
-            "type": "application/json",
-            "extension": "json",
-            "encoding": "text",
-            "new": true,
-            "open": true,
-            "save": true
           }
         }
       }
@@ -131,6 +68,100 @@
             "type": "text/plain",
             "encoding": "text",
             "extension": "txt"
+          }
+        }
+      }
+    }
+  },
+  "http://websh.org/app-jsoneditor/": {
+    "v": 0,
+    "name": "JSON Editor",
+    "icon": "icon.svg",
+    "description": "JSON Editor packaged for WebShell",
+    "version": "1.3.7",
+    "license": "ISC",
+    "homepage": "https://github.com/websh-org/app-jsoneditor#readme",
+    "repository": "https://github.com/websh-org/app-jsoneditor.git",
+    "api": {
+      "file": {
+        "new": "json",
+        "open": [
+          "json"
+        ],
+        "save": [
+          "json"
+        ],
+        "formats": {
+          "json": {
+            "name": "JSON File",
+            "type": "application/json",
+            "extension": "json",
+            "encoding": "text",
+            "new": true,
+            "open": true,
+            "save": true
+          }
+        }
+      }
+    }
+  },
+  "https://websh.org/template-app-vanilla/": {
+    "v": 0,
+    "name": "Vanilla Example App",
+    "short_name": "Vanilla",
+    "version": "0.0.1",
+    "icon": "icon.svg",
+    "description": "The Vanilla JS example app for WebShell ",
+    "license": "MIT",
+    "homepage": "https://github.com/websh-org/template-app-vanilla#readme",
+    "repository": "https://github.com/websh-org/template-app-vanilla.git",
+    "issues": "https://github.com/websh-org/template-app-vanilla/issues",
+    "api": {
+      "file": {
+        "new": "text",
+        "open": [
+          "text"
+        ],
+        "save": [
+          "text"
+        ],
+        "formats": {
+          "text": {
+            "name": "Text File",
+            "extension": "txt",
+            "type": "text/plain",
+            "accept": "text/*"
+          }
+        }
+      }
+    }
+  },
+  "http://websh.org/template-app-parcel/": {
+    "v": 0,
+    "name": "Parcel Example App",
+    "short_name": "Parcel Example",
+    "version": "0.0.1",
+    "icon": "icon.svg",
+    "description": "The Vanilla JS example app for WebShell ",
+    "license": "MIT",
+    "homepage": "https://github.com/websh-org/template-app-vanilla#readme",
+    "repository": "https://github.com/websh-org/template-app-vanilla.git",
+    "issues": "https://github.com/websh-org/template-app-vanilla/issues",
+    "api": {
+      "file": {
+        "new": "text",
+        "open": [
+          "text"
+        ],
+        "save": [
+          "text"
+        ],
+        "formats": {
+          "text": {
+            "name": "Text File",
+            "extension": "txt",
+            "type": "text/plain",
+            "accept": "text/*"
           }
         }
       }

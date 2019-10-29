@@ -5,8 +5,8 @@ import { ShellFile } from "~/lib/ShellFile";
 import { translate } from "~/lib/utils";
 
 translate({
-  "error:file-bad-file": "Cannot open file",
-  "error:file-bad-file:message": "The app failed to open the file: {reason}",
+  "error:file-cannot-open": "Cannot open file",
+  "error:file-cannot-open:message": "The app failed to open the file: {reason}",
 })
 
 export class AppController extends RemoteController {

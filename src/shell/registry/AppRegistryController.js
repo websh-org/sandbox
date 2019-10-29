@@ -30,7 +30,7 @@ export class AppRegistryController extends Controller {
 
 
   async _load() {
-    const saved = await this.registry("load",{key:"apps",initial:knownApps});
+    const saved = Object.assign({},knownApps,await this.registry("load",{key:"apps",initial:{}}));
     for (var url in saved) {
       this._update({url,manifest:saved[url]})
     }

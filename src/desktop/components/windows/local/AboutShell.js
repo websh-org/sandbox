@@ -130,9 +130,9 @@ export class AboutShell extends React.Component {
                   0.2.x
                   </div>
                 <DataList className="bulleted" data={[
-                  "Finalize file API manifest schema",
+                  "DONE Finalize file API manifest schema",
                   "Update documentation on websh.org",
-                  "Build starter app template repos on github",
+                  "DONE Build starter app template repos on github",
                   "Allow reloading a failed window instead of instant closing",
                   "Provide human readable messages for all errors"
                 ]} />
