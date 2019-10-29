@@ -124,7 +124,7 @@
                     "type":"string",
                     "title": "Content encoding",
                     "description": "Which encoding does the app ",
-                    "enum":["text","binary"]
+                    "enum":["text","dataurl"]
                   }
                 },
                 "required": [
