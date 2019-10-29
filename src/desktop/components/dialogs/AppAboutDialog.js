@@ -18,9 +18,9 @@ export class AppAboutDialog extends React.Component {
         icon="info"
       >
         <div className="ui secondary very padded center aligned secondary segment">
-          <div className="ui small image">
-            {version && <div className="ui blue ribbon label">{version}</div>  }
-            <img src={icon}/>
+          <div className="ui small image" style={{position:"relative"}}>
+            {version && <div className="ui ribbon mini black label">{version}</div>  }
+            <img src={icon} style={{width:"100%"}}/>
           </div>
          </div>
         <div className="ui padded center aligned form segment">
