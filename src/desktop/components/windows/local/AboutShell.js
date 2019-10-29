@@ -18,7 +18,7 @@ export class AboutShell extends React.Component {
               <div className="middle aligned column">
                 <img className="ui small image" src={logo} style={{ margin: "0 auto" }} />
                 <div className="ui center aligned huge header">
-                  <h1>WebShell </h1>
+                  <h1>WebShell 0.2</h1>
                   <div className="sub header">
                     The Development Sandbox edition
                   </div>
@@ -29,12 +29,12 @@ export class AboutShell extends React.Component {
                   WebShell is under development.
                 </div>
                 <p>
-                  WebShell is an <b>online desktop</b> environment. It allows <b>easy integration</b> of 
-                  single-page web apps and provides them with <b>file menu</b> operations and 
+                  WebShell is an <b>open-source online desktop</b> environment. It allows <b>easy integration</b> of
+                  single-page web apps and provides them with <b>file menu</b> operations and
                   the required <b>user interface</b>.
                 </p>
                 <p>
-                  WebShell provides a <b>consistent user experience</b> for all apps, 
+                  WebShell provides a <b>consistent user experience</b> for all apps,
                   while freeing the app developer from <b>great amounts of work</b>.
                 </p>
                 <p>
@@ -47,13 +47,16 @@ export class AboutShell extends React.Component {
                   Read more about WebShell at <a target="_blank" href="http://websh.org/about">the project website</a>.
                 </p>
                 <p>
+                  Refer to App API specs in <a target="_blank" href="http://websh.org/app-api">the docs</a>.
+                </p>
+                <p>
                   See the code on <a target="_blank" href="http://github.com/websh-org/">GitHub</a>.
                 </p>
                 <small>
-                This project is funded through the NGI0 PET Fund, a fund established by NLnet 
-                with financial support from the European Commission’s Next Generation Internet 
-                programme, under the aegis of DG Communications Networks, Content and Technology 
-                under grant agreement No 825310. Applications are still open, you can apply today.
+                  This project is funded through the NGI0 PET Fund, a fund established by NLnet
+                  with financial support from the European Commission’s Next Generation Internet
+                  programme, under the aegis of DG Communications Networks, Content and Technology
+                  under grant agreement No 825310. Applications are still open, you can apply today.
                 </small>
               </div>
             </div>
@@ -91,11 +94,19 @@ export class AboutShell extends React.Component {
                 <div className="ui center aligned blue header">
                   Try Now
                   </div>
-                <DataList className="bulleted" data={[
-                  "Integrate your single page app with WebShell in minutes.",
-                  "Allow your users to open and save files using the WebShell app API.",
-                  "No need to worry about coding file operations or implementing the UI, they are provided by WebShell.",
-                ]} />
+                <div className="ui bulleted list ">
+                  <div className="item">
+                    Use our <a href="https://github.com/websh-org/template-app-vanilla">Vanilla JS
+                  </a> or <a href="https://github.com/websh-org/template-app-parcel">Parecl Enabled
+                  </a> starter projects to kick-start your app.
+                  <DataList className="" data={[
+                      "Integrate your single page app with WebShell in minutes.",
+                      "Allow your users to open and save files using the WebShell app API.",
+                      "No need to worry about coding file operations or implementing the UI, they are provided by WebShell.",
+                    ]} />
+
+                  </div>
+                </div>
                 <div className="ui center aligned small blue header">
                   Under development
                   </div>
@@ -131,10 +142,10 @@ export class AboutShell extends React.Component {
                   </div>
                 <DataList className="bulleted" data={[
                   "DONE Finalize file API manifest schema",
-                  "Update documentation on websh.org",
+                  "DONE Update documentation on websh.org",
                   "DONE Build starter app template repos on github",
+                  "DONE Provide human readable messages for all errors",
                   "Allow reloading a failed window instead of instant closing",
-                  "Provide human readable messages for all errors"
                 ]} />
                 <div className="ui center aligned small header">
                   0.3

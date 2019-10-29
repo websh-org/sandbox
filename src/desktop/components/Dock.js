@@ -41,8 +41,8 @@ export class Dock extends React.Component {
         onClick={this.onClick}
         onRemove={this.onRemove}
         remove={!window.keepOpen}
-        name={window.info.about ? window.info.about.short_name : window.proc.title }
-        extra={window.proc.file && window.proc.file.name }
+        name={window.info.about ? window.info.about.short_name : window.proc.title}
+        extra={window.proc.file && window.proc.file.name}
       />
     )
   }
@@ -54,12 +54,11 @@ export class Dock extends React.Component {
 
   render() {
     return (
-      <a className="item" onClick={this.onClick} >
-        <div className="sh image">
-          <img src={logo} />
-          <div className="title"></div>
-        </div>
-      </a >
+      <ListItem
+        image={logo}
+        onClick={this.onClick}
+        name="Menu"
+      />
     )
   }
 }
