@@ -1,11 +1,11 @@
 import { observable, action, reaction, computed } from "mobx";
-import { Controller, readonly, command, state } from "~/lib/Controller";
+import { Controller, expose, command } from "~/lib/Controller";
 import { WindowController } from "./WindowController"
 import { MenuItem } from "~/lib/MenuItem"
 
 export class AppWindowController extends WindowController {
 
-  @state
+  @expose
   @computed 
   get file() {
     return this.proc.file;

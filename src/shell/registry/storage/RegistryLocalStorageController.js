@@ -1,4 +1,4 @@
-import { Controller, internal, command, readonly } from "~/lib/Controller";
+import { Controller, expose, command } from "~/lib/Controller";
 import { GenericRegistryController} from "./GenericRegistryController"
 
 export class RegistryLocalStorageController extends GenericRegistryController {

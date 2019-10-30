@@ -1,10 +1,10 @@
 import { observable, action, when, reaction, computed } from "mobx";
-import { Controller, readonly, internal, command, state } from "../../lib/Controller";
+import { Controller, expose, command } from "../../lib/Controller";
 import { WindowController } from "./WindowController";
 
 export class WindowManagerController extends Controller {
 
-  @state
+  @expose
   @computed 
   get windows() {
     return [...this._windows.values()];

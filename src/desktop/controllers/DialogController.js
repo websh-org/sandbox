@@ -1,5 +1,5 @@
 import { observable, action, reaction, computed } from "mobx";
-import { Controller, readonly, internal, command, state } from "~/lib/Controller";
+import { Controller, expose, command } from "~/lib/Controller";
 
 export class DialogController extends Controller {
 
@@ -9,11 +9,11 @@ export class DialogController extends Controller {
     this.type = type;
   }
 
-  @state
+  @expose
   @observable
   type = null;
 
-  @state
+  @expose
   @observable
   data = null;
 

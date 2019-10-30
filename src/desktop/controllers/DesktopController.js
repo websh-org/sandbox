@@ -1,6 +1,6 @@
 import { observable, action, when, reaction, computed } from "mobx";
 
-import { Controller, command, state, errors } from "~/lib/Controller";
+import { Controller, expose, command, errors } from "~/lib/Controller";
 
 import { WindowManagerController } from "./WindowManagerController";
 import { ShellController } from "~/shell/ShellController";
@@ -9,18 +9,18 @@ import { MenuItem } from "~/lib/MenuItem";
 import { AppWindowController } from "./AppWindowController";
 export class DesktopController extends Controller {
 
-  @state
+  @expose
   shell = ShellController.create({ parent: this });
 
-  @state
+  @expose
   wm = WindowManagerController.create({ parent: this });
 
-  @state
+  @expose
   get windows() {
     return this.wm.windows;
   }
 
-  @state
+  @expose
   @computed
   get infos() {
     return this.shell.infos
@@ -35,7 +35,7 @@ export class DesktopController extends Controller {
 
   toolbars = new WeakMap()
 
-  @state
+  @expose
   toolbarFor(window) {
     if (!this.toolbars.has(window)) {
       var toolbar = {};
@@ -51,7 +51,7 @@ export class DesktopController extends Controller {
     return this.toolbars.get(window);
   }
 
-  @state
+  @expose
   @observable
   modal = null;
 

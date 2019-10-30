@@ -1,5 +1,5 @@
 import { observable, action, when, reaction, computed } from "mobx";
-import { Controller, readonly, command, internal, state } from "../lib/Controller";
+import { Controller, expose, command } from "../lib/Controller";
 import { ProcController } from "./proc/ProcController";
 import { AppRegistryController } from "./registry/AppRegistryController";
 
@@ -19,7 +19,7 @@ export class ShellController extends Controller {
     return [...this._ps.values()];
   }
 
-  @state
+  @expose
   @computed
   get infos() {
     return this.appRegistry.infos;

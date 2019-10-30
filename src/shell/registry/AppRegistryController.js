@@ -1,5 +1,5 @@
 import { observable, action, reaction, computed, toJS } from "mobx";
-import { Controller, internal, command, readonly, state } from "~/lib/Controller";
+import { Controller, expose, command } from "~/lib/Controller";
 import { RemoteController } from "../proc/RemoteController";
 import { AppInfo } from "~/lib/AppInfo";
 
@@ -23,7 +23,7 @@ export class AppRegistryController extends Controller {
   @observable 
   _infos = new Map;
 
-  @state
+  @expose
   @computed get infos(){
     return [...this._infos.values()];
   }

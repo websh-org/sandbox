@@ -37,10 +37,8 @@ export class Controller {
   isController = true;
 
   constructor({ parent, ...rest }) {
-    this._internal = Object.assign({}, this._internal)
-    this._readonly = Object.assign({}, this._readonly)
     this._actions = Object.assign({}, this._actions)
-    this._state = Object.assign({}, this._state)
+    this._expose = Object.assign({}, this._expose)
 
     if (parent) parents.set(this, parent);
     this._handlers = {};
@@ -107,18 +105,64 @@ export class Controller {
   }
 }
 
-export function state(obj, prop, desc) {
-  obj._state = Object.assign({}, obj._state, { [prop]: true })
-  return desc;
+
+
+
+
+const AsyncFunction = Reflect.getPrototypeOf(async function () { }).constructor;
+class ProxyFunction extends AsyncFunction { };
+
+function create(Store, args) {
+  const store = new Store(args);
+  const controller = new ProxyFunction("", "");
+  Object.defineProperty(controller, 'name', {value: `${Store.name} [${Store.$id}=${store[Store.$id]}]`, writable: false});
+
+  const proxy = new Proxy(controller, {
+    async apply(target, thisArg, [command, args, { timeout = 0 } = {}]) {
+      store.assert(store._actions[command], "bad-command", { command, controller:Store.name });
+      try {
+        return await store._actions[command].execute.call(store, args);
+      } catch (error) {
+        store.catch (new ControllerError(error));
+      }
+    },
+    get(target, prop, receiver) {
+      if (prop in controller) return Reflect.get(controller, prop, controller);
+      if (prop !== Store.$id && !store._expose[prop] && typeof prop === "string") {
+        const value = Reflect.get(store, prop, store)
+        if (value !== undefined) {
+          store.throw(new ControllerError({
+            code: "controller-access-violation",
+            message: `${Store.name}.${prop} is not readable.`
+          }));
+        }
+        return undefined;
+      }
+      const value = Reflect.get(store, prop, store);
+      if (typeof value === "function" && !(value instanceof ProxyFunction)) return value.bind(store);
+      return value;
+    },
+    set(target, prop, value) {
+      return undefined;
+    }
+  });
+  store.action = store.call = proxy;
+  return proxy;
+};
+
+async function timeoutPromise(time,promise,{code="timeout",data={}}) {
+  try {
+  return await Promise.race(
+    promise,
+    new Promise(()=>setTimeout(()=>{throw {code,data}}))
+  )
+  } catch (error) {
+    throw new ControllerError(error);
+  }
 }
 
-export function internal(obj, prop, desc) {
-  obj._internal = Object.assign({}, obj._internal, { [prop]: true })
-  return desc;
-}
-
-export function readonly(obj, prop, desc) {
-  obj._readonly = Object.assign({}, obj._readonly, { [prop]: true })
+export function expose(obj, prop, desc) {
+  obj._expose = Object.assign({}, obj._expose, { [prop]: true })
   return desc;
 }
 
@@ -224,63 +268,5 @@ function tryCatch(obj, fn, list = {}) {
         else obj.catch(error);
       }
     }
-  }
-}
-
-
-
-const AsyncFunction = Reflect.getPrototypeOf(async function () { }).constructor;
-class ProxyFunction extends AsyncFunction { };
-
-function create(Store, args) {
-  const store = new Store(args);
-  const controller = new ProxyFunction("", "");
-  Object.defineProperty(controller, 'name', {value: `${Store.name} [${Store.$id}=${store[Store.$id]}]`, writable: false});
-
-  const proxy = new Proxy(controller, {
-    async apply(target, thisArg, [command, args, { timeout = 0 } = {}]) {
-      store.assert(store._actions[command], "bad-command", { command, controller:Store.name });
-      try {
-        return await store._actions[command].execute.call(store, args);
-      } catch (error) {
-        store.catch (new ControllerError(error));
-      }
-    },
-    get(target, prop, receiver) {
-      if (prop in controller) return Reflect.get(controller, prop, controller);
-      if (prop !== Store.$id && !store._state[prop] && typeof prop === "string") {
-        const value = Reflect.get(store, prop, store)
-        if (value !== undefined) {
-          store.throw(new ControllerError({
-            code: "controller-access-violation",
-            message: `${Store.name}.${prop} is not readable.`
-          }));
-        }
-        return undefined;
-      }
-      const value = Reflect.get(store, prop, store);
-      if (typeof value === "function" && !(value instanceof ProxyFunction)) return value.bind(store);
-      return value;
-    },
-    set(target, prop, value) {
-      if (store._internal[prop]) return undefined;
-      if (store._readonly[prop]) return undefined;
-      if (typeof prop === "string" && prop.startsWith("_")) return undefined;
-      if (prop in store) return Reflect.set(store, prop, store);
-      store.assert(false, "bad-prop-" + prop);
-    }
-  });
-  store.action = store.call = proxy;
-  return proxy;
-};
-
-async function timeoutPromise(time,promise,{code="timeout",data={}}) {
-  try {
-  return await Promise.race(
-    promise,
-    new Promise(()=>setTimeout(()=>{throw {code,data}}))
-  )
-  } catch (error) {
-    throw new ControllerError(error);
   }
 }

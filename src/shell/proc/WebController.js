@@ -1,7 +1,7 @@
 import { observable, action, reaction, computed } from "mobx";
 import { RemoteMasterPort } from "@websh/remote-master-port";
 
-import { Controller, command, state, errors, timeout, promise } from "/lib/Controller";
+import { Controller, expose, command, state, errors, timeout, promise } from "/lib/Controller";
 import { BaseProcController } from "./BaseProcController";
 import { translate } from "~/lib/utils";
 
@@ -24,11 +24,11 @@ export class WebController extends BaseProcController {
 
   _masterPort = null;
 
-  @state
+  @expose
   @observable
   url;
 
-  @state
+  @expose
   @computed
   get title() {
     return this._title || this.url;

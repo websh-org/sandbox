@@ -1,5 +1,5 @@
 import { observable, action, reaction, when, computed } from "mobx";
-import { Controller, internal, readonly, command, state } from "../../lib/Controller";
+import { Controller, expose, command } from "../../lib/Controller";
 
 import { resolve } from "dns";
 import { ControllerError } from "~/lib/ControllerError";
@@ -12,30 +12,30 @@ export class BaseProcController extends Controller {
   static $id = "pid";
 
 
-  @state
+  @expose
   type = null;
 
-  @state
+  @expose
   @observable
   manifest = {};
 
-  @state
+  @expose
   @observable
   state = null;
 
-  @state
+  @expose
   @observable
   dead = false;
 
   @observable
   _title = null;
 
-  @state
+  @expose
   get title() {
     return this._title;
   }
 
-  @state
+  @expose
   @observable 
   info
 

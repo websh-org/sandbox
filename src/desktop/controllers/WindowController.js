@@ -1,5 +1,5 @@
 import { observable, action, reaction, computed } from "mobx";
-import { Controller, readonly, command, internal, state } from "../../lib/Controller";
+import { Controller, expose, command } from "../../lib/Controller";
 import unknownProc from "~/../assets/icons/proc/unknown.svg"
 
 var maxZ = 0;
@@ -8,54 +8,54 @@ export class WindowController extends Controller {
 
   static $id = "wid";
 
-  @state 
+  @expose 
   @observable
   maximized = false;
 
-  @state 
+  @expose 
   @observable
   closed = false;
 
-  @state 
+  @expose 
   @observable
   active = false;
   
 
-  @state
+  @expose
   @observable
   zIndex = 0;
 
-  @state
+  @expose
   @computed
   get state() {
     return this.proc.state;
   }
 
-  @state
+  @expose
   @observable
   keepOpen = false;
   
-  @state
+  @expose
   @computed
   get title() {
     return this.info.about ? this.info.about.short_name : this.proc.title;
   }
 
-  @state
+  @expose
   @computed
   get type() {
     return this.proc.type;
   }
 
 
-  @state
+  @expose
   @computed
   get icon() {
     return this.info.about.icon || unknownProc;
   }
 
 
-  @state
+  @expose
   @computed
   get info() {
     return this.proc.info;
@@ -67,7 +67,7 @@ export class WindowController extends Controller {
     this.proc = proc;
   }
 
-  @state
+  @expose
   @observable
   proc = null;
   

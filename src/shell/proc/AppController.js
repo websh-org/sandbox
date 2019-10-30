@@ -1,5 +1,5 @@
 import { observable, action, reaction, computed, toJS } from "mobx";
-import { Controller, internal, command, readonly, state } from "~/lib/Controller";
+import { Controller, expose, command } from "~/lib/Controller";
 import { RemoteController } from "./RemoteController";
 import { ShellFile } from "~/lib/ShellFile";
 import { translate } from "~/lib/utils";
@@ -12,15 +12,15 @@ translate({
 export class AppController extends RemoteController {
 
 
-  @state
+  @expose
   type = "app";
 
-  @state
+  @expose
   @observable
   file = null
 
 
-  @state
+  @expose
   @computed
   get title() {
     return (
