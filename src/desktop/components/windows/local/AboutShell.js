@@ -47,7 +47,7 @@ export class AboutShell extends React.Component {
                   Read more about WebShell at <a target="_blank" href="http://websh.org/about">the project website</a>.
                 </p>
                 <p>
-                  Refer to App API specs in <a target="_blank" href="http://websh.org/app-api">the docs</a>.
+                  Refer to App API specs in <a target="_blank" href="http://websh.org/api">the docs</a>.
                 </p>
                 <p>
                   See the code on <a target="_blank" href="http://github.com/websh-org/">GitHub</a>.
