@@ -13,8 +13,7 @@ const stateLabels = {
 
 @observer
 export class Window extends React.Component {
-  @computed
-  get classes() {
+  @computed get classes() {
     const ret = [];
     const { active } = this.props.window;
     active && ret.push("active");

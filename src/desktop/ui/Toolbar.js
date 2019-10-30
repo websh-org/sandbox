@@ -65,8 +65,7 @@ class ToolbarButton extends React.Component {
 @observer
 class ToolbarDropdown extends React.Component {
 
-  @observable
-  open = false;
+  @observable open = false;
 
   render() {
     const { icon, label, items } = this.props.item;

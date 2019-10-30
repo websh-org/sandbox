@@ -23,8 +23,7 @@ export class AppRegistryController extends Controller {
   @observable 
   _infos = new Map;
 
-  @expose
-  @computed get infos(){
+  @expose @computed get infos(){
     return [...this._infos.values()];
   }
 
@@ -65,13 +64,11 @@ export class AppRegistryController extends Controller {
     }
   }
 
-  @command
-  get({ url }) {
+  @command get({ url }) {
     return this._get({url});
   }
   
-  @command
-  update({url,manifest}) {
+  @command update({url,manifest}) {
     if (manifest) {
       this._update({url,manifest})
       this._save();

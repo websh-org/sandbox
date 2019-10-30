@@ -12,24 +12,18 @@ translate({
 export class AppController extends RemoteController {
 
 
-  @expose
-  type = "app";
+  @expose type = "app";
 
-  @expose
-  @observable
-  file = null
+  @expose @observable file = null
 
 
-  @expose
-  @computed
-  get title() {
+  @expose @computed get title() {
     return (
       this.info.about.name || this.url
     )
   }
 
-  @command
-  async "file-new"({}) {
+  @command async "file-new"({}) {
     this.assert(this.info.file.supported, "not-supported");
     const file = new ShellFile(this.info.file.defaultNewFile);
     const res = await this.request("file-new", { });
@@ -37,8 +31,7 @@ export class AppController extends RemoteController {
     return res;
   }
 
-  @command
-  async "file-open"({ file, format }) {
+  @command async "file-open"({ file, format }) {
     this.assert(this.info.file.supported, "not-supported");
     const formatInfo = this.info.file.formats.get(format);
     const { extension, type } = file;
@@ -48,8 +41,7 @@ export class AppController extends RemoteController {
     return res;
   }
   
-  @command
-  async "file-save"({ format }) {
+  @command async "file-save"({ format }) {
     this.assert(this.info.file.supported, "not-supported");
     const res = await this.request("file-save", { format });
     const { content, type } = res;

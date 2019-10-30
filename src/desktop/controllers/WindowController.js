@@ -9,55 +9,38 @@ export class WindowController extends Controller {
   static $id = "wid";
 
   @expose 
-  @observable
-  maximized = false;
+  @observable maximized = false;
 
   @expose 
-  @observable
-  closed = false;
+  @observable closed = false;
 
   @expose 
-  @observable
-  active = false;
+  @observable active = false;
   
 
-  @expose
-  @observable
-  zIndex = 0;
+  @expose @observable zIndex = 0;
 
-  @expose
-  @computed
-  get state() {
+  @expose @computed get state() {
     return this.proc.state;
   }
 
-  @expose
-  @observable
-  keepOpen = false;
+  @expose @observable keepOpen = false;
   
-  @expose
-  @computed
-  get title() {
+  @expose @computed get title() {
     return this.info.about ? this.info.about.short_name : this.proc.title;
   }
 
-  @expose
-  @computed
-  get type() {
+  @expose @computed get type() {
     return this.proc.type;
   }
 
 
-  @expose
-  @computed
-  get icon() {
+  @expose @computed get icon() {
     return this.info.about.icon || unknownProc;
   }
 
 
-  @expose
-  @computed
-  get info() {
+  @expose @computed get info() {
     return this.proc.info;
   }
 
@@ -67,38 +50,29 @@ export class WindowController extends Controller {
     this.proc = proc;
   }
 
-  @expose
-  @observable
-  proc = null;
+  @expose @observable proc = null;
   
-  @command
-  @action
-  "activate"() {
+  @command @action "activate"() {
     this.zIndex = ++ maxZ;
     this.active = true;
     this.proc("activate");
   }
 
-  @command
-  @action
-  "deactivate"() {
+  @command @action "deactivate"() {
     this.proc("deactivate");
     this.active = false;
     return this;
   }
 
-  @command
-  "load"({ element }) {
+  @command "load"({ element }) {
     this.proc("load", { element })
   }
 
-  @command
-  "maximize"() {
+  @command "maximize"() {
     this.maximized = true;
   }
 
-  @command
-  async "close"({confirmed}={}) {
+  @command async "close"({confirmed}={}) {
     await this.proc("close", {confirmed})
     this.closed = true;
   }

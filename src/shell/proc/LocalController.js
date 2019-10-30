@@ -7,8 +7,7 @@ import { translate } from "~/lib/utils";
 
 export class LocalController extends BaseProcController {
 
-  @expose
-  kind = null;
+  @expose kind = null;
 
   constructor({ kind, ...rest }) {
     super({ ...rest });

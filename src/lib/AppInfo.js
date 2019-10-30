@@ -27,8 +27,7 @@ export class AppInfo {
 
   url = null;
 
-  @observable
-  _manifest = null;
+  @observable _manifest = null;
 
   get manifest() {
     return this._manifest;
@@ -48,8 +47,7 @@ export class AppInfo {
     if (manifest) this.manifest = manifest;
   }
 
-  @computed
-  get about() {
+  @computed get about() {
     if (!this.manifest) return { supported: false };
     const { name, short_name, icon, description, license, homepage, repository, version } = this.manifest;
     return {

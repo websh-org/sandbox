@@ -9,20 +9,15 @@ import { MenuItem } from "~/lib/MenuItem";
 import { AppWindowController } from "./AppWindowController";
 export class DesktopController extends Controller {
 
-  @expose
-  shell = ShellController.create({ parent: this });
+  @expose shell = ShellController.create({ parent: this });
 
-  @expose
-  wm = WindowManagerController.create({ parent: this });
+  @expose wm = WindowManagerController.create({ parent: this });
 
-  @expose
-  get windows() {
+  @expose get windows() {
     return this.wm.windows;
   }
 
-  @expose
-  @computed
-  get infos() {
+  @expose @computed get infos() {
     return this.shell.infos
   }
 
@@ -35,8 +30,7 @@ export class DesktopController extends Controller {
 
   toolbars = new WeakMap()
 
-  @expose
-  toolbarFor(window) {
+  @expose toolbarFor(window) {
     if (!this.toolbars.has(window)) {
       var toolbar = {};
       switch (window.proc.type) {
@@ -51,16 +45,12 @@ export class DesktopController extends Controller {
     return this.toolbars.get(window);
   }
 
-  @expose
-  @observable
-  modal = null;
+  @expose @observable modal = null;
 
 
-  @observable
-  activeWindow = null;
+  @observable activeWindow = null;
 
-  @action
-  async showModal(type, data = {}) {
+  @action async showModal(type, data = {}) {
     this.modal = DialogController.create({ type, data });
     const result = await this.modal("show");
     this.modal = null;
@@ -75,8 +65,7 @@ export class DesktopController extends Controller {
   }
 
 
-  @command
-  async "show-launcher"() {
+  @command async "show-launcher"() {
     const me = this;
     const { url } = await this.showModal("launcher", { get infos() { return me.infos } }) || {};
     if (!url) return;
@@ -89,13 +78,11 @@ export class DesktopController extends Controller {
    */
 
 
-  @command
-  async "window-activate"({ window }) {
+  @command async "window-activate"({ window }) {
     await this.wm("window-activate", { window });
   }
 
-  @command
-  async "window-close"({ window }) {
+  @command async "window-close"({ window }) {
     try {
       await this.wm("window-close", { window });
     } catch (e) {
@@ -119,8 +106,7 @@ export class DesktopController extends Controller {
    *
    */
 
-  @command
-    .errors({
+  @command .errors({
       async "app-invalid-manifest"(error) {
         await this.catch(error)
       }
@@ -145,32 +131,27 @@ export class DesktopController extends Controller {
     }
   }
 
-  @command
-  async "launch-app"({ url }) {
+  @command async "launch-app"({ url }) {
     return await this.call("launch-proc", { type: "app", url })
   }
 
-  @command
-  async "app-file-new"({ window }) {
+  @command async "app-file-new"({ window }) {
     return await window.proc("file-new", {})
   }
 
-  @command
-  async "app-file-open"({ window, format }) {
+  @command async "app-file-open"({ window, format }) {
     const formatInfo = window.info.file.formats.get(format);
     const { file } = await this.showModal("file-open", { format: formatInfo }) || {};
     if (!file) return;
     return await window.proc("file-open", { file, format })
   }
 
-  @command
-  async "app-file-save"({ window, format }) {
+  @command async "app-file-save"({ window, format }) {
     const file = await window.proc("file-save", { format });
     await this.showModal("file-save", { file }) || {};
   }
 
-  @command
-  async "app-about"({ window }) {
+  @command async "app-about"({ window }) {
     await this.showModal("app-about", { about: window.info.about }) || {};
   }
 }

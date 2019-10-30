@@ -11,17 +11,13 @@ export class ShellController extends Controller {
   registry = null;
   appRegistry = null;
 
-  @observable
-  _ps = new Map();
+  @observable _ps = new Map();
 
-  @computed
-  get ps() {
+  @computed get ps() {
     return [...this._ps.values()];
   }
 
-  @expose
-  @computed
-  get infos() {
+  @expose @computed get infos() {
     return this.appRegistry.infos;
   }
 
@@ -35,15 +31,13 @@ export class ShellController extends Controller {
   appRegistry = AppRegistryController.create({ registry: this.registry });
   
 
-  @command
-  async "proc-open"({ type, ...rest }) {
+  @command async "proc-open"({ type, ...rest }) {
     const info = await this.registry_getProcInfo({ type, ...rest });
     const proc = await this.addProc(ProcController.create({ type, info, ...rest }));
     return proc;
   }
 
-  @command
-  async "proc-connect"({ proc }) {
+  @command async "proc-connect"({ proc }) {
     try {
       await proc("connect");
       await this.registry_updateProcInfo({ proc });

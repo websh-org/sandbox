@@ -24,13 +24,9 @@ export class WebController extends BaseProcController {
 
   _masterPort = null;
 
-  @expose
-  @observable
-  url;
+  @expose @observable url;
 
-  @expose
-  @computed
-  get title() {
+  @expose @computed get title() {
     return this._title || this.url;
   }
 
@@ -38,8 +34,7 @@ export class WebController extends BaseProcController {
     return this._masterPort.send(...args);
   }
 
-  @action
-  async loadProc() {
+  @action async loadProc() {
     const element = this.element;
     await this.checkAvailable();
     await this.loadIframe();
@@ -65,8 +60,7 @@ export class WebController extends BaseProcController {
   }
 
   @timeout(5000, "app-load-timeout")
-  @promise
-  async loadIframe(resolve) {
+  @promise async loadIframe(resolve) {
     const { element: iframe } = this
 
     iframe.onload = e => {

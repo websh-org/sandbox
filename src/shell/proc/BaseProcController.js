@@ -7,44 +7,28 @@ import { ControllerError } from "~/lib/ControllerError";
 let counter = 0;
 
 export class BaseProcController extends Controller {
-  element = null;
 
   static $id = "pid";
 
+  @expose type = null;
+  @expose @observable manifest = {};
+  @expose @observable info
+  @expose @observable state = null;
+  @expose @observable dead = false;
 
-  @expose
-  type = null;
-
-  @expose
-  @observable
-  manifest = {};
-
-  @expose
-  @observable
-  state = null;
-
-  @expose
-  @observable
-  dead = false;
-
-  @observable
-  _title = null;
-
-  @expose
-  get title() {
+  @expose get title() {
     return this._title;
   }
 
-  @expose
-  @observable 
-  info
+  @observable _title = null;
+
+  element = null;
 
   constructor({ title, type, info, ...rest }) {
     super(rest);
     this.type = type;
     this.info = info;
-    if(!info) debugger;
-    console.log("proc",info,this.info)
+    if (!info) debugger;
     //this._title = title || "p" + (counter++);
     this.promise("loaded");
     this.promise("connected");
@@ -74,10 +58,10 @@ export class BaseProcController extends Controller {
     }
   }
 
-  async setState(STATE, data={}) {
-    if (STATE==="INVALID") {
+  async setState(STATE, data = {}) {
+    if (STATE === "INVALID") {
       this.state = "INVALID";
-      this.INVALID({...data,state:this.state});
+      this.INVALID({ ...data, state: this.state });
       return;
     }
     const state = this.states[STATE];
@@ -88,46 +72,40 @@ export class BaseProcController extends Controller {
       this[STATE] && await this[STATE](data);
       return;
     } catch (error) {
-      await this.setState("INVALID",{error})
+      await this.setState("INVALID", { error })
     }
-    
+
   }
 
-  @action
-  INITIAL() { }
+  @action INITIAL() { }
 
-  loadProc(){}
+  loadProc() { }
 
-  @action
-  async LOADING({ element }) {
+  @action async LOADING({ element }) {
     this.element = element;
     await this.loadProc();
     this.setState("CONNECTING");
   }
 
-  @action
-  async CONNECTING() {
+  @action async CONNECTING() {
     this.resolve("loaded");
     const manifest = this.manifest = await this.getManifest()
-    this.setState("CONNECTED",{manifest});
+    this.setState("CONNECTED", { manifest });
   }
 
   async getManifest() {
     return {};
   }
 
-  @action
-  async CONNECTED({ manifest }) {
+  @action async CONNECTED({ manifest }) {
     this.manifest = manifest;
     this.resolve("connected");
   }
 
-  @action
-  async READY() {
+  @action async READY() {
   }
 
-  @action
-  async INVALID({error,state}) {
+  @action async INVALID({ error, state }) {
     //console.log({state,error})
     error = new ControllerError(error);
     this.reject("loaded", error);
@@ -140,51 +118,43 @@ export class BaseProcController extends Controller {
   }
 
 
-  @command
-  async 'load'({ element }) {
-    this.setState("LOADING",{ element });
+  @command async 'load'({ element }) {
+    this.setState("LOADING", { element });
   }
 
-  @command
-  'kill'() {
+  @command 'kill'() {
     this._dead = true;
   }
 
-  @command
-  async 'connect'() {
+  @command async 'connect'() {
     await this.await("loaded", "connected");
     return this.manifest;
   }
 
 
 
-  @command
-  async 'ready'() {
+  @command async 'ready'() {
     await this.setState("READY");
   }
 
-  @command
-  async 'closed'() {
+  @command async 'closed'() {
     return this.await("loaded", "connected", "closed");
   }
 
   _activate() { }
 
-  @command
-  async "activate"() {
+  @command async "activate"() {
     await this._activate()
   }
 
   _deactivate() { }
 
-  @command
-  async "deactivate"() {
+  @command async "deactivate"() {
     await this._deactivate()
   }
 
 
-  @command
-  async "close"({ confirmed = false }) {
+  @command async "close"({ confirmed = false }) {
     if (this.state !== "READY") return;
     try {
       await this._close({ confirmed });

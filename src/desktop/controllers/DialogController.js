@@ -9,25 +9,18 @@ export class DialogController extends Controller {
     this.type = type;
   }
 
-  @expose
-  @observable
-  type = null;
+  @expose @observable type = null;
 
-  @expose
-  @observable
-  data = null;
+  @expose @observable data = null;
 
-  @command
-  "resolve"(result) {
+  @command "resolve"(result) {
     this._promise.resolve(result);
   }
 
-  @command
-  "reject"(result) {
+  @command "reject"(result) {
     this._promise.reject(result);
   }
-  @command
-  "show"() {
+  @command "show"() {
     return new Promise((resolve, reject) => {
       this._promise = { resolve, reject }
     })

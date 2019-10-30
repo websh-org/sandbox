@@ -4,8 +4,7 @@ import { WindowController } from "./WindowController";
 
 export class WindowManagerController extends Controller {
 
-  @expose
-  @computed 
+  @expose @computed 
   get windows() {
     return [...this._windows.values()];
   }
@@ -18,8 +17,7 @@ export class WindowManagerController extends Controller {
     return window;
   }
 
-  @command
-  async "window-activate"({ window }) {
+  @command async "window-activate"({ window }) {
     for (const w of this.windows) {
       if (w.active) {
         await w("deactivate")
@@ -29,8 +27,7 @@ export class WindowManagerController extends Controller {
     this.activeWindow = window;
   }
 
-  @command
-  async "window-close"({ window, confirmed = false }) {
+  @command async "window-close"({ window, confirmed = false }) {
     if (typeof window !== "function") debugger;
     await window("close",{confirmed});
     const sorted = this.windows.concat().sort((a, b) => a.zIndex - b.zIndex);
@@ -42,8 +39,7 @@ export class WindowManagerController extends Controller {
     this.call("window-activate", { window: sorted[index] })
   }
 
-  @command
-  async "window-open"({ proc, ...rest }) {
+  @command async "window-open"({ proc, ...rest }) {
     return await this.addWindow(
       WindowController.create({ parent: this, proc,...rest })
     );
