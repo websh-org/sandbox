@@ -26,6 +26,6 @@ export class App extends React.Component {
       keepOpen:true,
       uri:"webshell:local:about-shell"
     });
-    await this.desktop("window-open",{ uri:"webshell:app:https://websh.org/app-quill/" });
+    //await this.desktop("window-open",{ uri:"webshell:app:https://websh.org/app-quill/" });
   }
 }
