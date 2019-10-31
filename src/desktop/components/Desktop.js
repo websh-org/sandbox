@@ -17,7 +17,7 @@ export class Desktop extends React.Component {
         <div className="windows">
           {desktop.windows.map(window => (
             <ErrorBoundary key={window.wid}>
-              <Window window={window} toolbar={desktop.toolbarFor(window)} />
+              <Window window={window} desktop={desktop} toolbar={desktop.toolbarFor(window)} />
             </ErrorBoundary>
           ))}
         </div>

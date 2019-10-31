@@ -9,11 +9,12 @@ export class LocalWindow extends React.Component {
     if (element) this.props.window("load", { element, manifest:element.manifest });
   }
   render() {
-    const {kind} = this.props.window.proc;
-    const Local = localWindows[kind]
-    if(!Local) return <span>Local window {kind} not found.</span>
+    const {window,desktop} = this.props;
+    const {locator} = window.proc;
+    const Local = localWindows[locator]
+    if(!Local) return <span>Local window {locator} not found.</span>
     return (
-      <Local window={window} ref={this.loadWindow}/>
+      <Local window={window} desktop={desktop} ref={this.loadWindow}/>
     );
   }
 }

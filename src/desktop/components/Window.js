@@ -25,7 +25,7 @@ export class Window extends React.Component {
   @observable showDebug = process.env.NODE_ENV != "production" ;
 
   render() {
-    const { window } = this.props;
+    const { window, desktop } = this.props;
     const { type, title, icon, wid, active, zIndex } = window;
     const Inner = windowTypes[type];
     return (
@@ -41,7 +41,7 @@ export class Window extends React.Component {
         {this.props.toolbar && this.props.toolbar.items && <Toolbar items={this.props.toolbar.items} />}
         <div className="main">
         <div className="client">
-          <Inner window={window} />
+          <Inner window={window} desktop={desktop}/>
         </div>
         {
           this.showDebug &&

@@ -75,7 +75,7 @@ export class AboutShell extends React.Component {
                   Try Now
                     </div>
                 <DataList className="bulleted" data={[
-                  "Click the WebShell launcher button and try out the example apps.",
+                  "Click the WebShell menu button (top left corner) and try out the example apps.",
                   "Open and save your local files with any WebShell app.",
                 ]} />
                 <div className="ui center aligned green small header">
@@ -99,7 +99,7 @@ export class AboutShell extends React.Component {
                 <div className="ui bulleted list ">
                   <div className="item">
                     Use our <a href="https://github.com/websh-org/template-app-vanilla">Vanilla JS
-                  </a> or <a href="https://github.com/websh-org/template-app-parcel">Parecl Enabled
+                  </a> or <a href="https://github.com/websh-org/template-app-parcel">Parcel Enabled
                   </a> starter projects to kick-start your app.
                   <DataList className="" data={[
                       "Integrate your single page app with WebShell in minutes.",

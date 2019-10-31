@@ -37,6 +37,8 @@ export class BaseProcController extends Controller {
 
   element = null;
 
+  @expose locator = null;
+
   constructor({ title, type, locator, info, ...rest }) {
     super(rest);
     this.type = type;
