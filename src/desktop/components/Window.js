@@ -22,7 +22,7 @@ export class Window extends React.Component {
     return ret.join(" ");
   }
 
-  @observable showDebug = true;
+  @observable showDebug = false;
 
   render() {
     const { window } = this.props;
