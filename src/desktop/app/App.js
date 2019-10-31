@@ -22,7 +22,10 @@ export class App extends React.Component {
 
   async componentDidMount() {
     //await this.desktop("show-launcher");
-    await this.desktop("launch-proc",{type:"local",kind:"about-shell",keepOpen:true}),
-    await this.desktop("launch-proc",{type:"web",url:"https://websh.org"})
+    await this.desktop("window-open",{
+      keepOpen:true,
+      uri:"webshell:local:about-shell"
+    });
+    await this.desktop("window-open",{ uri:"webshell:app:https://websh.org/app-quill/" });
   }
 }

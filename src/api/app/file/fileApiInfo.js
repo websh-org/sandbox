@@ -35,8 +35,8 @@ export class FileApiInfo {
 }
 
 class FileFormatsInfo {
-  @observable def={};
-  constructor(def={}) {
+  @observable def = {};
+  constructor(def = {}) {
     this.def = def;
   }
 
@@ -68,4 +68,11 @@ class FileFormatsInfo {
     return this.all.find(({ id }) => this.def.new && this.def.new === id);
   }
 
+  matchAccept(file) {
+    return this.open.filter(f => f.matchAccept(file));
+  }
+
+  @computed get accept() {
+    return this.open.map(f => f.accept).join(",")
+  }
 }

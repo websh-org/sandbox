@@ -16,12 +16,17 @@ export class BaseProcController extends Controller {
   @expose @observable dead = false;
   
   @observable _api = new Map();
+
   @expose @computed get api() {
     const ret = {};
     for (const key of this._api.keys()) {
       ret[key] = this._api.get(key);
     }
     return ret;
+  }
+
+  @expose @computed get uri () {
+    return "webshell:"+this.type+":"+this.locator;
   }
 
   @expose get title() {
@@ -32,10 +37,11 @@ export class BaseProcController extends Controller {
 
   element = null;
 
-  constructor({ title, type, info, ...rest }) {
+  constructor({ title, type, locator, info, ...rest }) {
     super(rest);
     this.type = type;
     this.info = info;
+    this.locator = locator;
     if (!info) debugger;
     //this._title = title || "p" + (counter++);
     this.promise("loaded");
@@ -67,7 +73,7 @@ export class BaseProcController extends Controller {
   }
 
   async setState(STATE, data = {}) {
-    console.log(this.state,"-->",STATE)
+    //console.log(this.state,"-->",STATE)
     if (STATE === "INVALID") {
       this.state = "INVALID";
       this.INVALID({ ...data, state: this.state });

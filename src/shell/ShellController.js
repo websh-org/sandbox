@@ -6,7 +6,8 @@ import { AppRegistryController } from "./registry/AppRegistryController";
 import { RegistryController } from "./registry/RegistryController"
 
 import knownApps from "~/../static/known.apps.json"
-import { AppInfo } from "~/lib/AppInfo";
+import { ProcInfo } from "~/lib/ProcInfo";
+import { parseWebShellURI } from "~/lib/utils";
 
 export class ShellController extends Controller {
   registry = null;
@@ -23,29 +24,30 @@ export class ShellController extends Controller {
   }
 
   config = {
-    registry : {
+    registry: {
       storage: "local-storage",
     }
   }
 
   registry = RegistryController.create(this.config.registry);
   appRegistry = AppRegistryController.create({ registry: this.registry });
-  
 
-  @command async "proc-open"({ type, ...rest }) {
-    const info = await this.registry_getProcInfo({ type, ...rest });
-    const proc = await this.addProc(ProcController.create({ type, info, ...rest }));
+
+  @command async "proc-open"({ uri, ...rest }) {
+    const { type, locator } = parseWebShellURI(uri);
+    const info = await this.appRegistry("get", { uri });
+    const proc = await this.addProc(ProcController.create({ uri, info, ...rest }));
     return proc;
   }
 
   @command async "proc-connect"({ proc }) {
     try {
       await proc("connect");
-      await this.registry_updateProcInfo({ proc });
+      await this.appRegistry("update", { uri: proc.uri, manifest: proc.manifest });
       await proc("ready");
       return proc;
     } catch (error) {
-      await this.registry_resetProcInfo({ proc });
+      await this.appRegistry("update", { uri: proc, manifest: null });
       this.throw(error);
     }
   }
@@ -58,40 +60,5 @@ export class ShellController extends Controller {
     );
     return proc;
   }
-
-  async registry_getProcInfo({ type, ...rest }) {
-    switch (type) {
-      case "app":
-        const { url } = rest;
-        return await this.appRegistry("get", { url });
-      default:
-
-          return new AppInfo({});
-        return { about: {} };
-    }
-  }
-
-  async registry_updateProcInfo({ proc }) {
-    const { manifest, type } = proc;
-    switch (type) {
-      case "app":
-        const { url } = proc;
-        return await this.appRegistry("update", { url, manifest });
-      default:
-        return proc.info.manifest = manifest;
-    }
-  }
-
-  async registry_resetProcInfo({ proc }) {
-    const { manifest, type } = proc;
-    switch (type) {
-      case "app":
-        const { url } = proc;
-        return await this.appRegistry("update", { url, manifest: null });
-      default:
-        return { about: {} };
-    }
-  }
-
 };
 

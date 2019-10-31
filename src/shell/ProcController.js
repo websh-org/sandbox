@@ -1,6 +1,7 @@
 import { AppController } from "./proc/AppController";
 import { WebController } from "./proc/WebController";
 import { LocalController } from "./proc/LocalController";
+import { parseWebShellURI } from "~/lib/utils";
 
 export const procTypes = {
   'app': AppController,
@@ -9,8 +10,9 @@ export const procTypes = {
 }
 
 export const ProcController = {
-  create({type,...rest}) {
-    return procTypes[type].create({type,...rest});
+  create({uri,...rest}) {
+    const {type,locator} = parseWebShellURI(uri);
+    return procTypes[type].create({type,locator,...rest});
   }
 }
 

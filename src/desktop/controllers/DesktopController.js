@@ -64,16 +64,11 @@ export class DesktopController extends Controller {
 
   @command async "show-launcher"() {
     const me = this;
-    const { url } = await this.showModal("launcher", { get infos() { return me.infos } }) || {};
-    if (!url) return;
-    this.call("launch-app", { url })
+    const { uri } = await this.showModal("launcher", { get infos() { return me.infos } }) || {};
+    if (!uri) return;
+    this.call("window-open", { uri })
   }
-  /**
-   * 
-   * WINDOW COMMANDS
-   *
-   */
-
+  
 
   @command async "window-activate"({ window }) {
     await this.wm("window-activate", { window });
@@ -103,14 +98,19 @@ export class DesktopController extends Controller {
    *
    */
 
+
+  @command async "launch-app"({ url }) {
+    return await this.call("window-open", { uri:"webshell:app:" + url })
+  }
+
   @command .errors({
       async "app-invalid-manifest"(error) {
         await this.catch(error)
       }
     })
-  async "launch-proc"({ type, keepOpen, ...rest }) {
-    const proc = await this.shell("proc-open", { type, ...rest })
-    const window = await this.wm("window-open", { type, keepOpen, proc });
+  async "window-open"({ uri, keepOpen, ...rest }) {
+    const proc = await this.shell("proc-open", { uri, ...rest })
+    const window = await this.wm("window-open", { keepOpen, proc });
     await this.call("window-activate", { window })
     try {
       await this.shell("proc-connect", { proc });
@@ -121,24 +121,29 @@ export class DesktopController extends Controller {
         await this.call("app-file-new",{window})
       }
 
-      await proc("closed");
+      this.waitForClose({window});
     } catch (error) {
       await this.throw(error);
       await this.call("window-close", { window })
     }
   }
 
-  @command async "launch-app"({ url }) {
-    return await this.call("launch-proc", { type: "app", url })
+  async waitForClose({window}) {
+    try {
+      await window.proc("closed");
+    } catch (error) {
+      await this.catch(error);
+      await this.call("window-close", { window })
+    }
   }
+
 
   @command async "app-file-new"({ window }) {
     return await window.proc("file-new", {})
   }
 
-  @command async "app-file-open"({ window, format }) {
-    const formatInfo = window.info.file.formats.get(format);
-    const { file } = await this.showModal("file-open", { format: formatInfo }) || {};
+  @command async "app-file-open"({ window }) {
+    const { file, format } = await this.showModal("file-open", { formats:window.info.file.formats }) || {};
     if (!file) return;
     return await window.proc("file-open", { file, format })
   }
@@ -176,16 +181,8 @@ const AppToolbar = {
         available(window) {
           return !!window.info.file.formats.open.length;
         },
-        items(window) {
-          return window.info.file.formats.open.map(f => ({
-            label: f.label || f.id,
-            params: (window) => ({ window,format: f.id  }),
-            command: "app-file-open",
-            async xexecute(window) {
-              return await this.call("app-file-open", { window,format: f.id });
-            }
-          }))
-        },
+        params: (window) => ({ window }),
+        command: "app-file-open",
       },
       {
         icon: "save",

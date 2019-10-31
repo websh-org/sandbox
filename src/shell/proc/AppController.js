@@ -11,6 +11,6 @@ export class AppController extends RemoteController {
   }
 
   @expose @computed get title() {
-    return this.info.about.name || this.url
+    return this.info.about.name || this.locator
   }
 };

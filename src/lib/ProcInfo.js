@@ -2,7 +2,7 @@ import { observable, action, reaction, computed, toJS } from "mobx";
 import licenses from 'spdx-license-list';
 
 import { ControllerError } from "./controller/ControllerError"
-import { translate, invalidator } from "~/lib/utils";
+import { translate, invalidator, parseWebShellURI } from "~/lib/utils";
 
 import manifestSchema from "~/../static/schemas/app-manifest.json";
 import { FileFormat } from "./FileFormat";
@@ -25,9 +25,19 @@ function resolveURL(...args) {
   }
 }
 
-export class AppInfo {
+export class ProcInfo {
+
+  constructor({ uri, manifest }) {
+    //  if (!url) debugger
+    this.uri = uri;
+    const {type,locator} = parseWebShellURI(uri);
+    this.type = type;
+    this.locator = locator;
+    if (manifest) this.manifest = manifest;
+  }
 
   url = null;
+  locator = null;
 
   @observable _manifest = null;
 
@@ -40,17 +50,13 @@ export class AppInfo {
       const errors = invalidate(value);
       if (errors) {
         console.log({errors,value:toJS(value)})
-        throw new ControllerError({ code: "app-invalid-manifest", data: { errors, url: this.url } })
+        throw new ControllerError({ code: "app-invalid-manifest", data: { errors, url: this.locator } })
       }
       this._manifest = value;
 
   }
 
-  constructor({ url, manifest }) {
-  //  if (!url) debugger
-    this.url = url;
-    if (manifest) this.manifest = manifest;
-  }
+
 
   @computed get about() {
     if (!this.manifest) return { supported: false };
@@ -60,7 +66,7 @@ export class AppInfo {
       version,
       description,
       short_name: short_name || name,
-      icon: resolveURL(icon, this.url),
+      icon: resolveURL(icon, this.locator),
       homepage: resolveURL(homepage),
       repository: resolveURL(repository),
       license: licenses[license] || {

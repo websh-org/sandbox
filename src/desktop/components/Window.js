@@ -6,6 +6,7 @@ import { Toolbar } from "~/desktop/ui/Toolbar"
 import { Icon, AppIcon } from "~/desktop/ui/"
 import { windowTypes } from "./windows"
 import "./Window.less";
+import { WindowDebug } from "./WindowDebug";
 const stateLabels = {
   INITIAL: "Loading",
   LOADED: "Connecting to"
@@ -21,7 +22,7 @@ export class Window extends React.Component {
     return ret.join(" ");
   }
 
-  @observable showDebug = false;
+  @observable showDebug = true;
 
   render() {
     const { window } = this.props;
@@ -45,7 +46,7 @@ export class Window extends React.Component {
         {
           this.showDebug &&
           <div className="debug">
-            <Debug window={window}/>
+            <WindowDebug window={window}/>
           </div>
         }
         <div className="sh loader ui text loader">{stateLabels[window.state] || window.state} {title}...</div>
@@ -59,17 +60,6 @@ export class Window extends React.Component {
         </div>
       </div>
     );
-  }
-}
-
-@observer class Debug extends React.Component {
-  render() {
-    const {window}=this.props;
-    return(
-      <div>
-        <pre>{JSON.stringify(toJS(window.proc.manifest),null,2)}</pre>
-      </div>
-    )
   }
 }
 

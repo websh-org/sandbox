@@ -1,5 +1,5 @@
 {
-  "https://websh.org/app-ace/": {
+  "webshell:app:https://websh.org/app-ace/": {
     "v": 0,
     "name": "ACE",
     "icon": "icon.svg",
@@ -29,7 +29,7 @@
       }
     }
   },
-  "https://websh.org/app-quill/": {
+  "webshell:app:https://websh.org/app-quill/": {
     "v": 0,
     "name": "Quill",
     "icon": "icon.svg",
@@ -73,7 +73,7 @@
       }
     }
   },
-  "https://websh.org/app-jsoneditor/": {
+  "webshell:app:https://websh.org/app-jsoneditor/": {
     "v": 0,
     "name": "JSON Editor",
     "icon": "icon.svg",
@@ -105,7 +105,7 @@
       }
     }
   },
-  "https://websh.org/app-example-image/": {
+  "webshell:app:https://websh.org/app-example-image/": {
     "v": 0,
     "name": "Image Viewer Example App",
     "short_name": "Image Viewer",
@@ -132,7 +132,7 @@
       }
     }
   },
-  "https://websh.org/template-app-vanilla/": {
+  "webshell:app:https://websh.org/template-app-vanilla/": {
     "v": 0,
     "name": "Vanilla Example App",
     "short_name": "Vanilla Example",
@@ -163,7 +163,7 @@
       }
     }
   },
-  "https://websh.org/template-app-parcel/": {
+  "webshell:app:https://websh.org/template-app-parcel/": {
     "v": 0,
     "name": "Parcel Example App",
     "short_name": "Parcel Example",

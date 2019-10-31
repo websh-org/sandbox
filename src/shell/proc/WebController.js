@@ -14,20 +14,17 @@ translate({
 
 export class WebController extends BaseProcController {
 
-  constructor({ url, ...rest }) {
+  constructor({ ...rest }) {
     super({ ...rest });
 
-    const parsed = new URL(url);
-    this.url = parsed.href;
+    const parsed = new URL(this.locator);
     this.origin = parsed.origin;
   }
 
   _masterPort = null;
 
-  @expose @observable url;
-
   @expose @computed get title() {
-    return this._title || this.url;
+    return this._title || this.locator;
   }
 
   send(...args) {
@@ -45,13 +42,13 @@ export class WebController extends BaseProcController {
   @timeout(5000, "app-load-timeout")
   async checkAvailable() {
     try {
-      await fetch(this.url, {
+      await fetch(this.locator, {
         method: "head",
         mode: "no-cors",
         cache: "no-cache"
       })
     } catch (error) {
-      this.throw("app-load-unreachable", { url: this.url, reason: String(error) })
+      this.throw("app-load-unreachable", { url: this.locator, reason: String(error) })
     }
   }
 
@@ -68,7 +65,7 @@ export class WebController extends BaseProcController {
       resolve();
       //this._connect();
     }
-    iframe.src = this.url;
+    iframe.src = this.locator;
   }
 
   async _close({ confirmed }) {
@@ -79,7 +76,7 @@ export class WebController extends BaseProcController {
     this.element.removeAttribute('src');
     this.element.srcdoc = "Not loaded";
     await this._masterPort.disconnect();
-    this.url = null;
+    this.locator = null;
   }
 
   _activate() {

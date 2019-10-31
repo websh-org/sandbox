@@ -16,7 +16,7 @@ export class PromptDialog extends React.Component {
               <input
                 type="text"
                 autoFocus={true}
-                value={this.url}
+                value={this.value}
                 onChange={e => this.value = e.target.value}
               ></input>
             </div>

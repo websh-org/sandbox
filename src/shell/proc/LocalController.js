@@ -9,9 +9,9 @@ export class LocalController extends BaseProcController {
 
   @expose kind = null;
 
-  constructor({ kind, ...rest }) {
-    super({ ...rest });
-    this.kind = kind;
+  constructor({ kind, type, ...rest }) {
+    super({ type, ...rest });
+    this.kind = this.locator;
   }
 
   @computed get title() {

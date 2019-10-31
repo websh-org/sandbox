@@ -1,14 +1,15 @@
 import { observable, action, reaction, computed, toJS } from "mobx";
 import { Controller, expose, command } from "~/lib/controller/Controller";
 import { RemoteController } from "../proc/RemoteController";
-import { AppInfo } from "~/lib/AppInfo";
+import { ProcInfo } from "~/lib/ProcInfo";
 
 import knownApps from "~/../static/known.apps.json"
+import { parseWebShellURI } from "~/lib/utils";
 
-function checkURL(url) {
-  url = new URL(url);
-  //if (url.protocol !== "https:" && url.hostname!=="localhost") throw {code:"app-not-https"}
-  return url.href;
+function checkURL(uri) {
+  uri = new URL(uri);
+  //if (uri.protocol !== "https:" && uri.hostname!=="localhost") throw {code:"app-not-https"}
+  return uri.href;
 }
 
 export class AppRegistryController extends Controller {
@@ -30,8 +31,8 @@ export class AppRegistryController extends Controller {
 
   async _load() {
     const saved = Object.assign({},knownApps,await this.registry("load",{key:"apps",initial:{}}));
-    for (var url in saved) {
-      this._update({url,manifest:saved[url]})
+    for (var uri in saved) {
+      this._update({uri,manifest:saved[uri]})
     }
   }
 
@@ -39,23 +40,23 @@ export class AppRegistryController extends Controller {
     const saved = {};
     for (var info of this.infos) {
       if (info.unknown) continue;
-      saved[info.url] = info.manifest;
+      saved[info.uri] = info.manifest;
     }
     this.registry("save",{key:"apps",value:saved});
   }
 
-  _get({url}) {
-    url = checkURL(url);
-    if (!this._infos.has(url)) {
-      this._infos.set(url,new AppInfo({url}))
-      this._infos.get(url).unknown = true;
+  _get({uri}) {
+    const { type, locator } = parseWebShellURI(uri);
+    if (!this._infos.has(uri)) {
+      this._infos.set(uri,new ProcInfo({uri}))
+      this._infos.get(uri).unknown = true;
     }
-    return this._infos.get(url)
+    return this._infos.get(uri)
   }
 
-  _update({url,manifest}) {
-    url = checkURL(url);
-    const info = this._get({url});
+  _update({uri,manifest}) {
+    const { type, locator } = parseWebShellURI(uri);
+    const info = this._get({uri});
     if (!manifest) {
       if (!info.unknown) return;
     } else {
@@ -64,16 +65,16 @@ export class AppRegistryController extends Controller {
     }
   }
 
-  @command get({ url }) {
-    return this._get({url});
+  @command get({ uri }) {
+    return this._get({uri});
   }
   
-  @command update({url,manifest}) {
+  @command update({uri,manifest}) {
     if (manifest) {
-      this._update({url,manifest})
+      this._update({uri,manifest})
       this._save();
     } else {
-      this._infos.delete(url);
+      this._infos.delete(uri);
     }
   }
 };

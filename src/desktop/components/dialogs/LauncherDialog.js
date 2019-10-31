@@ -16,12 +16,14 @@ export class LauncherDialog extends React.Component {
         <ButtonTabs>
           <ButtonTabs.Tab id="apps" label="Your Apps">
             {
-              infos.map(info => (
+              infos
+              .filter(info=>info.type==="app")
+              .map(info => (
                 <div
-                  key={info.url}
+                  key={info.uri}
                   className="sh launch button ui basic button"
                   title={info.about.description}
-                  onClick={() => resolve({ url: info.url })}
+                  onClick={() => resolve({ uri: info.uri })}
                 >
                   <AppIcon url={info.about.icon} />
                   <div className="name">
@@ -32,7 +34,7 @@ export class LauncherDialog extends React.Component {
             }
           </ButtonTabs.Tab>
           <ButtonTabs.Tab id="url" label="Open From URL">
-            <UrlInput onAction={(url) => dialog("resolve", { url })} />
+            <UrlInput onAction={(url) => dialog("resolve", { uri:"webshell:app:"+url })} />
           </ButtonTabs.Tab>
         </ButtonTabs>
       </Dialog>

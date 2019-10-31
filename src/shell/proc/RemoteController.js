@@ -39,7 +39,7 @@ export class RemoteController extends WebController {
     this.element.removeAttribute('src');
     this.element.srcdoc = "Not loaded";
     await this._masterPort.disconnect();
-    this.url = null;
+    this.locator = null;
   }
 
  

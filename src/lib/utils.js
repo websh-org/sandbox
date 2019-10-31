@@ -1,4 +1,5 @@
 import Ajv from "ajv";
+import { ControllerError } from "./controller/ControllerError";
 
 const translations = {};
 const uuidPattern = "" + 1e7 + -1e3 + -4e3 + -8e3 + -1e11;
@@ -35,4 +36,23 @@ export function translate(id,def) {
   }
   if (id in translations) throw {code:"duplicate-translation", data:{id}}
   translations[id] = def;
+}
+
+translate({
+  "error:bad-uri": "URI failed to parse",
+  "error:bad-uri:message": "{uri} is not a valid WebShell URI: {reason}"
+})
+
+export function parseWebShellURI(uri) {
+  try {
+    const url1 = new URL(uri);
+    if (url1.protocol!=="webshell:") throw new Error("Must be prefixed with webshell:")
+    const uri2 = url1.pathname+(url1.query||"")+(url1.hash||"");
+    const url2 = new URL(uri2);
+    const type = url2.protocol.slice(0,-1);
+    const locator = url2.pathname+(url2.query||"")+(url2.hash||"");
+    return {type,locator}
+  } catch (error) {
+    throw new ControllerError({code:"bad-uri",data:{reason:String(error),uri}})
+  }
 }
