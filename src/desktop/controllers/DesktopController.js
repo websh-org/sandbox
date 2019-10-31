@@ -1,6 +1,6 @@
 import { observable, action, when, reaction, computed } from "mobx";
 
-import { Controller, expose, command, errors } from "~/lib/Controller";
+import { Controller, expose, command, errors } from "~/lib/controller/Controller";
 
 import { WindowManagerController } from "./WindowManagerController";
 import { ShellController } from "~/shell/ShellController";
@@ -23,9 +23,6 @@ export class DesktopController extends Controller {
 
   constructor({ ...rest }) {
     super({ ...rest });
-    this.on("app-action", ({ target: app }, { action, params }) => {
-      this.call("app-" + action, { ...params, app });
-    })
   }
 
   toolbars = new WeakMap()

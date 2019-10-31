@@ -2,8 +2,8 @@
 body {
   --bg       : #fff;
   --fg       : #000;
-  --bg-hover : #333;
-  --fg-hover : #333;
+  --bg-hover : #fff;
+  --fg-hover : #666;
   --bg-active: #ccc;
   --fg-active: #555;
 
@@ -30,6 +30,10 @@ body {
   color     : var(--fg);
 }
 
+.sh.colors {
+  .colors();
+}
+
 .selectable() {
   background: var(--bg);
   color     : var(--fg);
@@ -46,6 +50,12 @@ body {
   }
 }
 
+.sh.selectable {
+  .colors();
+  .selectable();
+}
+
+
 .hoverable() {
   color: var(--fg);
 
@@ -56,4 +66,9 @@ body {
   &:hover {
     color: var(--fg-hover);
   }
+}
+
+.sh.hoverable {
+  .colors();
+  .hoverable();
 }

@@ -1,5 +1,5 @@
 import { observable, action, reaction, computed, toJS } from "mobx";
-import { Controller, expose, command } from "~/lib/Controller";
+import { Controller, expose, command } from "~/lib/controller/Controller";
 import { RemoteController } from "../proc/RemoteController";
 import { AppInfo } from "~/lib/AppInfo";
 

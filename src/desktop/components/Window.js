@@ -1,7 +1,7 @@
 import React from "react";
 
 import { observer } from "mobx-react";
-import { computed } from "mobx";
+import { computed, observable, toJS } from "mobx";
 import { Toolbar } from "~/desktop/ui/Toolbar"
 import { Icon, AppIcon } from "~/desktop/ui/"
 import { windowTypes } from "./windows"
@@ -13,47 +13,90 @@ const stateLabels = {
 
 @observer
 export class Window extends React.Component {
+  
   @computed get classes() {
     const ret = [];
     const { active } = this.props.window;
     active && ret.push("active");
     return ret.join(" ");
   }
+
+  @observable showDebug = true;
+
   render() {
-    const { window, children } = this.props;
+    const { window } = this.props;
     const { type, title, icon, wid, active, zIndex } = window;
     const Inner = windowTypes[type];
-
     return (
-      <div 
-        className={"sh window ui segments "+this.classes}
+      <div
+        className={"sh window " + this.classes}
         title={wid}
         style={{ zIndex }}
         data-state={window.state}
       >
-        <div className="titlebar ui form inverted segment">
-          <span className="title">
-           <AppIcon url={window.icon} size="mini"/> 
-           &nbsp; 
-           {title}
-          </span>
-          {
-            window.proc.file &&
-            <span className="file" title={JSON.stringify(window.proc.file,null,2)}>
-              <Icon icon="file"/>
-              {window.proc.file.name}
-            </span>
-          }
+        <div className="titlebar">
+          <TitleBar window={window} />
         </div>
         {this.props.toolbar && this.props.toolbar.items && <Toolbar items={this.props.toolbar.items} />}
         <div className="client">
-          <Inner window={window}/>
+          <Inner window={window} />
         </div>
-        <div className="statusbar ui tight secondary segment">
+        {
+          this.showDebug &&
+          <div className="debug">
+            <Debug window={window}/>
+          </div>
+        }
+        <div className="statusbar">
+          <i className="sh selectable wrench icon"
+            data-active={this.showDebug}
+            onClick={()=>this.showDebug=!this.showDebug}
+          />
           <small>{window.state}</small>
         </div>
-        <div className="sh loader ui text loader">{stateLabels[window.state]||window.state} {title}...</div> 
+        <div className="sh loader ui text loader">{stateLabels[window.state] || window.state} {title}...</div>
       </div>
     );
   }
 }
+
+@observer class Debug extends React.Component {
+  render() {
+    const {window}=this.props;
+    return(
+      <div>
+        <pre>{JSON.stringify(toJS(window.proc.manifest),null,2)}</pre>
+        <pre>{JSON.stringify(toJS(window.proc.info),null,2)}</pre>
+      </div>
+    )
+  }
+}
+
+
+@observer class TitleBar extends React.Component {
+  render() {
+    const { window } = this.props;
+    const { title } = window;
+    const api = window.proc.api;
+    return (
+      <>
+        <span className="title">
+          <AppIcon url={window.icon} size="mini" />
+          &nbsp;
+          {title}
+        </span>
+        {
+          api.file && api.file.currentFile &&
+          <span
+            className="file"
+            title={JSON.stringify(api.file.currentFile, null, 2)}
+          >
+            <Icon icon="file" />
+            {api.file.currentFile.name}
+          </span>
+        }
+      </>
+    )
+  }
+}
+

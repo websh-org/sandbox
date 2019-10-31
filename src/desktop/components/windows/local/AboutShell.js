@@ -5,10 +5,9 @@ import logo from "~/../static/web-shell-logo.png"
 import { DataList } from "~/desktop/ui";
 @observer
 export class AboutShell extends React.Component {
-  loadWindow = element => {
-    if (element) this.props.window("load", { element });
+  manifest = {
+    name: "About WebShell"
   }
-
   render() {
     return (
       <div className="ui container segments">

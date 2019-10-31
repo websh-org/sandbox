@@ -33,7 +33,8 @@ export class Dock extends React.Component {
   }
 
   render() {
-    const { desktop, window } = this.props;
+    const { window } = this.props;
+    const { api } = window.proc;
     return (
       <ListItem
         image={window.icon}
@@ -42,7 +43,7 @@ export class Dock extends React.Component {
         onRemove={this.onRemove}
         remove={!window.keepOpen}
         name={window.info.about ? window.info.about.short_name : window.proc.title}
-        extra={window.proc.file && window.proc.file.name}
+        extra={api.file && api.file.currentFile && api.file.currentFile.name}
       />
     )
   }

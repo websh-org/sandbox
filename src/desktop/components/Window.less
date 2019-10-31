@@ -1,4 +1,6 @@
 
+@import "~/desktop/styles/colors.default.less";
+
 .sh.window {
   display   : grid;
   background: #eee;
@@ -13,18 +15,30 @@
   right:0;
   min-height: 0;  /* NEW */
   min-width: 0; 
-
   &.active {
   }
 
 
  
   grid:
-    "titlebar"max-content "toolbar"max-content "client"1fr "statusbar" max-content;
+    "titlebar   titlebar"max-content 
+    "toolbar    toolbar"max-content 
+    "debug      client"1fr 
+    "statusbar  statusbar" max-content;
 
+    grid-template-columns:max-content 1fr;
+
+  >.debug {
+    grid-area:debug;
+    border-right:solid 1px silver;
+    .colors();
+    width:320px;
+    overflow:auto;
+  }
   >.titlebar {
-    display:none;
     grid-area: titlebar;
+    .panel();
+    .colors();
     line-height:32px;
     padding:0 6px 2px;
     >.title {
@@ -51,6 +65,7 @@
     grid-area: statusbar;
     line-height:1.2;
     padding:4px 8px;
+    border-top: solid 1px silver;
   }
 
   >.loader {

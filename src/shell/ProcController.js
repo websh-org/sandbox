@@ -1,6 +1,6 @@
-import { AppController } from "./AppController";
-import { WebController } from "./WebController";
-import { LocalController } from "./LocalController";
+import { AppController } from "./proc/AppController";
+import { WebController } from "./proc/WebController";
+import { LocalController } from "./proc/LocalController";
 
 export const procTypes = {
   'app': AppController,

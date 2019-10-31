@@ -1,10 +1,12 @@
 import { observable, action, reaction, computed, toJS } from "mobx";
 import licenses from 'spdx-license-list';
 
-import { ControllerError } from "./ControllerError"
+import { ControllerError } from "./controller/ControllerError"
 import { translate, invalidator } from "~/lib/utils";
 
 import manifestSchema from "~/../static/schemas/app-manifest.json";
+import { FileFormat } from "./FileFormat";
+import { fileApiInfo } from "~/api/app/file/fileApiInfo";
 const invalidate = invalidator(manifestSchema);
 
 translate({
@@ -67,8 +69,8 @@ export class AppInfo {
   }
 
   @computed
-
   get file() {
+    return fileApiInfo(this.manifest||{});
     const def = this.manifest && this.manifest.api && this.manifest.api.file;
     const formats = {};
     const ret = {
@@ -122,29 +124,5 @@ export class AppInfo {
     ret.formats.default = def.new && ret.formats.get(def.new);
 
     return ret;
-  }
-}
-
-class FileFormat {
-  constructor(id, def) {
-    console.log(toJS(def));
-    this.id = id;
-    this.name = def.name;
-    this.save = !!def.save;
-    this.open = !!def.open;
-    this.new = !!def.new;
-    this.extension = def.extension;
-    this.type = def.type;
-    this.accept = def.accept || this.extension && "." + this.extension || this.type;
-    this.encoding = def.encoding || "text";
-  }
-
-  newFile() {
-    return {
-      name: "New " + this.name + (this.extension ? "." + this.extension : ""),
-      format: this.id,
-      extension: this.extension,
-      type: this.type
-    }
   }
 }

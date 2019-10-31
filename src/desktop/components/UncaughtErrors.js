@@ -4,7 +4,7 @@ import { observer } from "mobx-react";
 import { T } from "~/lib/utils";
 
 import "../styles/styles.less";
-import { ControllerError } from "~/lib/ControllerError";
+import { ControllerError } from "~/lib/controller/ControllerError";
 
 const uncaughtErrors = observable.set();
 const handleError = event => {

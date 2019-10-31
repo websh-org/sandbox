@@ -1,13 +1,12 @@
 import { observable, action, reaction, when, computed } from "mobx";
-import { Controller, expose, command } from "../../lib/Controller";
+import { Controller, expose, command } from "../../lib/controller/Controller";
 
 import { resolve } from "dns";
-import { ControllerError } from "~/lib/ControllerError";
+import { ControllerError } from "~/lib/controller/ControllerError";
 
 let counter = 0;
 
 export class BaseProcController extends Controller {
-
   static $id = "pid";
 
   @expose type = null;
@@ -15,6 +14,15 @@ export class BaseProcController extends Controller {
   @expose @observable info
   @expose @observable state = null;
   @expose @observable dead = false;
+  
+  @observable _api = new Map();
+  @expose @computed get api() {
+    const ret = {};
+    for (const key of this._api.keys()) {
+      ret[key] = this._api.get(key);
+    }
+    return ret;
+  }
 
   @expose get title() {
     return this._title;
@@ -81,9 +89,9 @@ export class BaseProcController extends Controller {
 
   loadProc() { }
 
-  @action async LOADING({ element }) {
+  @action async LOADING({ element, ...rest }) {
     this.element = element;
-    await this.loadProc();
+    await this.loadProc(rest);
     this.setState("CONNECTING");
   }
 
@@ -118,8 +126,9 @@ export class BaseProcController extends Controller {
   }
 
 
-  @command async 'load'({ element }) {
-    this.setState("LOADING", { element });
+  @command async 'load'({ ...params }) {
+    console.log({params})
+    this.setState("LOADING", params );
   }
 
   @command 'kill'() {

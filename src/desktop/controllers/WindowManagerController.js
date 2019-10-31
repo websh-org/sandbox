@@ -1,5 +1,5 @@
 import { observable, action, when, reaction, computed } from "mobx";
-import { Controller, expose, command } from "../../lib/Controller";
+import { Controller, expose, command } from "../../lib/controller/Controller";
 import { WindowController } from "./WindowController";
 
 export class WindowManagerController extends Controller {

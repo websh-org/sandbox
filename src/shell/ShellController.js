@@ -1,6 +1,6 @@
 import { observable, action, when, reaction, computed } from "mobx";
-import { Controller, expose, command } from "../lib/Controller";
-import { ProcController } from "./proc/ProcController";
+import { Controller, expose, command } from "../lib/controller/Controller";
+import { ProcController } from "./ProcController";
 import { AppRegistryController } from "./registry/AppRegistryController";
 
 import { RegistryController } from "./registry/RegistryController"

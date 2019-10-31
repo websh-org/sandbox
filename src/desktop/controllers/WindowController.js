@@ -1,5 +1,5 @@
 import { observable, action, reaction, computed } from "mobx";
-import { Controller, expose, command } from "../../lib/Controller";
+import { Controller, expose, command } from "../../lib/controller/Controller";
 import unknownProc from "~/../assets/icons/proc/unknown.svg"
 
 var maxZ = 0;
@@ -64,8 +64,8 @@ export class WindowController extends Controller {
     return this;
   }
 
-  @command "load"({ element }) {
-    this.proc("load", { element })
+  @command "load"({ element, ...rest }) {
+    this.proc("load", { element, ...rest })
   }
 
   @command "maximize"() {
