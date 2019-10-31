@@ -65,7 +65,7 @@ export class ShellController extends Controller {
         const { url } = rest;
         return await this.appRegistry("get", { url });
       default:
-          console.log("manifest");
+
           return new AppInfo({});
         return { about: {} };
     }
@@ -78,7 +78,6 @@ export class ShellController extends Controller {
         const { url } = proc;
         return await this.appRegistry("update", { url, manifest });
       default:
-        console.log(toJS(manifest));
         return proc.info.manifest = manifest;
     }
   }

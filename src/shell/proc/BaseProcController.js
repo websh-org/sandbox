@@ -67,6 +67,7 @@ export class BaseProcController extends Controller {
   }
 
   async setState(STATE, data = {}) {
+    console.log(this.state,"-->",STATE)
     if (STATE === "INVALID") {
       this.state = "INVALID";
       this.INVALID({ ...data, state: this.state });
@@ -98,7 +99,6 @@ export class BaseProcController extends Controller {
   @action async CONNECTING() {
     this.resolve("loaded");
     const manifest = this.manifest = await this.getManifest();
-    console.log("CONNECTING",manifest)
     this.setState("CONNECTED", { manifest });
   }
 
@@ -128,7 +128,7 @@ export class BaseProcController extends Controller {
 
 
   @command async 'load'({ ...params }) {
-    console.log({params})
+
     this.setState("LOADING", params );
   }
 

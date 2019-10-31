@@ -21,7 +21,7 @@ export class Window extends React.Component {
     return ret.join(" ");
   }
 
-  @observable showDebug = true;
+  @observable showDebug = false;
 
   render() {
     const { window } = this.props;
@@ -38,6 +38,7 @@ export class Window extends React.Component {
           <TitleBar window={window} />
         </div>
         {this.props.toolbar && this.props.toolbar.items && <Toolbar items={this.props.toolbar.items} />}
+        <div className="main">
         <div className="client">
           <Inner window={window} />
         </div>
@@ -47,6 +48,8 @@ export class Window extends React.Component {
             <Debug window={window}/>
           </div>
         }
+        <div className="sh loader ui text loader">{stateLabels[window.state] || window.state} {title}...</div>
+        </div>
         <div className="statusbar">
           <i className="sh selectable wrench icon"
             data-active={this.showDebug}
@@ -54,7 +57,6 @@ export class Window extends React.Component {
           />
           <small>{window.state}</small>
         </div>
-        <div className="sh loader ui text loader">{stateLabels[window.state] || window.state} {title}...</div>
       </div>
     );
   }
@@ -66,7 +68,6 @@ export class Window extends React.Component {
     return(
       <div>
         <pre>{JSON.stringify(toJS(window.proc.manifest),null,2)}</pre>
-        <pre>{JSON.stringify(toJS(window.proc.info),null,2)}</pre>
       </div>
     )
   }

@@ -12,7 +12,6 @@ export class AboutShell extends React.Component {
     description: "About WebShell"
   }
   render() {
-    console.log("render about")
     return (
       <div className="ui container segments">
         <div className="ui segment ">
