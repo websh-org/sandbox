@@ -22,7 +22,7 @@ export class Window extends React.Component {
     return ret.join(" ");
   }
 
-  @observable showDebug = false;
+  @observable showDebug = process.env.NODE_ENV != "production" ;
 
   render() {
     const { window } = this.props;

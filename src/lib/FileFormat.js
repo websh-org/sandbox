@@ -13,9 +13,10 @@ export class FileFormat {
   }
 
   matchAccept(file) {
-    const parts = this.accept.trim().split("\s*,\s*").filter(Boolean);
+    const parts = this.accept.trim().split(/\s*,\s*/).filter(Boolean);
     if (!parts.length) return true;
     for (const part of parts) {
+      console.log({parts});
       if (part.startsWith(".") && part.substr(1)===file.extension) return true;
       if (part === "*/*") return true;
       if (part === file.type.replace(/[/].+$/,"/*")) return true;
