@@ -10,7 +10,7 @@ export class BaseProcController extends Controller {
   static $id = "pid";
 
   @expose type = null;
-  @expose @observable manifest = {};
+  @expose @observable manifest = null;
   @expose @observable info
   @expose @observable state = null;
   @expose @observable dead = false;
@@ -97,12 +97,13 @@ export class BaseProcController extends Controller {
 
   @action async CONNECTING() {
     this.resolve("loaded");
-    const manifest = this.manifest = await this.getManifest()
+    const manifest = this.manifest = await this.getManifest();
+    console.log("CONNECTING",manifest)
     this.setState("CONNECTED", { manifest });
   }
 
   async getManifest() {
-    return {};
+    return null;
   }
 
   @action async CONNECTED({ manifest }) {

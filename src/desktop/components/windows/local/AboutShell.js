@@ -6,9 +6,13 @@ import { DataList } from "~/desktop/ui";
 @observer
 export class AboutShell extends React.Component {
   manifest = {
-    name: "About WebShell"
+    v:0,
+    name: "About WebShell",
+    icon: "icon.png",
+    description: "About WebShell"
   }
   render() {
+    console.log("render about")
     return (
       <div className="ui container segments">
         <div className="ui segment ">

@@ -6,7 +6,6 @@ import { localWindows } from "./index"
 @observer
 export class LocalWindow extends React.Component {
   loadWindow = element => {
-    console.log(element,element.manifest)
     if (element) this.props.window("load", { element, manifest:element.manifest });
   }
   render() {

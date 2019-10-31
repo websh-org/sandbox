@@ -1,57 +1,71 @@
+import { computed, observable } from "mobx";
 import { FileFormat } from "~/lib/FileFormat";
 
-export function fileApiInfo(manifest) {
-  const def = manifest.api && manifest.api.file;
-  const formats = {};
-  const ret = {
-    supported: !!def,
-    new: null,
-    save: [],
-    open: [],
-    formats: {
-      get(id) {
-        return formats[id];
-      },
-      all: [],
-      open: [],
-      save: [],
-      default: null
-    },
-    get defaultNewFile() {
-      return ret.formats.default && ret.formats.default.newFile()
-    },
-    newFile({ format, ...rest }) {
-      return formats[format].newFile(rest)
-    }
-  }
-  if (!ret.supported) return ret;
 
-  /**
-   * TODO : THROW ERRORS;
-   */
 
-  if (def.new in def.formats) {
-    ret.new = def.new;
+export class FileApiInfo {
+  constructor(manifest = {}) {
+    this.def = manifest.api && manifest.api.file;
   }
 
-  for (var id in def.formats) {
-    const f = def.formats[id]
-    const format = new FileFormat(id, f);
-    formats[id] = format;
-    ret.formats.all.push(format);
-    if (def.open && def.open.includes(id)) {
-      ret.open.push(id)
-      ret.formats.open.push(format);
-    }
-    if (def.save && def.save.includes(id)) {
-      ret.save.push(id)
-      ret.formats.save.push(format);
-    }
+  @computed get supported() {
+    return !!this.def
   }
-     
-  ret.formats.open = ret.formats.all.filter(f => ret.open.includes(f.id));
-  ret.formats.save = ret.formats.all.filter(f => ret.save.includes(f.id));
-  ret.formats.default = def.new && ret.formats.get(def.new);
 
-  return ret;
+  @computed get formats() {
+    return new FileFormatsInfo(this.def);
+  }
+
+  @computed get save() {
+    return this.formats.save.map(({ id }) => id);
+  }
+
+  @computed get open() {
+    return this.formats.open.map(({ id }) => id);
+  }
+
+  @computed get new() {
+    return this.formats.default;
+  }
+
+  @computed
+  get defaultNewFile() {
+    return this.formats.default && this.formats.default.newFile()
+  }
+}
+
+class FileFormatsInfo {
+  @observable def={};
+  constructor(def={}) {
+    this.def = def;
+  }
+
+  @computed get _formats() {
+    const ret = {};
+    for (var id in this.def.formats) {
+      ret[id] = new FileFormat(id, this.def.formats[id]);
+    }
+    return ret;
+  }
+
+  get(id) {
+    return this._formats[id]
+  }
+
+  @computed get all() {
+    return Object.values(this._formats);
+  }
+
+  @computed get open() {
+    return this.all.filter(({ id }) => this.def.open && this.def.open.includes(id));
+  }
+
+  @computed get save() {
+    return this.all.filter(({ id }) => this.def.save && this.def.save.includes(id));
+  }
+
+  @computed get default() {
+    return this.all.find(({ id }) => this.def.new && this.def.new === id);
+  }
+
 }

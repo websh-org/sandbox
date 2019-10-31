@@ -13,3 +13,4 @@ export const ProcController = {
     return procTypes[type].create({type,...rest});
   }
 }
+

@@ -123,7 +123,7 @@ export class DesktopController extends Controller {
 
       await proc("closed");
     } catch (error) {
-      await this.catch(error);
+      await this.throw(error);
       await this.call("window-close", { window })
     }
   }

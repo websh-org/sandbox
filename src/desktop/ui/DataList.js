@@ -1,7 +1,11 @@
 import React from "react";
-
+import {toJS} from  "mobx";
 export function DataList({data,id,className=""}) {
-  data = JSON.parse(JSON.stringify(data));
+  try {
+    data =data;
+  } catch(error) {
+    data = { ERROR: String(error)}
+  }
   className += " ui list";
   const render = (data) => {
     switch (typeof data) {

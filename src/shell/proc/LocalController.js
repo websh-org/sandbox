@@ -18,17 +18,8 @@ export class LocalController extends BaseProcController {
     return this.manifest.name;
   }
 
-   getManifest() {
-   this.info = {about: {
-      name: this.manifest.name
-    }}
-
-    return this.manifest;
-  }
-
-  loadProc({manifest={}}) {
-    console.log(manifest)
-    this.manifest = manifest;
+  getManifest() {
+    return this.element && this.element.manifest;
   }
 
   async _close({ confirmed }) {

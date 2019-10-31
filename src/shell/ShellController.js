@@ -1,4 +1,4 @@
-import { observable, action, when, reaction, computed } from "mobx";
+import { observable, action, when, reaction, computed, toJS } from "mobx";
 import { Controller, expose, command } from "../lib/controller/Controller";
 import { ProcController } from "./ProcController";
 import { AppRegistryController } from "./registry/AppRegistryController";
@@ -6,6 +6,7 @@ import { AppRegistryController } from "./registry/AppRegistryController";
 import { RegistryController } from "./registry/RegistryController"
 
 import knownApps from "~/../static/known.apps.json"
+import { AppInfo } from "~/lib/AppInfo";
 
 export class ShellController extends Controller {
   registry = null;
@@ -64,6 +65,8 @@ export class ShellController extends Controller {
         const { url } = rest;
         return await this.appRegistry("get", { url });
       default:
+          console.log("manifest");
+          return new AppInfo({});
         return { about: {} };
     }
   }
@@ -75,7 +78,8 @@ export class ShellController extends Controller {
         const { url } = proc;
         return await this.appRegistry("update", { url, manifest });
       default:
-        return { about: {} };
+        console.log(toJS(manifest));
+        return proc.info.manifest = manifest;
     }
   }
 
