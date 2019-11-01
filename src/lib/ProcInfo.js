@@ -15,9 +15,18 @@ translate({
 })
 
 
-function resolveURL(...args) {
+function resolveURL(to,from) {
   try {
-    const url = new URL(...args);
+    to = new URL(to);
+    return to.href;
+  } catch {
+    if (!from) return null;
+    if (!from.endsWith("/") && !to.match(/^[./]/) ) {
+      from += "/"
+    }
+  }
+  try {
+    const url = new URL(to,from);
     return url.href;
   } catch (error) {
     //console.log("bad url", ...args)

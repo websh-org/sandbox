@@ -8,22 +8,26 @@ import { UrlInput, ButtonTabs } from "~/desktop/ui";
 @observer
 export class FileOpenDialog extends React.Component {
 
-
+  
   openFromDisk = async e => {
     if (!e.target.files.length) return this.props.resolve(null);
     const file = this.file = await ShellFile.fromLocal(e.target.files[0]);
     this.format = this.listFormats[0] && this.listFormats[0].id;
-    //this.props.dialog("resolve",{file});
   }
 
   @observable file = null;
-  @observable format = "";
+  @observable format = this.props.data.formats.default.id;
   @computed get listFormats() {
     const { formats } = this.props.data;
     if (!this.file) return formats.open;
     else return formats.matchAccept(this.file);
   }
-
+  
+  @computed get accept() {
+    if (this.format) return this.props.data.formats.get(this.format).accept;
+    else return this.props.data.formats.accept;
+  }
+  
   render() {
     const { dialog, data } = this.props;
     const { format, formats } = data;
@@ -45,7 +49,7 @@ export class FileOpenDialog extends React.Component {
                     <i className="upload icon"></i> Select File
                 </div>
                 </label>
-                <input className="ui dimmer" id={id} type="file" accept={formats.accept} onChange={this.openFromDisk} />
+                <input className="ui dimmer" id={id} type="file" accept={this.accept} onChange={this.openFromDisk} />
               </div>
           </ButtonTabs.Tab>
           {false &&
@@ -58,8 +62,8 @@ export class FileOpenDialog extends React.Component {
           <div className="inline field">
             <label>Open as:</label>
             <select className="ui fluid dropdown" value={this.format} onChange={e => this.format = e.target.value}>
-              {!this.file && <option value="">All Accepted Files</option>}
               {this.listFormats.map(f => <option key={f.id} value={f.id}>{f.name}</option>)}
+              {!this.file && <option value="">All Accepted Files</option>}
             </select>
             <button 
               className="ui right floated orange button"
