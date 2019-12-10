@@ -16,7 +16,7 @@ export class FileOpenDialog extends React.Component {
   }
 
   @observable file = null;
-  @observable format = this.props.data.formats.default.id;
+  @observable format = this.props.data.formats.default && this.props.data.formats.default.id;
   @computed get listFormats() {
     const { formats } = this.props.data;
     if (!this.file) return formats.open;
