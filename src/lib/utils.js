@@ -56,3 +56,8 @@ export function parseWebShellURI(uri) {
     throw new ControllerError({code:"bad-uri",data:{reason:String(error),uri}})
   }
 }
+
+export const requestIdle = window.requestIdleCallback || ( fn=>setTimeout(fn,10) )
+
+
+
