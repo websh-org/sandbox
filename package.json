@@ -1,7 +1,7 @@
 {
   "name": "@websh/sandbox",
   "private": true,
-  "version": "0.2.0a",
+  "version": "0.2.1",
   "description": "WebShell",
   "keywords": [],
   "main": "src/index.js",
@@ -27,7 +27,7 @@
   "scripts": {
     "build": "(rm -rf docs/*; cd src; NODE_ENV=production parcel build index.html --public-url=/sandbox/ --out-dir=../docs)",
     "dev": "(cd src; parcel index.html)",
-    "publish": "npm run build; git add -A; git commit -m publish; git push"
+    "publish": "npm run build; git add docs; git commit -m publish; git push"
   },
   "browserslist": [
     "last 2 Chrome versions",
