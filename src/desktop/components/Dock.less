@@ -1,75 +1,9 @@
-@import "~/desktop/styles/colors.default.less";
-
-.sh-list() {
-  >.item>.remove {
-    &:after {
-      content: "×"
-    }
-  }
-  > .item > .image >img  {
-    object-fit    : contain;
-    vertical-align: middle;
-  }
-}
-
-.sh.desktop .sh.dock {
-  .sh-list();
-}
+@import "~/desktop/styles/imports";
 
 .sh.desktop[data-layout="default"] {
-  --dock-size: 40px;
-  --icon-size: 24px;
-
   .sh.dock {
     .panel();
-    .colors();
-    align-items: center;
-    display    : flex;
-    height     : var(--dock-size);
-    line-height: var(--dock-size);
-
-    >.item {
-      .selectable();
-      padding     : 0 8px;
-      cursor      : pointer;
-      border-right: solid 1px #8888;
-      display     : flex;
-
-      >.image {
-        >img {
-          width         : var(--icon-size);
-          height        : var(--icon-size);
-        }
-      }
-
-      >.title {
-        display: flex;
-
-        >.name,
-        >.extra {
-          margin-left: 8px;
-
-          &:empty {
-            display: none;
-          }
-        }
-
-        >.name {
-          font-weight: bold;
-        }
-
-        >.extra {
-          opacity: 0.8;
-        }
-      }
-
-      >.remove {
-        .hoverable();
-        display    : inline-block;
-        margin-left: 8px;
-        font-weight: bold;
-        font-size  : 120%;
-      }
-    }
+    .toolbar();
   }
 }
+

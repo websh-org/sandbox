@@ -6,6 +6,7 @@ export { localWindows } from "./local"
 export const windowTypes = {
   'app': IframeWindow,
   'web': IframeWindow,
+  'fs': IframeWindow,
   'local': LocalWindow
 }
 

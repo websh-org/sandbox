@@ -27,7 +27,11 @@ export class WindowController extends Controller {
   @expose @observable keepOpen = false;
   
   @expose @computed get title() {
-    return this.info.about ? this.info.about.short_name : this.proc.title;
+    return this.proc.title;
+  }
+
+  @expose @computed get extra() {
+    return this.proc.extra;
   }
 
   @expose @computed get type() {

@@ -19,7 +19,7 @@ export class RemoteController extends WebController {
  
   async getManifest() {
     const origin = this.element.sandbox && !this.element.sandbox.contains("allow-same-origin") ? "*" : this.origin;
-    this._masterPort = new RemoteMasterPort('SOUTH-TOOTH', this.element, { origin });
+    this._masterPort = new RemoteMasterPort('SOUTH-TOOTH', this.element, { origin, handler:this.trigger.bind(this)});
     try {
       return await this._masterPort.connect();
     } catch (error) {
@@ -27,10 +27,7 @@ export class RemoteController extends WebController {
     }
   }
 
-  iframeNavigated() {
-    this.setState("INVALID",{error:{code:"remote-navigated"}});
-  }
-  
+ 
   async _close({ confirmed }) {
     return await this.request("proc-close", { confirmed });
   }
@@ -42,7 +39,7 @@ export class RemoteController extends WebController {
     this.locator = null;
   }
 
- 
+
   send(...args) {
     return this._masterPort.send(...args);
   }

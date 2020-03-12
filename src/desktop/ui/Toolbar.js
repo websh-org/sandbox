@@ -7,7 +7,7 @@ export class Toolbar extends React.Component {
   render() {
     const { items } = this.props;
     return (
-      <div className="ui attached text menu">
+      <div className="sh toolbar">
         <ToolbarItems items={items} />
       </div>
     )
@@ -29,8 +29,10 @@ class ToolbarItem extends React.Component {
     const { type, available, items } = item;
     if (!available) return null;
     if (type === 'group') {
+      const attr = {};
+      if (item.order) attr["data-order"]=item.order;
       return (
-        <div className="menu">
+        <div className="group" {...attr}>
           <ToolbarItems items={items} />
         </div>
       )
@@ -46,16 +48,20 @@ class ToolbarButton extends React.Component {
     const { item } = this.props;
     const icon = this.props.icon || item.icon;
     const label = this.props.label || item.label;
+    const attr = {};
+    if (item.order) attr["data-order"]=item.order;
     return (
       <a
+        {...attr}
         className="item"
         tabIndex={-1}
+
         onClick={e => {
           document.activeElement.blur()
           item.execute();
         }}
       >
-        {icon && <i className={"icon " + icon} />}
+        {icon && <span className="image"><i className={"icon " + icon} /></span>}
         {label}
       </a>
     )

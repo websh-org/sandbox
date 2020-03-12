@@ -7,10 +7,15 @@ export class AppController extends RemoteController {
 
   constructor(params) {
     super(params);
-    this._api.set('file', RemoteFileApi.create({ target: this }))
+    this._api.set('file', RemoteFileApi.create({ controller: this }))
   }
+
 
   @expose @computed get title() {
     return this.info.about.name || this.locator
+  }
+
+  @expose @computed get extra() {
+    return this.api.file.currentFile && this.api.file.currentFile.name
   }
 };

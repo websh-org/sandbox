@@ -25,12 +25,17 @@ export class BaseProcController extends Controller {
     return ret;
   }
 
+
   @expose @computed get uri () {
     return "webshell:"+this.type+":"+this.locator;
   }
 
-  @expose get title() {
-    return this._title;
+  @expose @computed get title() {
+    return this.info.about && this.info.about.name || this.uri
+  }
+
+  @expose @computed get extra() {
+    return null;
   }
 
   @observable _title = null;
@@ -47,7 +52,26 @@ export class BaseProcController extends Controller {
     this.promise("loaded");
     this.promise("connected");
     this.promise("closed");
+    this.promise("ready");
     this.setState("INITIAL");
+  }
+  
+  _handlers = {};
+
+  @expose
+  on(event, handler) {
+    console.log('on',event)
+    this._handlers[event] = [].concat(this._handlers[event]||[]).concat(handler);
+  }
+  @expose
+  off(event, handler) {
+    this._handlers[event] = (this._handlers[event]||[]).filter(x=>x!==handler);
+  }
+
+
+  trigger(event,data) {
+    console.log('trigger',event,data);
+    (this._handlers[event]||[]).forEach(x=>x(data));
   }
 
   states = {
@@ -56,16 +80,19 @@ export class BaseProcController extends Controller {
       from: null
     },
     LOADING: {
-      from: "INITIAL",
+      from: ["INITIAL"],
     },
     CONNECTING: {
-      from: "LOADING",
+      from: ["LOADING","RELOADING"]
     },
     CONNECTED: {
       from: "CONNECTING",
     },
     READY: {
       from: "CONNECTED"
+    },
+    RELOADING: {
+      from: "READY"
     },
     INVALID: {
 
@@ -82,7 +109,7 @@ export class BaseProcController extends Controller {
     const state = this.states[STATE];
     try {
       this.assert(state, "proc-unknown-state", { state: STATE });
-      this.assert(!("from" in state) || this.state === state.from, "proc-unexpected-state", { state: STATE, from: this.state });
+      this.assert(!("from" in state) || [].concat(state.from).includes(this.state), "proc-unexpected-state", { state: STATE, from: this.state });
       this.state = STATE;
       this[STATE] && await this[STATE](data);
       return;
@@ -93,6 +120,11 @@ export class BaseProcController extends Controller {
   }
 
   @action INITIAL() { }
+
+  @action RELOADING() { 
+    this.setState("INVALID");
+  }
+
 
   loadProc() { }
 
@@ -115,9 +147,11 @@ export class BaseProcController extends Controller {
   @action async CONNECTED({ manifest }) {
     this.manifest = manifest;
     this.resolve("connected");
+    this.setState('READY')
   }
 
   @action async READY() {
+    this.resolve('ready')
   }
 
   @action async INVALID({ error, state }) {
@@ -126,6 +160,7 @@ export class BaseProcController extends Controller {
     this.reject("loaded", error);
     this.reject("connected", error);
     this.reject("closed", error);
+    this.reject("ready", error);
   }
 
   async DEAD() {
@@ -150,7 +185,7 @@ export class BaseProcController extends Controller {
 
 
   @command async 'ready'() {
-    await this.setState("READY");
+    await this.await("loaded", "connected","ready");
   }
 
   @command async 'closed'() {

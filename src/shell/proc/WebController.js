@@ -23,9 +23,7 @@ export class WebController extends BaseProcController {
 
   _masterPort = null;
 
-  @expose @computed get title() {
-    return this._title || this.locator;
-  }
+  
 
   send(...args) {
     return this._masterPort.send(...args);
@@ -37,6 +35,11 @@ export class WebController extends BaseProcController {
     await this.loadIframe();
     const origin = element.sandbox && !element.sandbox.contains("allow-same-origin") ? "*" : this.origin;
     this._masterPort = new RemoteMasterPort('SOUTH-TOOTH', element, { origin });
+  }
+
+  iframeNavigated() {
+    console.log("NAVIGATED")
+    this.setState("RELOADING");
   }
 
   @timeout(5000, "app-load-timeout")
@@ -52,9 +55,6 @@ export class WebController extends BaseProcController {
     }
   }
 
-  iframeNavigated() {
-
-  }
 
   @timeout(5000, "app-load-timeout")
   @promise async loadIframe(resolve) {

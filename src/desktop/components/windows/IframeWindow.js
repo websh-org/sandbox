@@ -10,7 +10,7 @@ export class IframeWindow extends React.Component {
 
   render() {
     return (
-      <iframe sandbox="allow-scripts" ref={this.loadWindow} />
+      <iframe sandbox="allow-scripts allow-forms" ref={this.loadWindow} />
     );
   }
 }

@@ -95,23 +95,18 @@ export class Controller {
   
 }
 
-class Command {
-  constructor({ target, name, execute }) {
-    Object.assign(this,{target,name,execute});
-  }
-}
 
 export class ControllerApi extends Controller {
-  constructor({target, name,...rest}) {
+  constructor({controller, name,...rest}) {
     super(rest);
-    this.target = target;
-    //target.api[name] = this;
+    this.controller = controller;
+    //controller.api[name] = this;
     for (var name in this._commands) {
       const {execute,...rest} = this._commands[name];
-      installCommand(target,name,{
+      installCommand(controller,name,{
         ...rest,
         execute: (params) => {
-          return execute.call(this,{target,...params})  
+          return execute.call(this,{controller,...params})  
         }        
       });
     }

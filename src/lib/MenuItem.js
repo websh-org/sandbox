@@ -19,6 +19,7 @@ export class MenuItem {
     }
   }
 
+
   
   @computed get type() {
     return this._def.type;
@@ -50,6 +51,10 @@ export class MenuItem {
     return this._resolve("label")
   }
 
+  @computed get order() {
+    return this._resolve("order",null)
+  }
+  
   @computed get icon() {
     return this._resolve("icon")
   }

@@ -2,16 +2,18 @@ import { observable, action, when, reaction, computed } from "mobx";
 
 import { Controller, expose, command, errors } from "~/lib/controller/Controller";
 
+import { RootFsController } from "./RootFsController";
 import { WindowManagerController } from "./WindowManagerController";
 import { ShellController } from "~/shell/ShellController";
 import { DialogController } from "./DialogController";
 import { MenuItem } from "~/lib/MenuItem";
-import { AppWindowController } from "./AppWindowController";
+
+
 export class DesktopController extends Controller {
 
   @expose shell = ShellController.create({ parent: this });
-
   @expose wm = WindowManagerController.create({ parent: this });
+  @expose fs = RootFsController.create({parent:this});
 
   @expose get windows() {
     return this.wm.windows;
@@ -103,11 +105,20 @@ export class DesktopController extends Controller {
     return await this.call("window-open", { uri:"webshell:app:" + url })
   }
 
+  @command async "launch-fs"({ url }) {
+    const window = await this.call("window-open", { uri:"webshell:fs:" + url, keepOpen:true })
+  }
+
+  @command async "launch-local"({ url, keepOpen }) {
+    return await this.call("window-open", { uri:"webshell:local:" + url,keepOpen })
+  }
+
+
   @command .errors({
-      async "app-invalid-manifest"(error) {
-        await this.catch(error)
-      }
-    })
+    async "app-invalid-manifest"(error) {
+      await this.catch(error)
+    }
+  })
   async "window-open"({ uri, keepOpen, ...rest }) {
     const proc = await this.shell("proc-open", { uri, ...rest })
     const window = await this.wm("window-open", { keepOpen, proc });
@@ -122,6 +133,7 @@ export class DesktopController extends Controller {
       }
 
       this.waitForClose({window});
+      return window;
     } catch (error) {
       await this.throw(error);
       await this.call("window-close", { window })
@@ -204,6 +216,7 @@ const AppToolbar = {
     {
       icon: "info",
       label: "About",
+      order: "last",
       execute(window) {
         this.call("app-about", { window });
       }

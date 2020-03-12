@@ -14,8 +14,8 @@ export class LocalController extends BaseProcController {
     this.kind = this.locator;
   }
 
-  @computed get title() {
-    return this.manifest.name;
+  @expose @computed get title() {
+    return this.info.about.name;
   }
 
   getManifest() {

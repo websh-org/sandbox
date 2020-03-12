@@ -14,18 +14,18 @@ export class FileApi extends ControllerApi {
   @expose @observable currentFormat;
 
   @command async "file-new"({}) {
-    const {controller} = this;
-    this.assert(controller.info.file.supported, "not-supported");
-    const file = new ShellFile(controller.info.file.defaultNewFile);
+    const {target} = this;
+    this.assert(target.info.file.supported, "not-supported");
+    const file = new ShellFile(target.info.file.defaultNewFile);
     const res = await this.fileNew({});
     this.currentFile = file;
     return res;
   }
 
   @command async "file-open"({ file, format }) {
-    const {controller} = this;
-    this.assert(controller.info.file.supported, "not-supported");
-    const formatInfo = controller.info.file.formats.get(format);
+    const {target} = this;
+    this.assert(target.info.file.supported, "not-supported");
+    const formatInfo = target.info.file.formats.get(format);
     const { extension, type } = file;
     const content = await file.getContent({encoding:formatInfo.encoding});
     const res = await this.fileOpen({ format, content, extension, type });
@@ -34,8 +34,8 @@ export class FileApi extends ControllerApi {
   }
 
   @command async "file-save"({ format }) {
-    const {controller} = this;
-    this.assert(controller.info.file.supported, "not-supported");
+    const {target} = this;
+    this.assert(target.info.file.supported, "not-supported");
     const res = await this.fileSave({ format });
     const { content, type } = res;
     this.currentFile.setContent({content,type});
@@ -58,13 +58,13 @@ export class FileApi extends ControllerApi {
 export class RemoteFileApi extends FileApi {
 
   fileNew({}) {
-    return this.controller.request("file-new", { });
+    return this.target.request("file-new", { });
   }
   
   fileOpen({ format, content, extension, type }) {
-    return this.controller.request("file-open", { format, content, extension, type });
+    return this.target.request("file-open", { format, content, extension, type });
   }
   fileSave({format}) {
-    return this.controller.request("file-save", { format });
+    return this.target.request("file-save", { format });
   }
 }

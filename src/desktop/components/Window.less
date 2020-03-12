@@ -1,5 +1,5 @@
 
-@import "~/desktop/styles/colors.default.less";
+@import "~/desktop/styles/imports";
 
 .sh.window {
   display   : grid;
@@ -16,7 +16,7 @@
   min-height: 0;  /* NEW */
   min-width: 0; 
   &.active {
-  }
+}
 
 
  
@@ -46,14 +46,22 @@
     }
   }
 
-  >.toolbar {
-    grid-area: toolbar;
-    &.ui.menu:empty {
-      display:none;
+  > .toolbar {
+    .ui();
+    .toolbar();
+    border-bottom:solid 1px #ccc;
+    --item-shadow: none;
+    .group {
+      .ui();
+      .toolbar();
+      --item-shadow: none;
     }
+    grid-area: toolbar;
   }
 
   >.statusbar {
+    .ui();
+    .colors();
     grid-area: statusbar;
     line-height:1.2;
     padding:4px 8px;

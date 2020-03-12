@@ -1,19 +1,10 @@
-
-body {
-  --bg       : #fff;
-  --fg       : #000;
-  --bg-hover : #fff;
-  --fg-hover : #666;
-  --bg-active: #ccc;
-  --fg-active: #555;
-
-  --panel-bg       : #211;
-  --panel-fg       : #ccc;
-  --panel-bg-hover : #322;
-  --panel-fg-hover : #fff;
-  --panel-bg-active: #433;
-  --panel-fg-active: #eee;
-  
+.content() {
+  --bg       : var(--content-bg);
+  --fg       : var(--content-fg);
+  --bg-active: var(--content-bg-active);
+  --fg-active: var(--content-fg-active);
+  --bg-hover : var(--content-bg-hover);
+  --fg-hover : var(--content-fg-hover);
 }
 
 .panel() {
@@ -23,6 +14,15 @@ body {
   --fg-active: var(--panel-fg-active);
   --bg-hover : var(--panel-bg-hover);
   --fg-hover : var(--panel-fg-hover);
+}
+
+.ui() {
+  --bg       : var(--ui-bg);
+  --fg       : var(--ui-fg);
+  --bg-active: var(--ui-bg-active);
+  --fg-active: var(--ui-fg-active);
+  --bg-hover : var(--ui-bg-hover);
+  --fg-hover : var(--ui-fg-hover);
 }
 
 .colors() {
@@ -44,7 +44,7 @@ body {
     color     : var(--fg-hover);
   }
   
-  &[data-active="true"] {
+  &:active, &[data-active="true"] {
     background: var(--bg-active);
     color     : var(--fg-active);
   }
@@ -59,7 +59,7 @@ body {
 .hoverable() {
   color: var(--fg);
 
-  &[data-active="true"] {
+  :active, &[data-active="true"] {
     color: var(--fg-active);
   }
 

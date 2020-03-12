@@ -42,8 +42,8 @@ export class Dock extends React.Component {
         onClick={this.onClick}
         onRemove={this.onRemove}
         remove={!window.keepOpen}
-        name={window.info.about ? window.info.about.short_name : window.proc.title}
-        extra={api.file && api.file.currentFile && api.file.currentFile.name}
+        name={window.title}
+        extra={window.extra}
       />
     )
   }
